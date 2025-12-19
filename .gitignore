@@ -90,3 +90,4 @@ src/.gitignore
 *.tar
 *.zip
 docker.env
+deploy.sh
