@@ -91,3 +91,4 @@ src/components copy/
 src/.gitignore
 *.tar
 *.zip
+docker.env
