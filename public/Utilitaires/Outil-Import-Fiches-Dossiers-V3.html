@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Importateur PASQ - Final (Cellules Fixes)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- Styles CSS Complets --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; color: #333; }
+        .main-container { max-width: 1200px; margin: 30px auto; padding: 0 15px; }
+        .app-header { text-align: center; margin-bottom: 30px; color: #2c3e50; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 25px; overflow: hidden; }
+        .card-header { background-color: #3498db; color: white; font-weight: 600; padding: 15px 20px; border-bottom: none; display: flex; align-items: center; }
+        .card-header i { margin-right: 10px; font-size: 1.2em; }
+        .card-body { padding: 25px; background-color: white; }
+        .folder-drop-area { border: 2px dashed #ccc; border-radius: 8px; padding: 30px; text-align: center; margin-bottom: 20px; transition: border-color 0.3s; background-color: #f8f9fa; position: relative; cursor: pointer; }
+        .folder-drop-area.highlight { border-color: #3498db; background-color: #ebf5fb; }
+        .file-input { position: absolute; left: 0; top: 0; height: 100%; width: 100%; opacity: 0; cursor: pointer; }
+        .drop-text { font-size: 16px; color: #7f8c8d; margin-bottom: 15px; }
+        .btn-primary { background-color: #3498db; border-color: #3498db; }
+        .btn-primary:hover:not(:disabled) { background-color: #2980b9; border-color: #2980b9; }
+        .btn-success { background-color: #2ecc71; border-color: #2ecc71; }
+        .btn-success:hover:not(:disabled) { background-color: #27ae60; border-color: #27ae60; }
+        .folder-list { max-height: 300px; overflow-y: auto; margin-top: 20px; border: 1px solid #eee; padding: 10px; border-radius: 6px; }
+        .folder-item { background-color: #f8f9fa; border-radius: 6px; margin-bottom: 10px; padding: 10px 15px; }
+        .folder-header { font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; }
+        .folder-header i { margin-right: 8px; color: #3498db; }
+        .file-list { margin-left: 25px; font-size: 0.9em; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; margin-top: 3px; border-bottom: 1px dashed #eee; }
+        .file-item:last-child { border-bottom: none; }
+        .file-name { flex-grow: 1; margin-right: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-status { font-size: 0.85em; padding: 3px 8px; border-radius: 10px; min-width: 90px; text-align: center; font-weight: 500; white-space: nowrap; }
+        .status-pending { background-color: #f8f9fa; color: #7f8c8d; border: 1px solid #dee2e6; }
+        .status-processing { background-color: #e9f7fe; color: #3498db; border: 1px solid #bce0f7; }
+        .status-success { background-color: #e9fef0; color: #2ecc71; border: 1px solid #b6f0c3; }
+        .status-error { background-color: #fdebeb; color: #e74c3c; border: 1px solid #f5c6cb; }
+        .progress { height: 8px; margin-top: 20px; margin-bottom: 10px; border-radius: 4px; overflow: hidden; }
+        .progress-bar { background-color: #3498db; transition: width 0.3s ease-in-out; }
+        .results-view { border: 1px solid #eee; border-radius: 6px; padding: 15px; background-color: #2c3e50; color: #f1f1f1; max-height: 400px; overflow-y: auto; font-family: monospace; white-space: pre-wrap; font-size: 13px; }
+        .tab-content { padding-top: 20px; }
+        .preview-table-container { max-height: 400px; overflow: auto; border: 1px solid #ddd; border-radius: 6px; }
+        .preview-table { width: 100%; border-collapse: collapse; }
+        .preview-table th, .preview-table td { border: 1px solid #ddd; padding: 8px 10px; font-size: 13px; white-space: nowrap; }
+        .preview-table th { background-color: #f2f2f2; text-align: left; position: sticky; top: 0; z-index: 1; }
+        .preview-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .action-buttons { margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px; }
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { flex: 1; background-color: white; border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); }
+        .stat-value { font-size: 22px; font-weight: bold; margin: 5px 0; color: #3498db; }
+        .stat-label { font-size: 13px; color: #7f8c8d; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top-color: #3498db; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+        .template-section { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 20px; background-color: #fdfdfd; }
+        .mapping-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+        .mapping-label { width: 150px; font-weight: 600; flex-shrink: 0; font-size: 0.9em; }
+        .mapping-value { flex-grow: 1; }
+        .mapping-value input { font-size: 0.9em; }
+        .mapping-section { margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
+        .mapping-header { font-weight: 600; margin-bottom: 10px; color: #2c3e50; }
+        .problematique-mapping { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px 15px; margin-bottom: 15px; }
+        .format-info { background-color: #e9f7fe; border-left: 4px solid #3498db; padding: 10px 15px; margin-bottom: 20px; font-size: 0.9em; border-radius: 0 4px 4px 0; }
+        .nav-tabs .nav-link { color: #555; }
+        .nav-tabs .nav-link.active { color: #3498db; font-weight: 600; border-color: #dee2e6 #dee2e6 #fff; }
+        #debug-info { font-family: monospace; font-size: 11px; background-color: #f1f1f1; border: 1px solid #ddd; padding: 10px; margin-top: 20px; max-height: 300px; height: 300px; overflow-y: scroll; white-space: pre-wrap; word-break: break-all; border-radius: 4px; line-height: 1.3; width: 100%; box-sizing: border-box; }
+        #dropArea:hover { border-color: #999; }
+        .btn:disabled { cursor: not-allowed; opacity: 0.65; }
+         /* --- FIN CSS --- */
+    </style>
+    <script>
+        // --- Gestionnaire d'Erreurs Global ---
+        window.onerror = function(message, source, lineno, colno, error) { const errorMsg = `ERREUR GLOBALE:\nMessage: ${message}\nSource: ${source} L:${lineno}, C:${colno}\nErreur: ${error}\nStack: ${error?.stack}`; console.error(errorMsg); try { const debugArea = document.getElementById('debug-info'); if (debugArea) { debugArea.value += `\n\n!!! ERREUR GLOBALE !!!\n${message}\nSource: ${source} Ligne:${lineno}\n`; debugArea.scrollTop = debugArea.scrollHeight; } else { alert("Erreur JS Globale (debug-info absent):\n" + message); } } catch (e) { alert("Erreur JS Globale (affichage impossible):\n" + message); } };
+        console.log("WINDOW.ONERROR ATTACHÉ.");
+    </script>
+</head>
+<body>
+    <!-- --- HTML Complet --- -->
+    <div class="main-container">
+         <div class="app-header"> <h1>Importation PASQ pour React</h1> <p class="text-muted">Convertissez des dossiers de fiches PASQ en format compatible avec votre application React</p> </div>
+         <div class="card">
+            <div class="card-header"> <i class="fas fa-folder-open"></i> Sélection des dossiers / fichiers </div>
+            <div class="card-body">
+                <div class="format-info"> <i class="fas fa-info-circle me-2"></i> <strong>Format optimisé pour l'import React</strong> - L'outil génère un fichier Excel structuré exactement comme le format attendu par votre application React. </div>
+                <div class="folder-drop-area" id="dropArea" onclick="document.getElementById('folderInput').click();"> <span class="drop-text">Glissez-déposez des fichiers/dossiers ici ou cliquez pour sélectionner</span> <p class="text-muted small">Formats supportés : .xls, .xlsx, .xlsm, .csv</p> <i class="fas fa-file-upload fa-3x text-muted mb-3"></i> <input type="file" id="folderInput" webkitdirectory directory multiple class="file-input"> </div>
+                <div class="template-section">
+                    <h5 class="mb-3">Configuration du mapping des champs</h5> <p class="text-muted mb-3">Ajustez les correspondances si le format standard ne fonctionne pas (non utilisé avec la lecture par cellules fixes).</p>
+                    <div class="mb-3"> <div class="form-check"> <input class="form-check-input" type="radio" name="templateType" id="templatePreset" value="preset" checked disabled> <label class="form-check-label" for="templatePreset"> Format Fixe (lecture par cellules) </label> </div> <div class="form-check"> <input class="form-check-input" type="radio" name="templateType" id="templateCustom" value="custom" disabled> <label class="form-check-label" for="templateCustom"> Format personnalisé (désactivé) </label> </div> </div>
+                    <div id="customMappingSection" style="display: none;"> <!-- Contenu mapping personnalisé laissé mais non utilisé --> </div>
+                </div>
+                <div class="stats-container" id="statsContainer" style="display: none;"> <div class="stat-card"> <div class="stat-value" id="totalFolders">0</div> <div class="stat-label">Dossiers</div> </div> <div class="stat-card"> <div class="stat-value" id="totalFiles">0</div> <div class="stat-label">Fichiers Valides</div> </div> <div class="stat-card"> <div class="stat-value" id="processedFiles">0</div> <div class="stat-label">Traités</div> </div> <div class="stat-card"> <div class="stat-value" id="successFiles">0</div> <div class="stat-label">Succès</div> </div> </div>
+                <div class="folder-list" id="folderList" style="display: none;"> <p class="text-muted text-center">Aucun dossier/fichier sélectionné.</p> </div>
+                <div class="progress" style="display: none;" id="totalProgress"> <div class="progress-bar" role="progressbar" style="width: 0%"></div> </div> <p class="text-center mb-0 mt-1" id="progressText" style="display: none;"> <span class="spinner"></span> Traitement en cours... <span id="progressCounter"></span> </p>
+                <div class="action-buttons"> <button class="btn btn-primary" id="processBtn" disabled> <i class="fas fa-cogs"></i> Traiter les fichiers </button> </div>
+                <textarea id="debug-info" readonly></textarea>
+            </div>
+        </div>
+        <div class="card" id="resultsCard" style="display:none;"> <div class="card-header"> <i class="fas fa-table"></i> Résultats </div> <div class="card-body"> <ul class="nav nav-tabs" id="resultTabs" role="tablist"> <li class="nav-item" role="presentation"> <button class="nav-link active" id="preview-tab" data-bs-toggle="tab" data-bs-target="#preview" type="button" role="tab">Aperçu Tableau</button> </li> <li class="nav-item" role="presentation"> <button class="nav-link" id="structure-tab" data-bs-toggle="tab" data-bs-target="#structure" type="button" role="tab">Structure Colonnes</button> </li> <li class="nav-item" role="presentation"> <button class="nav-link" id="json-tab" data-bs-toggle="tab" data-bs-target="#json" type="button" role="tab">Données JSON</button> </li> </ul> <div class="tab-content" id="resultTabsContent"> <div class="tab-pane fade show active" id="preview" role="tabpanel"> <div id="tablePreviewContainer" class="preview-table-container mt-3"> <p class="text-muted text-center p-3" id="previewPlaceholder">Les données extraites apparaîtront ici après traitement.</p> <table class="table preview-table" id="tablePreview" style="display: none;"> <thead id="tablePreviewHead"></thead> <tbody id="tablePreviewBody"></tbody> </table> </div> </div> <div class="tab-pane fade" id="structure" role="tabpanel"> <div class="mt-3"> <h5>Structure du fichier d'exportation React</h5> <p>Le fichier Excel généré contiendra exactement ces colonnes, dans cet ordre:</p> <div class="preview-table-container"> <table class="table table-sm table-striped preview-table"> <thead> <tr> <th>#</th> <th>Nom de colonne (React)</th> </tr> </thead> <tbody id="structureColumns"></tbody> </table> </div> </div> </div> <div class="tab-pane fade" id="json" role="tabpanel"> <div class="results-view mt-3" id="jsonResults"> <p class="text-muted text-center" id="jsonPlaceholder">Le JSON brut apparaîtra ici après traitement.</p> </div> </div> </div> <div class="action-buttons"> <button class="btn btn-outline-secondary btn-sm" id="downloadJsonBtn" disabled> <i class="fas fa-file-code"></i> JSON </button> <button class="btn btn-outline-secondary btn-sm" id="downloadCsvBtn" disabled> <i class="fas fa-file-csv"></i> CSV </button> <button class="btn btn-success btn-sm" id="downloadExcelBtn" disabled> <i class="fas fa-file-excel"></i> Excel (React) </button> </div> </div> </div>
+     </div>
+    <!-- --- FIN HTML --- -->
+
+    <!-- Scripts JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        console.log("--- TEST FINAL (Cellules Fixes): Script démarré ---");
+
+        // --- Variables Globales et Constantes ---
+        let dropArea, folderInput, folderList, processBtn, downloadJsonBtn, downloadCsvBtn, downloadExcelBtn,
+            totalProgress, progressBar, progressText, progressCounter, statsContainer, totalFoldersEl,
+            totalFilesEl, processedFilesEl, successFilesEl, jsonResults, jsonPlaceholder, tablePreviewContainer,
+            tablePreview, tablePreviewHead, tablePreviewBody, previewPlaceholder, structureColumns, resultsCard,
+            templatePreset, templateCustom, customMappingSection, debugInfo;
+        let folders = []; let allFiles = []; let processedData = [];
+        let stats = { totalFolders: 0, totalFiles: 0, processedFiles: 0, successFiles: 0, errorFiles: 0 };
+        let currentProcessingPromise = null;
+        const REACT_COLUMNS = [
+            'Nom', 'Prénom', 'Téléphone', 'Mail', "Date d'ouverture de dossier", 'Lieu de vie / Adresse', 'N°', 'Premier contact',
+            'Genre', 'Nationalité', "Langue de l'entretien", 'Date de naissance', 'Age', "Tranche d'âge", 'Statut de séjour',
+            'Administratif', 'Addiction', 'CPAS', 'Juridique', 'Suivi post-pénitentiaire/ IPPJ',
+            'Demande hébergement/ logement ou logement précaire', 'Famille/Couple', 'Scolarité', 'ISP',
+            'Problème Santé (physique ou mentale)', 'Dettes/ Factures', 'Retour volontaire', 'Séjour',
+            'Sans-abrisme (en rue/ squat)', 'Autres', 'Écoute et soutien', 'Prise de rdv (dans une antenne)',
+            'Acc. Physique', 'Informer (retour volontaire, …)', 'Orientation', 'Soutien administratif (dont AMU)',
+            'Autre', 'Gestionnaire du dossier', 'Antenne', 'État du dossier', 'Date de clôture',
+            "Notes Générales" // Assurez-vous que cette colonne est bien présente
+        ];
+
+        // --- Fonction Debug ---
+        function debug(message) { try { const timestamp = new Date().toLocaleTimeString(); const line = `[${timestamp}] ${message}\n`; if (debugInfo) { debugInfo.value += line; debugInfo.scrollTop = debugInfo.scrollHeight; } else { console.log("(debugInfo pas prêt) " + line.trim()); } console.log(line.trim()); } catch (e) { console.error("ERREUR debug:", e); console.log("Message:", message); } }
+
+        // --- Fonction pour lire une cellule ---
+        function getCellValue(worksheet, cellAddress) {
+            try {
+                const cell = worksheet[cellAddress];
+                // Utiliser .w pour la valeur formatée (texte affiché) est souvent plus sûr
+                return cell && typeof cell.w !== 'undefined' ? String(cell.w).trim() : '';
+            } catch (e) {
+                debug(`Erreur getCellValue pour ${cellAddress}: ${e.message}`);
+                return '';
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+             console.log(">>> DOM Listener Fired (Cellules Fixes) <<<");
+             try {
+                 console.log("Assignation éléments DOM...");
+                 dropArea = document.getElementById('dropArea'); folderInput = document.getElementById('folderInput'); folderList = document.getElementById('folderList'); processBtn = document.getElementById('processBtn'); downloadJsonBtn = document.getElementById('downloadJsonBtn'); downloadCsvBtn = document.getElementById('downloadCsvBtn'); downloadExcelBtn = document.getElementById('downloadExcelBtn'); totalProgress = document.getElementById('totalProgress'); progressBar = totalProgress?.querySelector('.progress-bar'); progressText = document.getElementById('progressText'); progressCounter = document.getElementById('progressCounter'); statsContainer = document.getElementById('statsContainer'); totalFoldersEl = document.getElementById('totalFolders'); totalFilesEl = document.getElementById('totalFiles'); processedFilesEl = document.getElementById('processedFiles'); successFilesEl = document.getElementById('successFiles'); jsonResults = document.getElementById('jsonResults'); jsonPlaceholder = document.getElementById('jsonPlaceholder'); tablePreviewContainer = document.getElementById('tablePreviewContainer'); tablePreview = document.getElementById('tablePreview'); tablePreviewHead = document.getElementById('tablePreviewHead'); tablePreviewBody = document.getElementById('tablePreviewBody'); previewPlaceholder = document.getElementById('previewPlaceholder'); structureColumns = document.getElementById('structureColumns'); resultsCard = document.getElementById('resultsCard'); templatePreset = document.getElementById('templatePreset'); templateCustom = document.getElementById('templateCustom'); customMappingSection = document.getElementById('customMappingSection'); debugInfo = document.getElementById('debug-info');
+                 console.log(`Assignation terminée. debugInfo: ${!!debugInfo}, processBtn: ${!!processBtn}, folderInput: ${!!folderInput}`);
+                 if (!processBtn || !folderInput || !dropArea || !debugInfo) { throw new Error("Éléments DOM critiques manquants!"); }
+                 debug("DOM Chargé. Setup Listeners..."); setupEventListeners(); debug("Listeners attachés. Affichage structure..."); displayColumnStructure(); debug("Structure affichée. Reset UI..."); resetUI(); debug(">>> Initialisation Finale (Cellules Fixes) terminée. <<<");
+             } catch (error) { console.error("!!! ERREUR INIT !!!:", error); alert("Erreur critique Init. Voir F12."); if(debugInfo) debugInfo.value += `\n\nERREUR INIT:\n${error.message}\n${error.stack}`; }
+        });
+        console.log("DOM Listener attaché (Cellules Fixes).");
+
+         // --- Event Listeners Setup (Tous handlers complexes) ---
+        function setupEventListeners() { console.log("--- setupEventListeners: Début ---"); try { if (!dropArea || !folderInput || !templatePreset || !templateCustom || !processBtn) { console.error("setupEventListeners: Éléments manquants, arrêt."); return; } console.log("Attachement listeners..."); ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropArea.addEventListener(eventName, preventDefaults, false); }); ['dragenter', 'dragover'].forEach(eventName => { dropArea.addEventListener(eventName, highlight, false); }); ['dragleave', 'drop'].forEach(eventName => { dropArea.addEventListener(eventName, unhighlight, false); }); dropArea.addEventListener('drop', handleDrop); console.log("  - Listener 'drop' attaché."); folderInput.addEventListener('change', handleFileSelection); console.log("  - Listener 'change' attaché."); templatePreset.addEventListener('change', toggleCustomMapping); templateCustom.addEventListener('change', toggleCustomMapping); console.log("  - Listeners template attachés."); processBtn.addEventListener('click', handleProcessClick); console.log("  - Listener 'click' attaché."); downloadJsonBtn.addEventListener('click', downloadJson); downloadCsvBtn.addEventListener('click', downloadCsv); downloadExcelBtn.addEventListener('click', downloadExcel); console.log("  - Listeners download attachés."); console.log("--- setupEventListeners: Terminé ---"); } catch (error) { console.error(`!!! ERREUR SETUP LISTENERS !!!: ${error.message}\n${error.stack}`); alert("Erreur setup listeners. Voir F12."); if(debugInfo) debugInfo.value += `\n\nERREUR SETUP LISTENERS:\n${error.message}\n${error.stack}`; } }
+
+        // --- Handlers (VRAIS) ---
+        function handleFileSelection(event) { console.log(">>> handleFileSelection: Entrée."); try { const files = event.target.files; console.log(">>> handleFileSelection: files =", files); debug(`Input: ${files ? files.length : 'undef'} fichiers.`); if (!files) { throw new Error("event.target.files est null."); } processSelectedFiles(files); if(folderInput) folderInput.value = null; } catch(err) { debug(`!!! ERREUR handleFileSelection: ${err.message} !!!`); console.error("Erreur handleFileSelection:", err); } }
+        function handleDrop(e) { console.log(">>> handleDrop: Entrée."); try { const dt = e.dataTransfer; const files = dt.files; console.log(">>> handleDrop: files =", files); debug(`Drop: ${files ? files.length : 'undef'} fichiers.`); if (!files) { throw new Error("e.dataTransfer.files est null."); } preventDefaults(e); unhighlight(); processSelectedFiles(files); } catch(err) { debug(`!!! ERREUR handleDrop: ${err.message} !!!`); console.error("Erreur handleDrop:", err); } }
+        function handleProcessClick(event) { console.log(`>>> handleProcessClick: Entrée (Clic sur ${event?.target?.id}).`); debug(`Clic sur 'Traiter'. Disabled: ${processBtn?.disabled}`); if (!processBtn) { debug("ERREUR: processBtn non défini."); return; } if (processBtn.disabled) { debug("Clic ignoré: bouton désactivé."); if (allFiles.length === 0) { alert("Sélectionnez des fichiers."); } return; } if (!currentProcessingPromise) { debug("Lancement processFolders..."); processBtn.disabled = true; debug(`Bouton désactivé.`); stats.processedFiles = 0; stats.successFiles = 0; stats.errorFiles = 0; updateStatsUI(); updateProgressUI(); setTimeout(async () => { currentProcessingPromise = processFolders().catch(error => { debug(`!!! ERREUR GLOBALE traitement: ${error.message}\n${error.stack}`); alert(`Erreur traitement. Voir console/debug.`); }).finally(() => { currentProcessingPromise = null; debug("Traitement terminé (finally)."); if (processBtn) { processBtn.disabled = true; debug("Bouton laissé désactivé."); } }); }, 50); } else { debug("Traitement déjà en cours."); alert("Traitement en cours."); } }
+
+        // --- File Selection Processing (Version Complète avec Logs) ---
+        function processSelectedFiles(fileList) { console.log(">>> processSelectedFiles: Entrée."); console.log(">>> Vérification fileList..."); if (!fileList || typeof fileList.length === 'undefined') { console.error("!!! ERREUR CRITIQUE - fileList invalide !!!"); debug("ERREUR CRITIQUE: fileList invalide."); alert("Erreur interne: réception fichiers invalide."); return; } console.log(`>>> fileList reçu (type: ${typeof fileList}, length: ${fileList.length}):`, fileList); debug(`Reçu ${fileList.length} élément(s).`); console.log(">>> Appel resetUI()..."); debug("Traitement sélection..."); try { resetUI(); console.log(">>> resetUI() terminé."); const tempFolders = {}; const validExtensions = ['.xls', '.xlsx', '.xlsm', '.csv']; allFiles = []; folders = []; console.log(">>> Itération sur fileList..."); Array.from(fileList).forEach((file, index) => { console.log(`  - Itération ${index}: "${file?.name}"`); if (!file || !file.name) { console.warn(`  - Élément invalide.`); return; } const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase(); const relativePath = file.webkitRelativePath || file.name; const pathParts = relativePath.split(/[\\/]/); const fileName = pathParts.pop() || relativePath; const folderPath = pathParts.length > 0 ? pathParts.join('/') : 'Fichiers racine'; if (fileName.startsWith('.') || fileName.toLowerCase() === 'thumbs.db' || fileExt === '.zip') { console.log(`    Ignoré: ${fileName}`); return; } if (!validExtensions.includes(fileExt)) { console.log(`    Extension ignorée (${fileExt}): ${fileName}`); return; } console.log(`    VALIDE: "${fileName}" / "${folderPath}"`); if (!tempFolders[folderPath]) { tempFolders[folderPath] = { name: folderPath, files: [] }; } const fileObject = { file: file, name: fileName, relativePath: relativePath, status: 'pending', id: `file-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`, folderName: folderPath }; tempFolders[folderPath].files.push(fileObject); allFiles.push(fileObject); }); console.log(">>> Fin itération."); folders = Object.values(tempFolders); folders.sort((a, b) => a.name.localeCompare(b.name)); folders.forEach(folder => folder.files.sort((a, b) => a.name.localeCompare(b.name))); stats.totalFolders = folders.length; stats.totalFiles = allFiles.length; console.log(">>> Mise à jour UI et stats..."); debug(`Trouvé ${stats.totalFiles} fichier(s) VALIDE(s) dans ${stats.totalFolders} dossier(s).`); updateStatsUI(); updateFolderListUI(); console.log(">>> Vérification activation bouton..."); if (!processBtn) { throw new Error("processBtn est null!"); } if (allFiles.length > 0) { processBtn.disabled = false; console.log(`>>> Bouton 'Traiter' ACTIVÉ (disabled = ${processBtn.disabled}).`); debug(`Bouton 'Traiter' activé.`); } else { processBtn.disabled = true; console.log(`>>> Aucun fichier VALIDE. Bouton 'Traiter' DÉSACTIVÉ (disabled = ${processBtn.disabled}).`); debug(`Aucun fichier VALIDE. Bouton désactivé.`); if(folderList) { folderList.innerHTML = '<p class="text-muted text-center">Aucun fichier Excel/CSV valide.</p>'; folderList.style.display = 'block'; } } console.log(">>> processSelectedFiles: Terminé."); } catch (error) { debug(`!!! ERREUR processSelectedFiles: ${error.message} !!!`); console.error("Erreur processSelectedFiles:", error); if(processBtn) { processBtn.disabled = true; console.error("processSelectedFiles: Bouton désactivé suite à erreur."); } alert("Erreur sélection fichiers. Voir F12."); } }
+
+        // --- Core Processing Logic (MODIFIÉ pour lire notes depuis "Suivi des rdv") ---
+        async function processFolders() {
+             debug("--- processFolders (Cellules Fixes + Notes 'Suivi des rdv'): Début traitement ---");
+             if (allFiles.length === 0) { debug("Aucun fichier."); return; }
+             processedData = [];
+             let dossiersAjoutes = 0;
+
+             // --- DÉFINITION DU MAPPING CELLULE -> COLONNE REACT (SANS Notes Générales) ---
+             // ** AJUSTEZ CECI À VOTRE STRUCTURE EXCEL EXACTE **
+             const cellMapping = {
+                 // Coordonnées (Colonne B)
+                 'Nom': 'B3', 'Prénom': 'B4', 'Téléphone': 'B5', 'Mail': 'B6',
+                 "Date d'ouverture de dossier": 'B7', 'Lieu de vie / Adresse': 'B8', 'N°': 'B9',
+                 'Premier contact': 'B10',
+                 // Informations Personnelles (Colonne B)
+                 'Genre': 'B13', 'Nationalité': 'B14', "Langue de l'entretien": 'B15',
+                 'Date de naissance': 'B16', 'Statut de séjour': 'B17',
+                 // Problématiques (Check en Colonne D, valeur '1' ou 'x')
+                 'Administratif': { cell: 'D3', check: '1' },
+                 'Addiction': { cell: 'D4', check: '1' },
+                 'CPAS': { cell: 'D5', check: '1' },
+                 'Juridique': { cell: 'D6', check: '1' },
+                 'Suivi post-pénitentiaire/ IPPJ': { cell: 'D7', check: '1' },
+                 'Demande hébergement/ logement ou logement précaire': { cell: 'D8', check: '1' },
+                 'Famille/Couple': { cell: 'D9', check: '1' },
+                 'Scolarité': { cell: 'D10', check: '1' },
+                 'ISP': { cell: 'D11', check: '1' },
+                 'Problème Santé (physique ou mentale)': { cell: 'D12', check: '1' },
+                 'Dettes/ Factures': { cell: 'D13', check: '1' },
+                 'Retour volontaire': { cell: 'D14', check: '1' },
+                 'Séjour': { cell: 'D15', check: '1' },
+                 'Sans-abrisme (en rue/ squat)': { cell: 'D16', check: '1' },
+                 // 'Autres': { cell: 'D18', check: '1' }, // Problématique "Autre" - À vérifier si utile/présent
+                 // Services (Check en Colonne F, valeur '1' ou 'x')
+                 'Écoute et soutien': { cell: 'F3', check: '1' },
+                 'Prise de rdv (dans une antenne)': { cell: 'F4', check: '1' },
+                 'Acc. Physique': { cell: 'F5', check: '1' },
+                 //'Visite à domicile': { cell: 'F6', check: '1' }, // Mappé vers 'Autres' ?
+                 'Orientation': { cell: 'F7', check: '1' },
+                 'Soutien administratif (dont AMU)': { cell: 'F8', check: '1' },
+                 //'Suivi psycho-social': { cell: 'F9', check: '1' }, // Mappé vers 'Autres' ?
+                 'Informer (retour volontaire, …)': { cell: 'F10', check: '1' }, // S'assurer que le label React est correct
+                 'Autre': { cell: 'F11', check: '1' }, // Service "Autre" -> Colonne React "Autre"
+                 // Champs spécifiques
+                 'Gestionnaire du dossier': 'G15',
+                 'Antenne': 'G16',
+                 'État du dossier': 'B19', // Vérifiez si B19 est correct
+                 'Date de clôture': 'B20'  // Vérifiez si B20 est correct
+                 // 'Notes Générales' est géré séparément depuis la feuille "Suivi des rdv"
+             };
+             // --- FIN DÉFINITION MAPPING ---
+
+             debug("--- Boucle fichiers (lecture principale + notes 'Suivi des rdv') ---");
+             for (const fileObj of allFiles) {
+                 debug(`--- Fichier: ${fileObj.relativePath} ---`);
+                 updateFileStatusUI(fileObj.id, 'processing');
+                 const outputRow = {}; REACT_COLUMNS.forEach(col => outputRow[col] = null);
+                 let fileHasData = false; // Devient true si on trouve au moins une valeur
+
+                 try {
+                     const fileData = await readFileAsync(fileObj.file); debug(`  Lecture OK.`);
+                     debug(`  Parsing XLSX (type: 'binary')...`);
+                     const workbook = XLSX.read(fileData, { type: 'binary', cellDates: true, cellNF: false, cellStyles: false });
+                     debug(`  Parsing OK.`);
+
+                     // --- 1. Lecture de la feuille principale (première feuille) ---
+                     const mainSheetName = workbook.SheetNames[0];
+                     if (!mainSheetName) { throw new Error("Fichier sans feuille principale."); }
+                     const mainWorksheet = workbook.Sheets[mainSheetName];
+                     debug(`  Lecture feuille principale '${mainSheetName}' via cellMapping...`);
+
+                     for (const reactCol of REACT_COLUMNS) {
+                         // Ne pas traiter 'Notes Générales' ici car géré par la feuille dédiée
+                         if (reactCol === "Notes Générales") continue;
+
+                         const cellInfo = cellMapping[reactCol];
+                         if (cellInfo) {
+                             if (typeof cellInfo === 'string') { // Cas: lecture directe
+                                 const value = getCellValue(mainWorksheet, cellInfo);
+                                 if (value !== '') {
+                                     outputRow[reactCol] = value;
+                                     debug(`    Mappé Fixe: Cellule ${cellInfo} -> ${reactCol} = "${value}"`);
+                                     fileHasData = true;
+                                 }
+                             } else if (typeof cellInfo === 'object' && cellInfo.cell && cellInfo.check) { // Cas: vérification 'x' ou '1'
+                                 const checkValue = getCellValue(mainWorksheet, cellInfo.cell);
+                                 // Accepter 'x' (insensible à la casse) ou le chiffre 1 comme marque de sélection
+                                 if (checkValue.toLowerCase() === cellInfo.check.toLowerCase() || checkValue === '1') {
+                                     outputRow[reactCol] = 'X'; // Mettre 'X' dans la colonne React
+                                     debug(`    Mappé CheckMark: ${reactCol} = X (trouvé "${checkValue}" en ${cellInfo.cell})`);
+                                     fileHasData = true;
+                                 }
+                             }
+                         }
+                     }
+                     // Forcer l'antenne depuis le nom du dossier si pas trouvée en G16 et si ce n'est pas la racine
+                     if (!outputRow['Antenne'] && fileObj.folderName && fileObj.folderName !== 'Fichiers racine') {
+                          outputRow['Antenne'] = fileObj.folderName;
+                          debug(`    Antenne forcée depuis nom dossier: ${fileObj.folderName}`);
+                          fileHasData = true; // Le nom du dossier est une donnée
+                     }
+                     debug(`  Fin lecture feuille principale.`);
+                     // --- Fin Lecture Feuille Principale ---
+
+
+                     // --- 2. Lecture des Notes Générales depuis la feuille "Suivi des rdv" ---
+                     debug("  Recherche feuille 'Suivi des rdv'...");
+                     // Recherche insensible à la casse et aux espaces autour
+                     
+let notesSheetName = workbook.SheetNames.find(name => name.trim().toLowerCase() === "suivi des rdv");
+if (!notesSheetName) {
+    // Si "Suivi des rdv" n'existe pas, on regarde si "Suivi" existe (cas d'erreur de nommage)
+    const fallbackSheet = workbook.SheetNames.find(name => name.trim().toLowerCase() === "suivi");
+    if (fallbackSheet) {
+        notesSheetName = fallbackSheet;
+        debug("⚠️ Feuille 'Suivi des rdv' absente. Utilisation de 'Suivi' comme fallback.");
+    } else {
+        debug("❌ Ni 'Suivi des rdv' ni 'Suivi' trouvés. Pas de notes importées.");
+    }
+}
+
+                     let notesAccumulees = '';
+
+                     if (notesSheetName) {
+                         debug(`    Feuille 'Suivi des rdv' trouvée: '${notesSheetName}'. Lecture des notes...`);
+                         const notesWorksheet = workbook.Sheets[notesSheetName];
+                         let rowNum = 3; // Commence à la ligne 3 pour les notes
+                         const MAX_NOTE_ROWS = 100; // Sécurité pour éviter boucle infinie
+
+                         for (let i = 0; i < MAX_NOTE_ROWS; i++, rowNum++) {
+                             const noteTextCell = 'C' + rowNum;
+                             const dateCell = 'B' + rowNum;
+
+                             const noteText = getCellValue(notesWorksheet, noteTextCell);
+                             // Si la cellule de texte (colonne C) est vide, on arrête de chercher des notes pour ce fichier
+                             if (!noteText) {
+                                 debug(`    Fin des notes trouvée à la ligne ${rowNum} (cellule ${noteTextCell} vide).`);
+                                 break;
+                             }
+
+                             const dateNoteRaw = getCellValue(notesWorksheet, dateCell);
+                             // Formatage simple: utiliser la valeur brute de la date telle quelle
+                             let datePrefix = dateNoteRaw ? `${dateNoteRaw}: ` : ''; // Ajoute ': ' si date existe
+
+                             // Ajouter la ligne de note formatée (Date: Texte) avec un saut de ligne
+                             notesAccumulees += datePrefix + noteText + '\n';
+                             debug(`    Note ajoutée (L${rowNum}): ${datePrefix}${noteText.substring(0, 50)}...`);
+                         }
+
+                         if (rowNum >= MAX_NOTE_ROWS + 3) { // +3 car on commence à rowNum=3
+                             debug(`    ATTENTION: Limite de ${MAX_NOTE_ROWS} lignes de notes atteinte pour la feuille '${notesSheetName}'.`);
+                         }
+                     } else {
+                         debug("    Feuille 'Suivi des rdv' non trouvée dans le fichier.");
+                     }
+
+                     // Assigner les notes accumulées (même si vides) à la colonne correspondante
+                     const notesTrimmed = notesAccumulees.trim(); // Enlève les sauts de ligne superflus au début/fin
+                     outputRow['Notes Générales'] = notesTrimmed;
+                     if (notesTrimmed) {
+                         fileHasData = true; // Les notes comptent comme des données valides
+                         debug(`    Notes Générales assignées (${notesTrimmed.length} caractères).`);
+                     } else {
+                         debug("    Aucune note trouvée ou feuille 'Suivi des rdv' absente/vide.");
+                     }
+                     // --- Fin Section Notes Générales ---
+
+
+                     // --- Finalisation pour ce fichier ---
+                     if (fileHasData) {
+                         // Calcul Age et Tranche d'âge si Date de naissance est présente
+                         if (outputRow['Date de naissance']) {
+                             try {
+                                 // Tente de parser la date. XLSX devrait retourner un objet Date si cellDates:true
+                                 let dob = outputRow['Date de naissance'];
+                                 // Si ce n'est pas déjà une date, tente de la convertir
+                                 if (!(dob instanceof Date)) {
+                                     // Essayer différents formats si nécessaire, ou laisser XLSX faire le travail
+                                     dob = new Date(dob);
+                                 }
+
+                                 if (dob instanceof Date && !isNaN(dob.getTime())) {
+                                     const today = new Date();
+                                     let age = today.getFullYear() - dob.getFullYear();
+                                     const m = today.getMonth() - dob.getMonth();
+                                     if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                                         age--;
+                                     }
+                                     outputRow['Age'] = age >= 0 ? age : null; // Éviter âge négatif
+
+                                     // Définir la tranche d'âge si l'âge est valide
+                                     if (outputRow['Age'] !== null) {
+                                         if (age < 18) outputRow["Tranche d'âge"] = "0-17";
+                                         else if (age <= 25) outputRow["Tranche d'âge"] = "18-25";
+                                         else if (age <= 35) outputRow["Tranche d'âge"] = "26-35";
+                                         else if (age <= 45) outputRow["Tranche d'âge"] = "36-45";
+                                         else if (age <= 55) outputRow["Tranche d'âge"] = "46-55";
+                                         else if (age <= 65) outputRow["Tranche d'âge"] = "56-65";
+                                         else outputRow["Tranche d'âge"] = "66+";
+                                         debug(`    Age calculé: ${age}, Tranche: ${outputRow["Tranche d'âge"]}`);
+                                     } else {
+                                         outputRow["Tranche d'âge"] = null;
+                                     }
+
+                                 } else {
+                                     debug(`    Date de naissance invalide ou non reconnue pour calcul âge: ${outputRow['Date de naissance']}`);
+                                     outputRow['Age'] = null;
+                                     outputRow["Tranche d'âge"] = null;
+                                 }
+                             } catch (ageError) {
+                                 debug(`    Erreur calcul âge: ${ageError.message}`);
+                                 outputRow['Age'] = null;
+                                 outputRow["Tranche d'âge"] = null;
+                             }
+                         } else {
+                             outputRow['Age'] = null;
+                             outputRow["Tranche d'âge"] = null;
+                         }
+
+                         processedData.push(outputRow); dossiersAjoutes++;
+                         debug(`  >>> Dossier ${fileObj.name} ajouté.`); // Évite de logger tout l'objet, trop verbeux
+                         stats.successFiles++; updateFileStatusUI(fileObj.id, 'success');
+                     } else {
+                         debug(`  --- Dossier ${fileObj.name} ignoré (aucune donnée trouvée sur feuille principale ET aucune note).`);
+                         // Considérer un fichier lu sans erreur mais sans donnée comme un succès de traitement (fichier vide)
+                         stats.successFiles++;
+                         updateFileStatusUI(fileObj.id, 'success', 'Vide.');
+                     }
+                 } catch (error) {
+                     stats.errorFiles++;
+                     updateFileStatusUI(fileObj.id, 'error', error.message);
+                     debug(`!!! ERREUR fichier ${fileObj.relativePath}: ${error.message}\n${error.stack}`);
+                     console.error(`Erreur fichier ${fileObj.relativePath}`, error);
+                 } finally {
+                     stats.processedFiles++;
+                     updateProgressUI();
+                 }
+             } // Fin boucle allFiles
+             debug("--- Fin boucle fichiers ---");
+             finalizeProcessing(dossiersAjoutes);
+        }
+
+        function readFileAsync(file) {
+            debug(`  readFileAsync: Lecture de ${file.name}`);
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    // Corrected the template literal here
+                    debug(`  readFileAsync: Lecture ${file.name} OK.`);
+                    resolve(event.target.result);
+                };
+                reader.onerror = (event) => {
+                    debug(`!!! readFileAsync: ERREUR lecture ${file.name} !!!`);
+                    reject(new Error(`Erreur lecture fichier ${file.name}: ${reader.error}`));
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // mapRowToReactStructure_StructureSpecifique n'est plus utilisée
+
+        function finalizeProcessing(dossiersAjoutesCount) {
+             debug("--- finalizeProcessing (Cellules Fixes): Fin du traitement ---"); try { debug(`Nombre total de dossiers/lignes ajoutés: ${dossiersAjoutesCount}`); debug(`Taille finale de processedData: ${processedData.length}`); if (processedData.length > 0) { debug(`Première ligne ajoutée: ${JSON.stringify(processedData[0])}`); } debug(`Résultats finaux: ${stats.successFiles} succès lecture/parsing, ${stats.errorFiles} erreurs lecture/parsing sur ${stats.totalFiles} fichiers traités.`); displayResults(); if (processBtn) processBtn.disabled = true; debug("Bouton 'Traiter' laissé désactivé (finalizeProcessing)."); let alertMsg = `Traitement terminé. ${dossiersAjoutesCount} dossier(s)/ligne(s) ajouté(s) aux résultats.`; if (stats.errorFiles > 0) { alertMsg += ` ${stats.errorFiles} fichier(s) en erreur de lecture/parsing.`; } if (dossiersAjoutesCount === 0 && stats.totalFiles > 0 && stats.errorFiles === 0) { alertMsg = `Traitement terminé. ${stats.totalFiles} fichiers lus, mais AUCUNE donnée pertinente n'a pu être extraite via les cellules fixes. Vérifiez la structure des fichiers et le mapping 'cellMapping' dans le code.`; } else if (dossiersAjoutesCount === 0 && stats.errorFiles > 0) { alertMsg = `Traitement terminé. ${stats.errorFiles} erreur(s) de lecture/parsing et AUCUNE donnée extraite. Vérifiez les logs.`; } else if (dossiersAjoutesCount > 0 && stats.errorFiles === 0){ alertMsg = `Traitement terminé avec succès ! ${dossiersAjoutesCount} dossier(s)/ligne(s) extrait(s).`} setTimeout(() => alert(alertMsg), 100); } catch(error) { debug(`!!! ERREUR finalizeProcessing: ${error.message} !!!`); console.error("Erreur finalizeProcessing:", error); }
+        }
+
+        // --- Fonctions Utilitaires Complètes ---
+        function resetUI() { console.log("resetUI appelée."); debug("Réinitialisation UI..."); try { if (debugInfo) debugInfo.value = ''; if (folderList) { folderList.innerHTML = '<p class="text-muted text-center">Aucun dossier/fichier sélectionné.</p>'; folderList.style.display = 'none'; } if (tablePreview) { tablePreview.style.display = 'none'; if(tablePreviewHead) tablePreviewHead.innerHTML = ''; if(tablePreviewBody) tablePreviewBody.innerHTML = ''; } if (previewPlaceholder) { previewPlaceholder.style.display = 'block'; previewPlaceholder.textContent = 'Les données extraites apparaîtront ici après traitement.'; previewPlaceholder.classList.remove('text-danger'); } if (jsonResults) jsonResults.innerHTML = ''; if (jsonPlaceholder) { jsonPlaceholder.style.display = 'block'; jsonPlaceholder.textContent = 'Le JSON brut apparaîtra ici après traitement.'; jsonPlaceholder.classList.remove('text-danger'); } if (totalProgress) totalProgress.style.display = 'none'; if (progressBar) progressBar.style.width = '0%'; if (progressText) progressText.style.display = 'none'; if (progressCounter) progressCounter.textContent = ''; if (statsContainer) statsContainer.style.display = 'none'; resetStats(); updateStatsUI(); if (processBtn) { processBtn.disabled = true; console.log(`resetUI: Bouton 'Traiter' désactivé (disabled = ${processBtn.disabled}).`); } else { console.warn("resetUI: processBtn non trouvé."); } if (downloadJsonBtn) downloadJsonBtn.disabled = true; if (downloadCsvBtn) downloadCsvBtn.disabled = true; if (downloadExcelBtn) downloadExcelBtn.disabled = true; if (resultsCard) resultsCard.style.display = 'none'; folders = []; allFiles = []; processedData = []; currentProcessingPromise = null; } catch(e) { debug(`ERREUR resetUI: ${e.message}`); console.error("Erreur resetUI:", e); } }
+        function resetStats() { stats = { totalFolders: 0, totalFiles: 0, processedFiles: 0, successFiles: 0, errorFiles: 0 }; }
+        function updateStatsUI() { if (!statsContainer || !totalFoldersEl || !totalFilesEl || !processedFilesEl || !successFilesEl) { return;} try { totalFoldersEl.textContent = stats.totalFolders; totalFilesEl.textContent = stats.totalFiles; processedFilesEl.textContent = stats.processedFiles; successFilesEl.textContent = stats.successFiles; statsContainer.style.display = (stats.totalFiles > 0 || stats.totalFolders > 0) ? 'grid' : 'none'; } catch(e) { debug(`Erreur updateStatsUI: ${e.message}`); console.error("Erreur updateStatsUI:", e);} }
+        function updateFolderListUI() { if (!folderList) { return; } try { folderList.innerHTML = ''; if (folders.length === 0 && allFiles.length > 0) { const fileListDiv = document.createElement('div'); fileListDiv.className = 'file-list'; allFiles.forEach(fileObj => { const fileItemDiv = document.createElement('div'); fileItemDiv.className = 'file-item'; fileItemDiv.id = fileObj.id; fileItemDiv.innerHTML = `<span class="file-name" title="${fileObj.name}">${fileObj.name}</span> <span class="file-status status-${fileObj.status}">${getStatusText(fileObj.status)}</span>`; fileListDiv.appendChild(fileItemDiv); }); folderList.appendChild(fileListDiv); folderList.style.display = 'block'; } else if (folders.length === 0) { folderList.innerHTML = '<p class="text-muted text-center">Aucun dossier/fichier valide.</p>'; folderList.style.display = 'block'; return; } else { folderList.style.display = 'block'; folders.forEach(folder => { const folderDiv = document.createElement('div'); folderDiv.className = 'folder-item'; const folderHeader = document.createElement('div'); folderHeader.className = 'folder-header'; folderHeader.innerHTML = `<i class="fas fa-folder"></i> ${folder.name} <span class="badge bg-secondary ms-2">${folder.files.length} fichier(s)</span>`; folderDiv.appendChild(folderHeader); const fileListDiv = document.createElement('div'); fileListDiv.className = 'file-list'; folder.files.forEach(fileObj => { const fileItemDiv = document.createElement('div'); fileItemDiv.className = 'file-item'; fileItemDiv.id = fileObj.id; fileItemDiv.innerHTML = `<span class="file-name" title="${fileObj.name}">${fileObj.name}</span> <span class="file-status status-${fileObj.status}">${getStatusText(fileObj.status)}</span>`; fileListDiv.appendChild(fileItemDiv); }); folderDiv.appendChild(fileListDiv); folderList.appendChild(folderDiv); }); } } catch(e) { debug(`Erreur updateFolderListUI: ${e.message}`); console.error("Erreur updateFolderListUI:", e); } }
+        function updateFileStatusUI(fileId, status, message = '') { try { const fileElement = document.getElementById(fileId); if (fileElement) { const statusElement = fileElement.querySelector('.file-status'); if (statusElement) { statusElement.className = `file-status status-${status}`; statusElement.textContent = getStatusText(status); statusElement.title = message; } } else { /* debug(`Élément UI introuvable file ID: ${fileId}`); */ } } catch(e) { debug(`Erreur updateFileStatusUI: ${e.message}`); console.error("Erreur updateFileStatusUI:", e); } }
+        function getStatusText(status) { switch (status) { case 'pending': return 'En attente'; case 'processing': return 'Traitement...'; case 'success': return 'Succès'; case 'error': return 'Erreur'; default: return status; } }
+        function updateProgressUI() { if (!totalProgress || !progressBar || !progressCounter || !progressText) return; try { const processedCount = stats.processedFiles; const totalCount = stats.totalFiles; const percentage = totalCount > 0 ? Math.round((processedCount / totalCount) * 100) : 0; progressBar.style.width = `${percentage}%`; progressBar.setAttribute('aria-valuenow', percentage); progressCounter.textContent = `${processedCount} / ${totalCount}`; if (totalCount > 0 && processedCount < totalCount) { totalProgress.style.display = 'block'; progressText.style.display = 'block'; } else if (processedCount >= totalCount && totalCount > 0) { progressText.style.display = 'none'; if (stats.errorFiles === 0) { setTimeout(() => { if(totalProgress) totalProgress.style.display = 'none'; }, 1500); } else { if(totalProgress) totalProgress.style.display = 'block'; } } else { if(totalProgress) totalProgress.style.display = 'none'; if(progressText) progressText.style.display = 'none'; } } catch(e) { debug(`Erreur updateProgressUI: ${e.message}`); console.error("Erreur updateProgressUI:", e); } }
+        function displayResults() { debug("Affichage des résultats."); if(!resultsCard || !jsonResults || !jsonPlaceholder || !tablePreview || !tablePreviewHead || !tablePreviewBody || !previewPlaceholder || !downloadJsonBtn || !downloadCsvBtn || !downloadExcelBtn) { debug("Erreur: Elements DOM résultats manquants."); return; } try { resultsCard.style.display = 'block'; jsonPlaceholder.classList.remove('text-danger'); previewPlaceholder.classList.remove('text-danger'); if (processedData.length > 0) { jsonResults.textContent = JSON.stringify(processedData, null, 2); jsonPlaceholder.style.display = 'none'; downloadJsonBtn.disabled = false; tablePreviewHead.innerHTML = ''; tablePreviewBody.innerHTML = ''; const headerRow = tablePreviewHead.insertRow(); REACT_COLUMNS.forEach(colName => { const th = document.createElement('th'); th.textContent = colName; headerRow.appendChild(th); }); const previewLimit = 100; processedData.slice(0, previewLimit).forEach(dataRow => { const row = tablePreviewBody.insertRow(); REACT_COLUMNS.forEach(colName => { const cell = row.insertCell(); cell.textContent = dataRow[colName] != null ? String(dataRow[colName]) : ''; }); }); tablePreview.style.display = 'table'; previewPlaceholder.style.display = 'none'; downloadCsvBtn.disabled = false; downloadExcelBtn.disabled = false; } else { jsonResults.innerHTML = ''; jsonPlaceholder.textContent = 'Aucune donnée compatible trouvée après traitement.'; jsonPlaceholder.style.display = 'block'; downloadJsonBtn.disabled = true; tablePreview.style.display = 'none'; tablePreviewHead.innerHTML = ''; tablePreviewBody.innerHTML = ''; previewPlaceholder.textContent = 'Aucune donnée compatible trouvée pour l\'aperçu tableau.'; previewPlaceholder.style.display = 'block'; downloadCsvBtn.disabled = true; downloadExcelBtn.disabled = true; if(stats.errorFiles > 0 || (stats.processedFiles > 0 && stats.totalFiles > 0 && processedData.length === 0) ) { jsonPlaceholder.classList.add('text-danger'); previewPlaceholder.classList.add('text-danger'); } } } catch(e) { debug(`Erreur displayResults: ${e.message}`); console.error("Erreur displayResults:", e); } }
+        function displayColumnStructure() { if (!structureColumns) { return; } try { structureColumns.innerHTML = ''; REACT_COLUMNS.forEach((col, index) => { const tr = document.createElement('tr'); tr.innerHTML = `<td>${index + 1}</td><td>${col}</td>`; structureColumns.appendChild(tr); }); } catch(e) { debug(`Erreur displayColumnStructure: ${e.message}`); console.error("Erreur displayColumnStructure:", e); } }
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        function highlight() { if(dropArea) dropArea.classList.add('highlight'); }
+        function unhighlight() { if(dropArea) dropArea.classList.remove('highlight'); }
+        function toggleCustomMapping() { /* Désactivé pour l'approche par cellules fixes */ debug("Mapping personnalisé désactivé pour la lecture par cellules fixes."); }
+        function getKeywordsFromInput(inputId) { /* Non utilisé dans cette approche */ return []; }
+        function getColumnsFromInput(inputId) { /* Non utilisé dans cette approche */ return []; }
+        function getMappingConfig() { /* Non utilisé dans cette approche */ return {}; }
+        function downloadBlob(blob, filename) { try { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); } catch(e) { debug(`Erreur downloadBlob: ${e.message}`); } }
+        function downloadJson() { if (processedData.length === 0) { alert("Aucune donnée à télécharger."); return; } const jsonData = JSON.stringify(processedData, null, 2); downloadBlob(new Blob([jsonData], { type: 'application/json' }), 'pasq_react_data.json'); debug("Fichier JSON téléchargé."); }
+        function downloadCsv() { if (processedData.length === 0) { alert("Aucune donnée à télécharger."); return; } try { const worksheet = XLSX.utils.json_to_sheet(processedData, { header: REACT_COLUMNS, skipHeader: false }); const csvData = XLSX.utils.sheet_to_csv(worksheet, { forceQuotes: true }); downloadBlob(new Blob([`\uFEFF${csvData}`], { type: 'text/csv;charset=utf-8;' }), 'pasq_react_data.csv'); debug("Fichier CSV téléchargé."); } catch (error) { debug(`ERREUR génération CSV: ${error}`); alert("Erreur génération CSV."); } }
+        function downloadExcel() { if (processedData.length === 0) { alert("Aucune donnée à télécharger."); return; } try { const workbook = XLSX.utils.book_new(); const worksheet = XLSX.utils.json_to_sheet(processedData, { header: REACT_COLUMNS, skipHeader: false }); try { const colWidths = REACT_COLUMNS.map(col => { let maxLen = col.length; processedData.slice(0, 50).forEach(row => { const cellLen = row[col] != null ? String(row[col]).length : 0; if (cellLen > maxLen) maxLen = cellLen; }); return { wch: Math.min(maxLen + 2, 60) }; }); worksheet['!cols'] = colWidths; } catch (widthError) { debug("Erreur calcul largeur colonnes: " + widthError.message); } XLSX.utils.book_append_sheet(workbook, worksheet, 'Données PASQ React'); XLSX.writeFile(workbook, 'pasq_react_data.xlsx'); debug("Fichier Excel téléchargé."); } catch (error) { debug(`ERREUR génération Excel: ${error}\n${error.stack}`); alert("Erreur génération Excel."); } }
+        // --- FIN DES FONCTIONS UTILITAIRES ---
+
+        console.log("--- TEST FINAL (Cellules Fixes): Fin script ---");
+    </script>
+
+</body>
+</html>

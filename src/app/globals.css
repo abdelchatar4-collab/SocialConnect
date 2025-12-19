@@ -1,0 +1,590 @@
+/*
+Copyright (C) 2025 ABDEL KADER CHATAR
+SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importation de la police Inter depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================================
+   VARIABLES CSS PERSONNALISÉES
+   ============================================================================ */
+/* ============================================================================
+   VARIABLES CSS PERSONNALISÉES (Premium Theme)
+   ============================================================================ */
+:root {
+  /* Premium Color Palette */
+  --foreground-rgb: 30, 41, 59;
+  /* Soft Gradient Background */
+  --background-start: #f8fafc;
+  --background-mid: #f1f5f9;
+  --background-end: #e2e8f0;
+  --background-accent: #eef2ff;
+
+  /* Primary Brand (Deep Indigo) */
+  --color-primary-50: 238 242 255;
+  --color-primary-500: 99 102 241;
+  --color-primary-600: 79 70 229;
+  --color-primary-700: 67 56 202;
+
+  /* Semantic - Success (Emerald) */
+  --color-success-50: 236 253 245;
+  --color-success-500: 16 185 129;
+  --color-success-600: 5 150 105;
+
+  /* Semantic - Error (Rose) */
+  --color-error-50: 255 241 242;
+  --color-error-500: 244 63 94;
+  --color-error-600: 225 29 72;
+
+  /* Semantic - Warning (Amber) */
+  --color-warning-50: 255 251 235;
+  --color-warning-500: 245 158 11;
+  --color-warning-600: 217 119 6;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 248, 250, 252;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 30, 41, 59;
+  }
+}
+
+
+/* ============================================================================
+   STYLES DE BASE AMÉLIORÉS
+   ============================================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    color: rgb(var(--foreground-rgb));
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-variation-settings: normal;
+    /* Premium Gradient Background */
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-mid) 50%, var(--background-accent) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    /* Subtle Noise Texture Overlay */
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    z-index: -1;
+  }
+
+  /* Reset pour une meilleure cohérence */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Amélioration de la lisibilité - SANS @apply pour éviter les erreurs */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: rgb(15 23 42);
+    /* slate-900 - removed !important to allow customization */
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+
+  p,
+  span,
+  div {
+    color: rgb(51 65 85);
+    /* slate-700 - removed !important to allow customization */
+  }
+
+
+  /* Inputs Premium - Clean & Minimal */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    color: rgb(30 41 59) !important;
+    /* slate-800 */
+    background-color: rgb(255 255 255) !important;
+    border: 1px solid rgb(226 232 240) !important;
+    /* slate-200 */
+    border-radius: 0.5rem;
+    /* More rounded */
+    padding: 0.625rem 0.875rem;
+    /* Larger Click Area */
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    /* Subtle shadow */
+  }
+
+  /* États focus des inputs - Soft Glow */
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none !important;
+    border-color: rgb(99 102 241) !important;
+    /* Indigo-500 */
+    box-shadow: 0 0 0 4px rgb(99 102 241 / 0.1) !important;
+    /* Soft spread */
+  }
+
+  /* Labels améliorés */
+  label {
+    color: rgb(71 85 105) !important;
+    /* slate-600 */
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.375rem;
+    display: block;
+    letter-spacing: 0.01em;
+  }
+
+  /* Checkboxes Modernes */
+  input[type="checkbox"]:not(.sr-only),
+  input[type="radio"]:not(.sr-only) {
+    appearance: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 1.5px solid rgb(203 213 225);
+    /* slate-300 */
+    border-radius: 0.375rem;
+    background-color: rgb(255 255 255);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    vertical-align: middle;
+  }
+
+  input[type="radio"]:not(.sr-only) {
+    border-radius: 50%;
+  }
+
+  /* Checked State - Indigo Brand */
+  input[type="checkbox"]:checked:not(.sr-only) {
+    background-color: rgb(79 70 229) !important;
+    /* indigo-600 */
+    border-color: rgb(79 70 229) !important;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m12.75 4.75-6.5 6.5-3.25-3.25' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e") !important;
+    background-size: 100% 100%;
+  }
+
+  input[type="radio"]:checked:not(.sr-only) {
+    background-color: rgb(79 70 229) !important;
+    border-color: rgb(79 70 229) !important;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3.5'/%3e%3c/svg%3e");
+    background-size: 100% 100%;
+  }
+
+  input:focus:not(.sr-only) {
+    box-shadow: 0 0 0 4px rgb(99 102 241 / 0.15);
+    /* Soft focus ring */
+    border-color: rgb(99 102 241);
+  }
+}
+
+
+/* ============================================================================
+   COMPOSANTS UTILITAIRES - SANS @apply POUR ÉVITER LES ERREURS
+   ============================================================================ */
+@layer components {
+
+  /* Formulaires avec styles cohérents */
+  .form-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgb(209 213 219);
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    color: rgb(17 24 39);
+    background-color: rgb(255 255 255);
+    transition: all 0.15s ease-in-out;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: rgb(59 130 246);
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  }
+
+  .form-input-error {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid rgb(239 68 68);
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    color: rgb(17 24 39);
+    background-color: rgb(255 255 255);
+    transition: all 0.15s ease-in-out;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+
+  .form-input-error:focus {
+    outline: none;
+    border-color: rgb(239 68 68);
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.1);
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(55 65 81);
+    margin-bottom: 0.25rem;
+  }
+
+  .form-error {
+    font-size: 0.875rem;
+    color: rgb(220 38 38);
+    margin-top: 0.25rem;
+  }
+
+  /* Boutons avec styles cohérents */
+  .btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+  }
+
+  .btn-base:focus-visible {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px currentColor;
+  }
+
+  .btn-base:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .btn-primary {
+    background-color: rgb(37 99 235);
+    color: rgb(255 255 255);
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+
+  .btn-primary:hover {
+    background-color: rgb(29 78 216);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  }
+
+  .btn-primary:focus-visible {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px rgb(59 130 246);
+  }
+
+  .btn-secondary {
+    background-color: rgb(243 244 246);
+    color: rgb(17 24 39);
+    border: 1px solid rgb(209 213 219);
+  }
+
+  .btn-secondary:hover {
+    background-color: rgb(229 231 235);
+  }
+
+  .btn-secondary:focus-visible {
+    box-shadow: 0 0 0 2px white, 0 0 0 4px rgb(156 163 175);
+  }
+
+  .card-base {
+    background-color: rgb(255 255 255);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    border: 1px solid rgb(229 231 235);
+  }
+
+  /* Premium Glassmorphism Card */
+  .card-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-glass:hover {
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+    transform: translateY(-2px);
+  }
+
+  /* Premium Surface */
+  .surface-premium {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1rem;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.05),
+      0 2px 4px -2px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .table-base {
+    min-width: 100%;
+    background-color: rgb(255 255 255);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+  }
+
+  .table-base th,
+  .table-base td {
+    border-bottom: 1px solid rgb(229 231 235);
+  }
+}
+
+/* ============================================================================
+   UTILITAIRES POUR LES ANIMATIONS ET TRANSITIONS
+   ============================================================================ */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .transition-all-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Classes pour forcer la visibilité du texte (pour debugging) */
+  .text-force-dark {
+    color: rgb(17 24 39) !important;
+  }
+
+  .bg-force-white {
+    background-color: rgb(255 255 255) !important;
+  }
+
+  /* Classe pour forcer les styles des checkboxes personnalisées */
+  .checkbox-custom {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+
+  /* Utilitaires pour améliorer la visibilité */
+  .text-visible {
+    color: rgb(17 24 39) !important;
+  }
+
+  .text-muted {
+    color: rgb(107 114 128) !important;
+  }
+
+  .text-subtle {
+    color: rgb(156 163 175) !important;
+  }
+
+  /* Classe pour les select */
+  .form-select {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0.5rem 0.75rem !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 0.375rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    appearance: none !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+    background-position: right 0.5rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 1.5em 1.5em !important;
+    padding-right: 2.5rem !important;
+  }
+
+  .form-select:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+}
+
+/* ============================================================================
+   ANIMATIONS KEYFRAMES
+   ============================================================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   FIXES SPÉCIFIQUES POUR LES PROBLÈMES TAILWIND RÉCURRENTS
+   ============================================================================ */
+
+/* Fix pour les textes gris trop clairs */
+.text-gray-400 {
+  color: rgb(75 85 99) !important;
+  /* gray-600 */
+}
+
+.text-gray-500 {
+  color: rgb(75 85 99) !important;
+  /* gray-600 */
+}
+
+.text-gray-300 {
+  color: rgb(107 114 128) !important;
+  /* gray-500 */
+}
+
+/* Fix pour les icônes trop claires */
+svg.text-gray-400 {
+  color: rgb(75 85 99) !important;
+}
+
+svg.text-gray-500 {
+  color: rgb(75 85 99) !important;
+}
+
+svg.text-gray-300 {
+  color: rgb(107 114 128) !important;
+}
+
+/* Fix pour les placeholders */
+::placeholder {
+  color: rgb(107 114 128) !important;
+}
+
+/* Fix pour les boutons avec liens */
+a.button-link {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+a.button-link:hover {
+  color: white !important;
+  text-decoration: none !important;
+}
+
+/* Fix pour les liens - Supprimé pour permettre aux classes Tailwind de fonctionner */
+
+/* ============================================================================
+   FORM TEXTAREA STYLES
+   ============================================================================ */
+/* Classe pour les textarea */
+.form-textarea {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  color: #111827 !important;
+  background-color: #ffffff !important;
+  font-size: 0.875rem;
+  font-weight: 500;
+  resize: horizontal;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-textarea::placeholder {
+  color: #6b7280;
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+  body {
+    color: black !important;
+    background: white !important;
+  }
+
+  .no-print,
+  .print\:hidden,
+  [class*="HolidayOverlay"],
+  [class*="fireworks"],
+  [class*="snowfall"],
+  canvas,
+  .fixed.inset-0 {
+    display: none !important;
+  }
+
+  .btn-base,
+  button,
+  a[href^="/users"] {
+    display: none !important;
+  }
+
+  /* Force background printing for badges */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

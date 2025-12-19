@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registre des Activités de Traitement - RGPD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --purple: #7c3aed;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: white;
+            font-size: 10pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+
+        @media print {
+            body {
+                font-size: 9pt;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+
+            .no-break {
+                page-break-inside: avoid;
+            }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 25px 0;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .header h1 {
+            font-size: 24pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            font-size: 12pt;
+            font-weight: 400;
+            color: var(--gray-600);
+            margin-bottom: 15px;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 9pt;
+            color: var(--gray-600);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .subsection-title {
+            font-size: 11pt;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 15px 0 8px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 9pt;
+        }
+
+        th,
+        td {
+            padding: 8px 10px;
+            text-align: left;
+            border: 1px solid var(--gray-200);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--gray-50);
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 9pt;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            color: #92400e;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border-left: 4px solid var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 8pt;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .info-box h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        /* Signature Box */
+        .signature-box {
+            border: 1px solid var(--gray-300);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 1px dotted var(--gray-300);
+        }
+
+        .signature-item {
+            text-align: center;
+            width: 30%;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid var(--gray-400);
+            margin-top: 40px;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid var(--gray-200);
+            text-align: center;
+            font-size: 8pt;
+            color: var(--gray-600);
+        }
+
+        /* Placeholders */
+        .placeholder {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #92400e;
+            font-style: italic;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>📋 Registre des Activités de Traitement</h1>
+            <h2>Conformité RGPD - Article 30</h2>
+            <div class="metadata">
+                <span><strong>Organisation :</strong> Anderlecht Prévention</span>
+                <span><strong>Service :</strong> PASQ</span>
+                <span><strong>Version :</strong> 1.0</span>
+                <span><strong>Date :</strong> 17 décembre 2025</span>
+            </div>
+        </div>
+
+        <!-- INFORMATIONS GÉNÉRALES -->
+        <div class="section no-break">
+            <div class="section-title">
+                <span>📌</span>
+                <span>1. Informations Générales</span>
+            </div>
+
+            <h3 class="subsection-title">Responsable du traitement</h3>
+            <table>
+                <tr>
+                    <th style="width:30%">Champ</th>
+                    <th>Information</th>
+                </tr>
+                <tr>
+                    <td><strong>Nom de l'organisation</strong></td>
+                    <td>Anderlecht Prévention - Commune d'Anderlecht</td>
+                </tr>
+                <tr>
+                    <td><strong>Adresse</strong></td>
+                    <td>Rue du Chapelain 2, 1070 Anderlecht</td>
+                </tr>
+                <tr>
+                    <td><strong>N° BCE</strong></td>
+                    <td><span class="placeholder">[0xxx.xxx.xxx]</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Représentant légal</strong></td>
+                    <td>Bourgmestre de la Commune d'Anderlecht</td>
+                </tr>
+                <tr>
+                    <td><strong>Contact</strong></td>
+                    <td>prevention@anderlecht.brussels</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Délégué à la Protection des Données (DPO)</h3>
+            <div class="alert alert-warning">
+                <strong>⚠️ Obligatoire</strong> pour les autorités publiques et services sociaux (Art. 37 RGPD)
+            </div>
+            <table>
+                <tr>
+                    <th style="width:30%">Champ</th>
+                    <th>Information</th>
+                </tr>
+                <tr>
+                    <td><strong>Nom</strong></td>
+                    <td>Léon Twitté</td>
+                </tr>
+                <tr>
+                    <td><strong>Fonction</strong></td>
+                    <td>Délégué à la Protection des Données</td>
+                </tr>
+                <tr>
+                    <td><strong>Email</strong></td>
+                    <td>ltwitte@anderlecht.brussels</td>
+                </tr>
+                <tr>
+                    <td><strong>Téléphone</strong></td>
+                    <td><span class="placeholder">[À compléter]</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- TRAITEMENT 1 -->
+        <div class="page-break"></div>
+        <div class="section">
+            <div class="section-title">
+                <span>📁</span>
+                <span>2. Traitement : Gestion des Dossiers Sociaux</span>
+            </div>
+
+            <div class="info-box">
+                <h4>Identification</h4>
+                <table>
+                    <tr>
+                        <td style="width:30%"><strong>Nom</strong></td>
+                        <td>Gestion des dossiers d'accompagnement social</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Département</strong></td>
+                        <td>PASQ - Pôle Accueil Social des Quartiers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Application</strong></td>
+                        <td>Application de Gestion des Usagers (Next.js/MySQL)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3 class="subsection-title">Finalités du traitement</h3>
+            <table>
+                <tr>
+                    <th>Finalité</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><strong>Principale</strong></td>
+                    <td>Accompagnement social des usagers du service</td>
+                </tr>
+                <tr>
+                    <td><strong>Secondaire</strong></td>
+                    <td>Suivi des problématiques (logement, administratif, juridique)</td>
+                </tr>
+                <tr>
+                    <td><strong>Statistique</strong></td>
+                    <td>Rapports anonymisés pour pilotage du service</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Base légale (Art. 6 RGPD)</h3>
+            <table>
+                <tr>
+                    <th>Base légale</th>
+                    <th>Justification</th>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-success">✅ Art. 6.1.e</span></td>
+                    <td>Mission d'intérêt public - Accompagnement social communal</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-success">✅ Art. 6.1.c</span></td>
+                    <td>Mission communale de prévention et d'accompagnement social</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Catégories de données collectées</h3>
+            <table>
+                <tr>
+                    <th>Donnée</th>
+                    <th>Obligatoire</th>
+                    <th>Sensible (Art. 9)</th>
+                </tr>
+                <tr>
+                    <td>Nom, Prénom</td>
+                    <td><span class="badge badge-success">Oui</span></td>
+                    <td><span class="badge badge-info">Non</span></td>
+                </tr>
+                <tr>
+                    <td>Date de naissance, Genre</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-info">Non</span></td>
+                </tr>
+                <tr>
+                    <td>Adresse, Téléphone, Email</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-info">Non</span></td>
+                </tr>
+                <tr>
+                    <td>Statut de séjour</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-warning">Potentiellement</span></td>
+                </tr>
+                <tr>
+                    <td>Situation professionnelle, Revenus</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-warning">Oui</span></td>
+                </tr>
+                <tr>
+                    <td>Problématiques sociales</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-warning">Oui</span></td>
+                </tr>
+                <tr>
+                    <td>Données de santé</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-danger">Oui (Art. 9)</span></td>
+                </tr>
+                <tr>
+                    <td>Décisions de justice (expulsion)</td>
+                    <td><span class="badge badge-info">Non</span></td>
+                    <td><span class="badge badge-danger">Oui (Art. 10)</span></td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Destinataires des données</h3>
+            <table>
+                <tr>
+                    <th>Destinataire</th>
+                    <th>Type</th>
+                    <th>Finalité</th>
+                </tr>
+                <tr>
+                    <td>Gestionnaires PASQ</td>
+                    <td>Interne</td>
+                    <td>Accompagnement quotidien</td>
+                </tr>
+                <tr>
+                    <td>Direction du service</td>
+                    <td>Interne</td>
+                    <td>Supervision, statistiques</td>
+                </tr>
+                <tr>
+                    <td>Infomaniak SA</td>
+                    <td>Sous-traitant</td>
+                    <td>Hébergement technique</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Transferts hors UE/EEE</h3>
+            <table>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Détails</th>
+                </tr>
+                <tr>
+                    <td><strong>Transfert vers pays tiers</strong></td>
+                    <td><span class="badge badge-info">❌ Non</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Localisation des données</strong></td>
+                    <td>Suisse (Infomaniak - data centers Genève)</td>
+                </tr>
+                <tr>
+                    <td><strong>Base du transfert</strong></td>
+                    <td>Décision d'adéquation de la Commission Européenne</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Durées de conservation</h3>
+            <table>
+                <tr>
+                    <th>Type de données</th>
+                    <th>Durée</th>
+                    <th>Justification</th>
+                </tr>
+                <tr>
+                    <td>Dossiers actifs</td>
+                    <td>Durée de l'accompagnement</td>
+                    <td>Nécessité opérationnelle</td>
+                </tr>
+                <tr>
+                    <td>Dossiers clôturés</td>
+                    <td>5 ans après clôture</td>
+                    <td>Obligations légales communales</td>
+                </tr>
+                <tr>
+                    <td>Données archivées</td>
+                    <td>Jusqu'à 10 ans</td>
+                    <td>Archives communales</td>
+                </tr>
+                <tr>
+                    <td>Logs de connexion</td>
+                    <td>1 an</td>
+                    <td>Sécurité informatique</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- MESURES DE SÉCURITÉ -->
+        <div class="page-break"></div>
+        <div class="section">
+            <div class="section-title">
+                <span>🔐</span>
+                <span>3. Mesures de Sécurité</span>
+            </div>
+
+            <h3 class="subsection-title">Sécurité technique</h3>
+            <table>
+                <tr>
+                    <th>Mesure</th>
+                    <th>Implémentation</th>
+                    <th>Statut</th>
+                </tr>
+                <tr>
+                    <td><strong>Authentification</strong></td>
+                    <td>Google OAuth 2.0 (SSO)</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Chiffrement en transit</strong></td>
+                    <td>HTTPS/TLS 1.3</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Chiffrement au repos</strong></td>
+                    <td>Chiffrement base de données MySQL</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Contrôle d'accès</strong></td>
+                    <td>Rôles (Admin, Gestionnaire)</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Journalisation</strong></td>
+                    <td>Audit trail (createdBy, updatedBy, timestamps)</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Sauvegardes</strong></td>
+                    <td>Quotidiennes, chiffrées</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Protection DDoS</strong></td>
+                    <td>Pare-feu Infomaniak</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title">Sécurité organisationnelle</h3>
+            <table>
+                <tr>
+                    <th>Mesure</th>
+                    <th>Description</th>
+                    <th>Statut</th>
+                </tr>
+                <tr>
+                    <td><strong>Formation RGPD</strong></td>
+                    <td>Sensibilisation des gestionnaires</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Accès limité</strong></td>
+                    <td>Seuls les gestionnaires autorisés</td>
+                    <td><span class="badge badge-success">✅ En place</span></td>
+                </tr>
+                <tr>
+                    <td><strong>2FA</strong></td>
+                    <td>Via Google (recommandé)</td>
+                    <td><span class="badge badge-info">Optionnel</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Procédure de violation</strong></td>
+                    <td>Notification APD sous 72h</td>
+                    <td><span class="badge badge-warning">⚠️ À documenter</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- DROITS DES PERSONNES -->
+        <div class="section">
+            <div class="section-title">
+                <span>👤</span>
+                <span>4. Droits des Personnes Concernées</span>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Droit RGPD</th>
+                    <th>Procédure</th>
+                    <th>Délai</th>
+                </tr>
+                <tr>
+                    <td><strong>Accès (Art. 15)</strong></td>
+                    <td>Demande par email au DPO</td>
+                    <td>30 jours</td>
+                </tr>
+                <tr>
+                    <td><strong>Rectification (Art. 16)</strong></td>
+                    <td>Via l'application ou demande au gestionnaire</td>
+                    <td>Immédiat</td>
+                </tr>
+                <tr>
+                    <td><strong>Effacement (Art. 17)</strong></td>
+                    <td>Demande au DPO, analyse au cas par cas</td>
+                    <td>30 jours</td>
+                </tr>
+                <tr>
+                    <td><strong>Limitation (Art. 18)</strong></td>
+                    <td>Marquage du dossier comme "limité"</td>
+                    <td>30 jours</td>
+                </tr>
+                <tr>
+                    <td><strong>Portabilité (Art. 20)</strong></td>
+                    <td>Export des données en format Excel/PDF</td>
+                    <td>30 jours</td>
+                </tr>
+                <tr>
+                    <td><strong>Opposition (Art. 21)</strong></td>
+                    <td>Analyse par le DPO</td>
+                    <td>30 jours</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SOUS-TRAITANTS -->
+        <div class="section">
+            <div class="section-title">
+                <span>🤝</span>
+                <span>5. Sous-Traitants</span>
+            </div>
+
+            <table>
+                <tr>
+                    <th>Sous-traitant</th>
+                    <th>Pays</th>
+                    <th>Objet</th>
+                    <th>Contrat Art. 28</th>
+                </tr>
+                <tr>
+                    <td><strong>Infomaniak SA</strong></td>
+                    <td>🇨🇭 Suisse</td>
+                    <td>Hébergement cloud (Jelastic)</td>
+                    <td><span class="badge badge-warning">⚠️ À établir</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Google LLC</strong></td>
+                    <td>🇺🇸 USA (adéquat)</td>
+                    <td>Authentification OAuth</td>
+                    <td><span class="badge badge-success">✅ Google Workspace</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SIGNATURES -->
+        <div class="page-break"></div>
+        <div class="section">
+            <div class="section-title">
+                <span>✅</span>
+                <span>6. Validation</span>
+            </div>
+
+            <div class="signature-box">
+                <div class="signature-row">
+                    <div class="signature-item">
+                        <strong>Responsable du traitement</strong>
+                        <div class="signature-line"></div>
+                        <small>Nom : _________________</small><br>
+                        <small>Date : ___/___/______</small>
+                    </div>
+                    <div class="signature-item">
+                        <strong>DPO</strong>
+                        <div class="signature-line"></div>
+                        <small>Nom : _________________</small><br>
+                        <small>Date : ___/___/______</small>
+                    </div>
+                    <div class="signature-item">
+                        <strong>Direction du service</strong>
+                        <div class="signature-line"></div>
+                        <small>Nom : _________________</small><br>
+                        <small>Date : ___/___/______</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p><strong>Références légales :</strong> RGPD (UE) 2016/679 | Loi belge du 30 juillet 2018 | APD -
+                autoriteprotectiondonnees.be</p>
+            <p style="margin-top: 10px; font-style: italic;">
+                Ce registre doit être tenu à jour et mis à disposition de l'Autorité de Protection des Données (APD) sur
+                demande.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

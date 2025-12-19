@@ -1,0 +1,46 @@
+/*
+Copyright (C) 2025 ABDEL KADER CHATAR
+SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
+*/
+
+@media print {
+  /* Cache les éléments qu'on ne veut pas imprimer */
+  header, 
+  footer, 
+  .no-print, 
+  button, 
+  a.btn-secondary, 
+  a[href^="#"] {
+    display: none !important;
+  }
+
+  /* Style pour l'impression */
+  body {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+
+  .vignette {
+    break-inside: avoid;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  .vignette-title {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+
+  /* Ajouter un saut de page avant certaines sections si besoin */
+  .page-break-before {
+    page-break-before: always;
+  }
+}

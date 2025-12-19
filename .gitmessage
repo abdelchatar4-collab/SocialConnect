@@ -1,0 +1,24 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+
+# Types:
+# feat: nouvelle fonctionnalité
+# fix: correction de bug
+# refactor: refactorisation du code
+# perf: amélioration des performances
+# docs: documentation
+# style: formatage, CSS, UI
+# test: tests
+# chore: maintenance, config, dépendances
+
+# Scopes pour ce projet:
+# users, import, export, dashboard, api, db, ui, forms, auth, migration
+
+# Exemples:
+# feat(users): add user filtering by status and antenne
+# fix(import): resolve Excel date parsing for birth dates
+# refactor(services): consolidate userService and userServiceModern
+# perf(dashboard): optimize SQL queries for statistics

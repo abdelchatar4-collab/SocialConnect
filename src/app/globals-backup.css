@@ -1,0 +1,489 @@
+/*
+Copyright (C) 2025 ABDEL KADER CHATAR
+SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Importation de la police Inter depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================================
+   VARIABLES CSS PERSONNALISÉES
+   ============================================================================ */
+:root {
+  --foreground-rgb: 15, 23, 42; /* slate-900 */
+  --background-start-rgb: 248, 250, 252; /* slate-50 */
+  --background-end-rgb: 255, 255, 255;
+  
+  /* Variables pour les couleurs de design tokens */
+  --color-primary-50: 239 246 255;
+  --color-primary-500: 59 130 246;
+  --color-primary-600: 37 99 235;
+  --color-primary-700: 29 78 216;
+  
+  --color-success-50: 240 253 244;
+  --color-success-500: 34 197 94;
+  --color-success-600: 22 163 74;
+  
+  --color-error-50: 254 242 242;
+  --color-error-500: 239 68 68;
+  --color-error-600: 220 38 38;
+  
+  --color-warning-50: 255 251 235;
+  --color-warning-500: 245 158 11;
+  --color-warning-600: 217 119 6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 248, 250, 252;
+    --background-start-rgb: 15, 23, 42;
+    --background-end-rgb: 30, 41, 59;
+  }
+}
+
+/* ============================================================================
+   STYLES DE BASE AMÉLIORÉS
+   ============================================================================ */
+@layer base {
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-start-rgb));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-variation-settings: normal;
+  }
+
+  /* Reset pour une meilleure cohérence */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  /* Amélioration de la lisibilité */
+  h1, h2, h3, h4, h5, h6 {
+    color: rgb(15 23 42) !important; /* slate-900 */
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  p, span, div {
+    color: rgb(51 65 85) !important; /* slate-700 */
+  }
+
+  /* ============================================================================
+     FIXES SPÉCIFIQUES POUR LES FORMULAIRES
+     ============================================================================ */
+  
+  /* Inputs avec styles cohérents et fixes des problèmes Tailwind */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    color: rgb(17 24 39) !important; /* gray-900 */
+    background-color: rgb(255 255 255) !important;
+    border: 1px solid rgb(209 213 219) !important; /* gray-300 */
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: all 0.15s ease-in-out;
+  }
+
+  /* États focus des inputs */
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus,
+  input[type="tel"]:focus,
+  input[type="url"]:focus,
+  input[type="search"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none !important;
+    border-color: rgb(59 130 246) !important; /* blue-500 */
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1) !important;
+  }
+
+  /* Options des select */
+  option {
+    color: rgb(17 24 39) !important; /* gray-900 */
+    background-color: rgb(255 255 255) !important;
+  }
+
+  /* Labels améliorés */
+  label {
+    color: rgb(55 65 81) !important; /* gray-700 */
+    font-weight: 500;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    display: block;
+  }
+
+  /* ============================================================================
+     FIXES POUR LES CHECKBOXES ET RADIOS
+     ============================================================================ */
+  
+  /* Reset des checkboxes natives pour éviter les conflits */
+  input[type="checkbox"]:not(.sr-only),
+  input[type="radio"]:not(.sr-only) {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgb(209 213 219); /* gray-300 */
+    border-radius: 0.25rem;
+    background-color: rgb(255 255 255);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    position: relative;
+  }
+
+  input[type="radio"]:not(.sr-only) {
+    border-radius: 50%;
+  }
+
+  /* États checked pour les checkboxes et radios */
+  input[type="checkbox"]:checked:not(.sr-only) {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+    background-size: 0.75rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  input[type="radio"]:checked:not(.sr-only) {
+    background-color: rgb(59 130 246) !important; /* blue-500 */
+    border-color: rgb(59 130 246) !important;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+    background-size: 0.5rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  /* Focus pour les checkboxes et radios */
+  input[type="checkbox"]:focus:not(.sr-only),
+  input[type="radio"]:focus:not(.sr-only) {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  }
+}
+
+/* ============================================================================
+   COMPOSANTS UTILITAIRES
+   ============================================================================ */
+@layer components {
+  /* Classes utilitaires pour éviter la répétition */
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-gray-900 bg-white transition-all;
+  }
+
+  .form-input-error {
+    @apply form-input border-red-500 focus:border-red-500 focus:ring-red-500;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .form-error {
+    @apply text-sm text-red-600 mt-1;
+  }
+
+  .btn-base {
+    @apply inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-500 shadow-sm hover:shadow-md;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-gray-100 text-gray-900 hover:bg-gray-200 border border-gray-300 focus-visible:ring-gray-500;
+  }
+
+  .card-base {
+    @apply bg-white rounded-lg shadow-md border border-gray-200;
+  }
+
+  .table-base {
+    @apply min-w-full divide-y divide-gray-200 bg-white rounded-lg shadow-sm;
+  }
+}
+
+/* ============================================================================
+   UTILITAIRES POUR LES ANIMATIONS ET TRANSITIONS
+   ============================================================================ */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .transition-all-smooth {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Classes pour forcer la visibilité du texte (pour debugging) */
+  .text-force-dark {
+    color: rgb(17 24 39) !important;
+  }
+
+  .bg-force-white {
+    background-color: rgb(255 255 255) !important;
+  }
+
+  /* Classe pour forcer les styles des checkboxes personnalisées */
+  .checkbox-custom {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+  }
+}
+
+/* ============================================================================
+   ANIMATIONS KEYFRAMES
+   ============================================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(10px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+@media print {
+  body {
+    color: black !important;
+    background: white !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+    font-weight: 600 !important;
+  }
+
+  /* Texte général avec bon contraste */
+  p, span, div {
+    color: #111827;
+  }
+
+  /* Titres avec contraste fort */
+  h1, h2, h3, h4, h5, h6 {
+    color: #111827 !important;
+    font-weight: 600 !important;
+  }
+
+  /* Placeholders visibles */
+  ::placeholder {
+    color: #6b7280 !important;
+  }
+
+  /* Boutons avec texte contrasté */
+  button {
+    font-weight: 500;
+  }
+
+  /* Tables avec texte lisible */
+  td, th {
+    color: #111827 !important;
+  }
+
+  /* Links avec bon contraste */
+  a {
+    color: #1d4ed8;
+  }
+
+  a:hover {
+    color: #1e40af;
+  }
+
+  /* Annuler les styles de lien pour les boutons */
+  a.button-link {
+    color: white !important;
+    text-decoration: none !important;
+  }
+
+  a.button-link:hover {
+    color: white !important;
+    text-decoration: none !important;
+  }
+
+  /* Correction des textes gris trop clairs */
+  .text-gray-400 {
+    color: #374151 !important;
+  }
+
+  .text-gray-500 {
+    color: #374151 !important;
+  }
+
+  .text-gray-300 {
+    color: #4b5563 !important;
+  }
+
+  /* Amélioration des icônes trop claires */
+  svg.text-gray-400 {
+    color: #4b5563 !important;
+  }
+
+  svg.text-gray-500 {
+    color: #4b5563 !important;
+  }
+
+  svg.text-gray-300 {
+    color: #4b5563 !important;
+  }
+}
+
+@layer components {
+  /* Classe utilitaire pour forcer la visibilité */
+  .text-visible {
+    color: #111827 !important;
+  }
+
+  /* Classe pour les champs de formulaire */
+  .form-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #6b7280;
+  }
+
+  /* Classe pour les select */
+  .form-select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Classe pour les textarea */
+  .form-textarea {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    color: #111827 !important;
+    background-color: #ffffff !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  .form-textarea::placeholder {
+    color: #6b7280;
+  }
+
+  /* Cards avec texte visible */
+  .card {
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+  }
+
+  .card h3, .card h4, .card p, .card span, .card div {
+    color: #111827 !important;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Utilitaires pour forcer la visibilité */
+  .force-dark-text {
+    color: #111827 !important;
+  }
+
+  .force-dark-text * {
+    color: #111827 !important;
+  }
+
+  /* Classes pour améliorer la visibilité des éléments spécifiques */
+  .text-muted {
+    color: #6b7280 !important;
+  }
+
+  .text-subtle {
+    color: #9ca3af !important;
+  }
+
+  /* Correction pour les éléments de navigation */
+  .nav-link {
+    color: #374151 !important;
+  }
+
+  .nav-link:hover {
+    color: #111827 !important;
+  }
+}
+

@@ -1,0 +1,62 @@
+
+# Vim
+vim scripts/promote-admin.js
+
+# Ou ouvrir le dossier entier dans votre IDE
+code .
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function promoteToAdmin() {
+  console.log('🔧 Promotion d\'un utilisateur en administrateur...');
+
+  try {
+    // Remplacez par votre adresse email
+    const EMAIL_TO_PROMOTE = 'votre-email@example.com'; // ⚠️ MODIFIEZ CETTE LIGNE
+
+    // Vérifier si l'utilisateur existe
+    const gestionnaire = await prisma.gestionnaire.findUnique({
+      where: { email: EMAIL_TO_PROMOTE }
+    });
+
+    if (!gestionnaire) {
+      console.log(`❌ Aucun gestionnaire trouvé avec l'email: ${EMAIL_TO_PROMOTE}`);
+      console.log('📋 Gestionnaires existants:');
+
+      const allGestionnaires = await prisma.gestionnaire.findMany({
+        select: { email: true, prenom: true, nom: true, role: true }
+      });
+
+      allGestionnaires.forEach(g => {
+        console.log(`  - ${g.email} (${g.prenom} ${g.nom || ''}) - Rôle: ${g.role}`);
+      });
+
+      return;
+    }
+
+    // Vérifier le rôle actuel
+    console.log(`👤 Gestionnaire trouvé: ${gestionnaire.prenom} ${gestionnaire.nom || ''} (${gestionnaire.email})`);
+    console.log(`📊 Rôle actuel: ${gestionnaire.role}`);
+
+    if (gestionnaire.role === 'ADMIN') {
+      console.log('✅ Cet utilisateur est déjà administrateur!');
+      return;
+    }
+
+    // Promouvoir en admin
+    const updatedGestionnaire = await prisma.gestionnaire.update({
+      where: { email: EMAIL_TO_PROMOTE },
+      data: { role: 'ADMIN' }
+    });
+
+    console.log(`🎉 Succès! ${updatedGestionnaire.prenom} ${updatedGestionnaire.nom || ''} est maintenant ADMIN`);
+    console.log('🔄 Vous pouvez maintenant vous reconnecter à l\'application pour accéder aux paramètres.');
+
+  } catch (error) {
+    console.error('❌ Erreur lors de la promotion:', error);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+promoteToAdmin();

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilan Annuel PASQ 2025</title>
+
+    <!-- 1. POLICES PREMIUM -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ==================== VARIABLES & RESET ==================== */
+        :root {
+            /* Charte couleurs PASQ - CONSERVÉE */
+            --clair: #66D1C9;
+            --inter-clair: #33C7B6;
+            --normal: #00B4A7;
+            --inter-fonce: #009F8D;
+            --fonce: #008C7A;
+
+            /* Couleurs étendues */
+            --text-primary: #1a2332;
+            --text-secondary: #4a5568;
+            --bg-body: #f8fafb;
+            --bg-slide: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0, 140, 122, 0.08);
+            --shadow-md: 0 8px 24px rgba(0, 140, 122, 0.12);
+            --shadow-lg: 0 16px 48px rgba(0, 140, 122, 0.16);
+            --shadow-xl: 0 24px 64px rgba(0, 140, 122, 0.2);
+
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, var(--fonce) 0%, var(--normal) 50%, var(--inter-clair) 100%);
+            --gradient-soft: linear-gradient(135deg, rgba(102, 209, 201, 0.1) 0%, rgba(0, 180, 167, 0.05) 100%);
+            --gradient-overlay: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ==================== TYPOGRAPHY ==================== */
+        body {
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 40px 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.3em;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            color: var(--fonce);
+            margin-bottom: 1em;
+            position: relative;
+            padding-bottom: 0.5em;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.5em;
+            color: var(--inter-fonce);
+            margin: 1.5em 0 0.8em;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.2em;
+            text-align: justify;
+        }
+
+        strong {
+            color: var(--fonce);
+            font-weight: 600;
+        }
+
+        /* ==================== SLIDE CONTAINER ==================== */
+        .slide-container {
+            background: var(--bg-slide);
+            width: 1100px;
+            min-height: 700px;
+            margin: 0 auto 60px;
+            padding: 70px 90px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            page-break-inside: avoid;
+            page-break-after: always;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-primary);
+        }
+
+        .slide-container:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* ==================== HEADER LOGO ==================== */
+        .header-logo {
+            position: absolute;
+            top: 35px;
+            left: 45px;
+            width: 140px;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        .header-logo:hover {
+            opacity: 1;
+        }
+
+        /* ==================== TITLE SLIDE ==================== */
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 650px;
+            background: var(--gradient-soft);
+            position: relative;
+        }
+
+        .title-logo {
+            width: 320px;
+            margin-bottom: 50px;
+            filter: drop-shadow(0 8px 16px rgba(0, 140, 122, 0.15));
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .title-slide h1 {
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .title-slide h2 {
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-bottom: 2em;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .title-slide h2::after {
+            display: none;
+        }
+
+        .year-badge {
+            display: inline-block;
+            padding: 18px 45px;
+            background: var(--gradient-primary);
+            color: white;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 50px;
+            box-shadow: var(--shadow-md);
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .year-badge:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ==================== LAYOUTS ==================== */
+        .col-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin: 2em 0;
+        }
+
+        .col-container-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 2em 0;
+        }
+
+        /* ==================== LISTS ==================== */
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 1.5em 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 1em;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6em;
+            width: 8px;
+            height: 8px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(102, 209, 201, 0.2);
+        }
+
+        ol {
+            counter-reset: item;
+            list-style: none;
+            padding-left: 0;
+            margin: 1.5em 0;
+        }
+
+        ol li {
+            counter-increment: item;
+            margin-bottom: 1.2em;
+            position: relative;
+            padding-left: 50px;
+            font-size: 1.1em;
+            line-height: 1.7;
+        }
+
+        ol li::before {
+            content: counter(item);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        ol li span {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* ==================== LINKS ==================== */
+        a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        a:hover {
+            color: var(--normal);
+        }
+
+        .summary-link {
+            color: var(--fonce);
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .summary-link:hover {
+            color: var(--normal);
+            transform: translateX(5px);
+        }
+
+        /* ==================== HIGHLIGHT BOXES ==================== */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(102, 209, 201, 0.08) 0%, rgba(0, 180, 167, 0.05) 100%);
+            border-left: 5px solid var(--fonce);
+            padding: 25px 30px;
+            margin: 2em 0;
+            border-radius: 0 12px 12px 0;
+            font-style: italic;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .highlight-box strong {
+            font-style: normal;
+        }
+
+        .glass-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 209, 201, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            margin: 2em 0;
+        }
+
+        /* ==================== STATS CARDS ==================== */
+        .stat-card {
+            background: var(--gradient-soft);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(102, 209, 201, 0.15);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.2em;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ==================== CHARTS ==================== */
+        .chart-box {
+            height: 280px;
+            width: 100%;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--gradient-soft);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-box-small {
+            height: 200px;
+            width: 100%;
+            margin: 15px 0;
+            padding: 15px;
+            background: var(--gradient-soft);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--fonce);
+            margin-bottom: 15px;
+        }
+
+        /* ==================== IMAGES ==================== */
+        .img-shadow {
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .img-shadow:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ==================== ANIMATIONS ==================== */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .slide-container {
+                margin: 0;
+                width: 100%;
+                min-height: 95vh;
+                box-shadow: none;
+                border-radius: 0;
+                page-break-inside: avoid;
+                page-break-after: always;
+            }
+
+            .slide-container:hover {
+                transform: none;
+                box-shadow: none;
+            }
+
+            .img-shadow {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .img-shadow:hover {
+                transform: none;
+            }
+
+            .stat-card:hover,
+            .year-badge:hover {
+                transform: none;
+            }
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media screen and (max-width: 1200px) {
+            .slide-container {
+                width: 95%;
+                padding: 50px 60px;
+            }
+
+            .col-container {
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SLIDE 1 : TITRE -->
+    <div class="slide-container title-slide">
+        <img src="logo.png" alt="Logo PASQ" class="title-logo">
+        <h1>Bilan Annuel d'Activité 2025</h1>
+        <h2>Pôle Accueil Social Des Quartiers (PASQ)</h2>
+        <div class="year-badge">Année 2025 – Perspectives 2026</div>
+    </div>
+
+    <!-- SLIDE 2 : SOMMAIRE (FORMAT 4x4) -->
+    <div class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Sommaire</h2>
+        <div class="col-container">
+            <div>
+                <ol>
+                    <li><a href="#intro" class="summary-link">Introduction</a></li>
+                    <li><a href="#chiffres1" class="summary-link">Chiffres Clés & Analyses</a></li>
+                    <li><a href="#projet1" class="summary-link">Projet 1 : Permanence Justice de Paix</a></li>
+                    <li><a href="#projet2" class="summary-link">Projet 2 : Prévention Expulsions</a></li>
+                </ol>
+            </div>
+            <div>
+                <ol start="5" style="counter-reset: item 4;">
+                    <li><a href="#reussite1" class="summary-link">Réussite 1 : Mobilisation CPAS</a></li>
+                    <li><a href="#reussite2" class="summary-link">Réussite 2 : Approche Collective</a></li>
+                    <li><a href="#pasqweb1" class="summary-link">Innovation : L'outil PASQWEB</a></li>
+                    <li><a href="#conclu" class="summary-link">Points à ajuster & Conclusion</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3 : INTRO -->
+    <div id="intro" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Introduction</h2>
+        <p>L'année 2025 a été marquée par une dégradation significative du service rendu par le CPAS : blocages
+            administratifs, reports de demandes urgentes, communication déficiente et absence d'anticipation face à la
+            montée de la pauvreté dans les quartiers vulnérables.</p>
+
+        <h3>Impact sur les équipes du Pôle Accueil Social de Quartier :</h3>
+        <div class="highlight-box">
+            Face à ces dysfonctionnements, les travailleurs sociaux de rue se voient contraints de recourir quasi
+            systématiquement aux démarches judiciaires pour obtenir le respect des obligations. Cette situation génère
+            une surcharge considérable : gestion de dossiers complexes, stress, incertitude pour les familles, et un
+            épuisement des équipes qui remet en question l'efficacité même du dispositif d'accueil social.
+        </div>
+
+        <p>À cela s’est ajoutée la mise en œuvre d’une réforme sociale d’une extrême violence, limitant la durée du
+            chômage à deux ans. Cette reconfiguration, combinée à l’absence de gouvernement et de financements, a
+            contribué à aggraver le climat général d’instabilité.</p>
+    </div>
+
+    <!-- SLIDE 4 : CHIFFRES CLES 1 -->
+    <div id="chiffres1" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Chiffres Clés (1/2)</h2>
+        <div class="col-container">
+            <div>
+                <h3>Vue d'ensemble</h3>
+                <p>En intégrant le dispositif spécifique de Prévention des Expulsions (géré distinctement), le Pôle gère
+                    un volume total de <strong>538 dossiers</strong> (512 dossiers TSR + 26 dossiers PREV EXP).
+                </p>
+                <div class="glass-box">
+                    Il faut ajouter à ces chiffres 173 demandes de médiation depuis le 1er janvier 2025 : Dont 74
+                    entamées, 41 orientées et 58 refus ou sans réponse.
+                    <div
+                        style="margin-top:15px; font-style:italic; font-size:0.9em; color:var(--fonce); font-weight:600;">
+                        Public Médiation : 47% Femmes / 53% Hommes</div>
+                </div>
+                <p><strong>Taux d'activité :</strong> 99.2% des dossiers sont actuellement actifs.</p>
+            </div>
+            <div>
+                <div class="chart-title">Médiation : Suivi des demandes</div>
+                <div class="chart-box-small" style="height: 160px;"><canvas id="chartMediationStats"></canvas></div>
+
+                <!-- NOUVEAU GRAPHIQUE AGE -->
+                <div class="chart-title" style="margin-top:20px;">Répartition par Tranches d'Âge</div>
+                <div class="chart-box-small" style="height: 200px;"><canvas id="chartAgeDistribution"></canvas></div>
+
+                <!-- GRAPHIQUE GENRE CONSERVÉ MAIS RÉDUIT -->
+                <div class="chart-title" style="margin-top:20px;">Répartition Genre</div>
+                <div class="chart-box-small" style="height: 140px;"><canvas id="chartGenreMediation"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5 : CHIFFRES CLES 2 -->
+    <div id="chiffres2" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Chiffres Clés (2/2)</h2>
+
+        <div class="chart-title" style="text-align: left; margin-bottom: 15px;">Évolution des ouvertures de dossiers
+            (2025)</div>
+        <div class="chart-box" style="height: 240px;"><canvas id="chartEvolution"></canvas></div>
+
+        <div class="col-container" style="margin-top:30px;">
+            <div>
+                <div class="chart-title">Répartition par Problématique</div>
+                <div class="chart-box" style="height: 280px;"><canvas id="chartProblemes"></canvas></div>
+            </div>
+            <div>
+                <h3>Analyse des données</h3>
+                <p><strong>Pic de Juillet (98 dossiers) :</strong> Ce pic correspond au déploiement initial de l'outil
+                    PASQWEB durant l'été, permettant un encodage massif de l'historique des dossiers.</p>
+                <p><strong>Chute d'Octobre/Novembre :</strong> Cette baisse reflète la "pause stratégique" dans le
+                    traitement des nouveaux dossiers CPAS, rendue nécessaire face à la saturation du service.</p>
+                <p><strong>Dominantes :</strong> Les enjeux <strong>CPAS</strong> (250 cas) restent largement
+                    majoritaires, suivis par le <strong>Juridique</strong> et la <strong>Fiscalité</strong>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6 : PROJET 1 -->
+    <div id="projet1" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Permanence Justice de Paix</h2>
+        <p>Lancé en <strong>septembre 2024</strong> et poursuivi en 2025, ce dispositif de permanence de médiation,
+            organisée un mardi sur deux directement au sein de la Justice de Paix, vise à faciliter l'accès à la
+            médiation amiable et à désengorger les procédures judiciaires :</p>
+        <ul>
+            <li>Sensibiliser les justiciables aux alternatives amiables de résolution de conflits</li>
+            <li>Orienter vers la médiation locale lorsque celle-ci apparaît pertinente</li>
+            <li>Organiser, quand c'est possible, des médiations directes sur place avec l'appui du juge de paix</li>
+            <li>Humaniser le parcours judiciaire en offrant une écoute et un accompagnement dès l'étape de la Justice de
+                Paix</li>
+        </ul>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div id="projet1bis" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Permanence Justice de Paix</h2>
+        <div class="col-container">
+            <div>
+                <h3>Impact et public visé :</h3>
+                <p>Ce projet s'adresse aux habitants d'Anderlecht confrontés à des litiges de proximité (conflits de
+                    voisinage, problèmes locatifs, différends familiaux, etc.). La présence physique des médiateurs
+                    locaux au cœur même de l'institution judiciaire favorise la confiance et permet d'intervenir au
+                    moment où les personnes sont le plus réceptives à une solution alternative.</p>
+                <h3>Bilan de la phase pilote (Sept. 2024 - Déc. 2025) :</h3>
+                <p>Entre septembre 2024 et décembre 2025, nous avons traité <strong>28 dossiers</strong> orientés par la
+                    Justice de Paix, dont 14 durant les permanences bihebdomadaires du mardi (8h-11h) qui ont fait
+                    l'objet d'un entretien de médiation.</p>
+            </div>
+            <div>
+                <div class="chart-box"><canvas id="chartMediationResultats"></canvas></div>
+                <div class="highlight-box">
+                    <strong>9 dossiers</strong> ont abouti à une issue positive (accord verbal ou homologué), soit un
+                    taux de réussite de <strong>64%</strong>.
+                </div>
+            </div>
+        </div>
+        <p>Cette expérimentation confirme la pertinence d'ancrer la médiation locale dans le parcours judiciaire et
+            ouvre la voie à une pérennisation du dispositif.</p>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div id="projet2" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Prévention Expulsions</h2>
+        <h3>Rappel des objectifs du projet :</h3>
+        <ul>
+            <li>Intervenir en amont des expulsions domiciliaires par un accompagnement proactif et personnalisé des
+                locataires concernés</li>
+            <li>Coordonner l'action de tous les partenaires clés : CPAS, Justice de Paix, avocats du BAJ, Loyers
+                Négociés et associations locales</li>
+            <li>Exploiter pleinement les nouvelles dispositions du Code bruxellois du Logement et notamment l’Ordonnance
+                du 22 juin 2023 (allongement des délais, moratoire hivernal, monitoring régional)</li>
+        </ul>
+        <h3>Public visé et impact :</h3>
+        <p>Ce projet cible prioritairement les ménages à faibles revenus, les primo-arrivants et les personnes en séjour
+            irrégulier confrontés à des procédures d'expulsion. Dans un contexte anderlechtois marqué par un taux de
+            pauvreté de 28,6% et une progression des loyers (+20% entre 2019 et 2024), cette action constitue un rempart
+            essentiel contre la précarisation des habitants.</p>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div id="projet2bis" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Prévention Expulsions</h2>
+        <div class="col-container">
+            <div>
+                <h3>Résultats obtenus :</h3>
+                <ul>
+                    <li>Au total, <strong>68 requêtes</strong> (54 initiales + 14 reçues en Oct/Nov) ont été traitées et
+                        analysées.</li>
+                    <li><strong>81 visites à domicile (VAD)</strong> réalisées et 11 prises de contact hors VAD ont
+                        abouti à l’ouverture de <strong>26 dossiers</strong> de fond.</li>
+                </ul>
+                <div class="chart-box"><canvas id="chartExpulsionVol"></canvas></div>
+                <h3>Continuité :</h3>
+                <p>Adaptation et continuité assurées par Samia Amezian durant le congé maternité.</p>
+            </div>
+            <div>
+                <h3>Impact concret :</h3>
+                <ul>
+                    <li>8 ménages ont pu être maintenus dans leur logement après négociation avec les propriétaires</li>
+                    <li>10 ménages ont bénéficié de solutions de relogement adaptées à leur situation</li>
+                    <li><strong>8 dossiers</strong> restent en cours de suivi.</li>
+                </ul>
+                <div class="chart-box"><canvas id="chartExpulsionIssue"></canvas></div>
+                <div class="highlight-box" style="border-left-color: #e67e22; margin-top:20px;">
+                    <strong>Point de vigilance :</strong> Incertitude concernant le retour de Mathieu Jadoul et le
+                    départ de Delphine Caron. Risque pour la pérennité du projet.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div id="reussite1" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Réussite : Mobilisation CPAS</h2>
+        <p><strong>Une mobilisation exceptionnelle</strong> pour protéger nos usagers face à une crise institutionnelle.
+            Depuis plus d'un an, les dysfonctionnements graves et répétés du CPAS d'Anderlecht ont plongé des centaines
+            de ménages dans des situations de détresse extrême. Face à cette violence institutionnelle et à l'urgence
+            sociale qu'elle a engendrée, les équipes du PASQ ont dû réorienter massivement leurs missions pour faire
+            rempart et protéger les usagers les plus vulnérables.</p>
+
+        <h3>L'ampleur de la mobilisation :</h3>
+        <ul>
+            <li>Plus de 250 dossiers traités nécessitant un accompagnement juridique renforcé.</li>
+            <li>Des dizaines de condamnations obtenues en référé, d'autres procédures toujours en cours sur le fond.
+            </li>
+            <li>Des dommages et intérêts obtenus pour compenser les préjudices subis par les usagers.</li>
+            <li>Des interventions d'huissiers de justice rendues nécessaires pour contraindre le CPAS à exécuter les
+                décisions judiciaires qu'il refusait d'appliquer.</li>
+            <li>Des situations dramatiques évitées de justesse : mises en danger vitales, expulsions imminentes,
+                coupures d'énergie en plein hiver, familles avec enfants à la rue.</li>
+            <li><strong>Relogement de 15 jeunes (19-25 ans) en situation critique grâce à la collaboration avec 3
+                    AIS.</strong></li>
+        </ul>
+        <!-- NOTE : J'ai remis cet encadré avec le style standard highlight-box -->
+        <div class="highlight-box">
+            <strong>Collaboration Jeunesse :</strong> Mise à l'emploi de <strong>7 jeunes (19-23 ans)</strong> en
+            collaboration étroite avec le pôle jeunesse.
+        </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div id="contentieux" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Bilan du Contentieux : Analyse Consolidée (Cureghem & Centre)</h2>
+        <div class="col-container">
+            <div>
+                <p><strong>Vue d'ensemble (Antennes Cureghem + Centre) :</strong></p>
+                <p>Sur un total de <strong>250 dossiers</strong> analysés en détail (136 Cureghem + 114 Centre) :</p>
+                <ul>
+                    <li><strong>44,4%</strong> des dossiers (111 cas) ont nécessité l'aide d'un avocat (phase
+                        contentieuse / jugement).</li>
+                    <li><strong>30%</strong> ont été réglés à l'amiable (75 cas) : la pression du service a été
+                        productive et a suffi à libérer les paiements.</li>
+                    <li><strong>25,6%</strong> sont encore en cours ou sans nouvelles.</li>
+                </ul>
+                <div class="glass-box">
+                    <strong>Qualitatif :</strong> Ces chiffres illustrent une forte intensité contentieuse. Dans
+                    l'antenne Centre, 87,7% des dossiers aboutis ont connu une issue favorable (déblocage paiements).
+                </div>
+            </div>
+            <div>
+                <div class="chart-title">Répartition des issues (250 dossiers)</div>
+                <div class="chart-box"><canvas id="chartContentieuxGlobal"></canvas></div>
+                <div class="highlight-box" style="text-align:center;">
+                    <strong>Conclusion :</strong> Dans près de <strong>75%</strong> des cas, l'intervention (amiable ou
+                    judiciaire) a permis de débloquer la situation.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div id="impact" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Impact Financier et Stabilisation des Ménages</h2>
+        <div class="col-container">
+            <div>
+                <h3>Résultats :</h3>
+                <p>L'analyse fine des dossiers dans les antennes démontre l'efficacité de l'action juridique :</p>
+                <ul>
+                    <li><strong>97 condamnations</strong> obtenues devant le Tribunal du Travail (56 Centre / 41
+                        Cureghem).</li>
+                    <li><strong>100 dossiers favorables</strong> sur 101 aboutis (déblocage des paiements).</li>
+                    <li>Dommages et intérêts obtenus : de <strong>500€ à 3.200€</strong> par dossier.</li>
+                </ul>
+                <h3>Spécificité Sociologique :</h3>
+                <p>L'immense majorité des dossiers concerne le public des <strong>Syriens Doms</strong>. L'argent
+                    récupéré permet de solder les dettes informelles (tontines) au sein de la communauté.</p>
+            </div>
+            <div>
+                <div class="chart-title">Indicateurs de Réussite</div>
+                <div class="chart-box"><canvas id="chartImpactCentre"></canvas></div>
+                <div class="highlight-box">
+                    <strong>Résultat concret :</strong> Outre les gains financiers, cette mobilisation a permis
+                    <strong>d'éviter 14 expulsions</strong> directes grâce à la médiation avec les bailleurs et à la
+                    résorption des arriérés.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Réussite : Mobilisation CPAS (Suite)</h2>
+        <h3>Un travail invisible mais vital :</h3>
+        <p>Sans l'intervention acharnée des travailleurs sociaux de rue, de nombreux habitants d'Anderlecht auraient
+            basculé dans la précarité absolue. Chaque dossier représente des heures de préparation administrative, de
+            coordination avec des avocats, de présence aux audiences, de négociation et de soutien psychologique aux
+            familles éprouvées.</p>
+        <h3>Une dérive structurelle qui interroge notre mission :</h3>
+        <p>Il est essentiel de rappeler que le PASQ est avant tout un service de prévention, dont la vocation première
+            est d'intervenir en amont des crises sociales, de développer des projets collectifs, de créer du lien dans
+            les quartiers et d'accompagner les dynamiques communautaires. Ce n'est absolument pas notre rôle de pallier
+            les manquements d'institutions sociales majeures comme le CPAS, censées garantir l'accès aux droits
+            fondamentaux des plus démunis.</p>
+
+        <h3>Stratégie nécessaire :</h3>
+        <p>Cette situation exige que nous réfléchissions collectivement à une stratégie qui réponde véritablement aux
+            besoins de nos habitants tout en préservant notre identité de service de prévention. Cela implique :</p>
+        <ul>
+            <li>Une reconnaissance institutionnelle de la charge supplémentaire assumée par le PASQ.</li>
+            <li>Un dialogue structuré avec le CPAS et les autorités communales pour responsabiliser les acteurs
+                défaillants.</li>
+            <li>Un plaidoyer politique pour dénoncer les dysfonctionnements.</li>
+        </ul>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div id="reussite2" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Réussite : Approche Collective</h2>
+        <p>Face à des non-recours aux droits et à une méconnaissance des procédures observés auprès d'une partie de
+            notre public (particulièrement chez les personnes d'origine syrienne), le PASQ a développé une approche
+            collective. Les travailleurs sociaux ont constaté des difficultés récurrentes générant une surcharge pour
+            l'équipe.</p>
+        <p>Entre le 18 et le 25 avril, 3 séances collectives ont été organisées (+/- 20 personnes au total),
+            <strong>avec pour objectif de :</strong>
+        </p>
+        <ul>
+            <li>Sensibiliser à l'importance de réagir rapidement</li>
+            <li>Expliquer les droits sociaux fondamentaux et les voies de recours</li>
+            <li>Déconstruire les freins culturels</li>
+            <li>Clarifier les responsabilités respectives</li>
+            <li>Poser des limites claires</li>
+        </ul>
+        <h3>Résultats et impact :</h3>
+        <p>Cette approche a permis de mieux canaliser ce public. Une méthode à généraliser dont la
+            <strong>pertinence</strong> est démontrée.
+        </p>
+        <div class="highlight-box">
+            <strong>À noter :</strong> 3 séances collectives organisées vers les professionnels, touchant 35 personnes :
+            <ul>
+                <li>Samu social (Prince de Liège) : <strong>12</strong> professionnels</li>
+                <li>Interne (Pôle jeunesse, Antenne Scolaire, Assuétudes et VP) : <strong>16</strong> professionnels
+                </li>
+                <li>CRIPA : <strong>7</strong> professionnels</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 15 -->
+    <div id="pasqweb1" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">PASQWEB : Développement et déploiement d'un outil de gestion sur mesure</h2>
+        <p>Face aux besoins spécifiques et évolutifs des équipes du PASQ, et constatant l'inadéquation des outils
+            standards du marché, j'ai pris l'initiative de concevoir et développer intégralement un outil de gestion des
+            usagers adapté aux réalités du terrain. PASQWEB est le fruit d'un travail de conception technique
+            approfondi, entièrement codé de A à Z, en étroite collaboration avec les travailleurs sociaux pour garantir
+            son adéquation aux pratiques professionnelles.</p>
+        <h3>Solution technique maîtrisée :</h3>
+        <ul>
+            <li>Technologie : Développé en React (fluidité, réactivité, évolutivité).</li>
+            <li>Infrastructure : Serveur local sécurisé (10 Gb/s).</li>
+            <li>Indépendance : Aucune dépendance externe, aucun coût de licence, maîtrise totale des données (RGPD).
+            </li>
+        </ul>
+        <img src="dashboard.png" class="img-shadow" style="width: 100%; margin-top: 20px;">
+    </div>
+
+    <!-- SLIDE 16 -->
+    <div id="pasqweb2" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">PASQWEB : Développement et déploiement d'un outil de gestion sur mesure</h2>
+        <h3>Quelques fonctionnalités :</h3>
+        <ul>
+            <li><strong>Dashboard dynamique :</strong> Tableau de bord complet avec vision temps réel (stats globales,
+                indicateurs par antenne, évolution accompagnements).</li>
+            <li><strong>Gestion complète des usagers :</strong> Fiches détaillées avec historique complet (anamnèses
+                sociales, administratives, juridiques).</li>
+            <li><strong>Formulaires structurés :</strong> Encodage rapide et intuitif des VAD, permanences et
+                interventions terrain.</li>
+            <li><strong>Bibliothèque centralisée :</strong> Documents utiles (modèles courriers, procédures) accessibles
+                en quelques clics.</li>
+            <li><strong>Gestion des référentiels :</strong> Architecture modulaire permettant d'adapter les paramètres.
+            </li>
+        </ul>
+        <!-- Images côte à côte -->
+        <div class="col-container" style="margin-top:20px;">
+            <div><img src="fiche.png" class="img-shadow" style="width:100%; height:220px; object-fit:cover;"></div>
+            <div><img src="formulaire.png" class="img-shadow" style="width:100%; height:220px; object-fit:cover;"></div>
+        </div>
+    </div>
+
+    <!-- SLIDE 17 -->
+    <div id="tracabilite" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Points à ajuster</h2>
+        <h3>L'enjeu de la traçabilité :</h3>
+        <p>Nécessité de renforcer l'objectivation de notre travail : passer d'une culture de l'oralité à une culture de
+            la donnée. Quantifier, mesurer et tracer nos actions est indispensable pour valoriser l'impact réel du
+            service.</p>
+
+        <h3>Outils et Freins :</h3>
+        <p>Les outils mis en place (PASQWEB, Fiches actions, Kobo, Monitoring des actions, ...) apportent une réelle
+            plus-value dans le suivi et la
+            structuration. Cependant, des freins subsistent liés à la charge de travail et au réflexe 'action avant
+            écriture' (perception de paperasse). L'objectif est d'ancrer ces routines pour garantir la reconnaissance de
+            nos missions.</p>
+    </div>
+
+    <!-- SLIDE 18 -->
+    <div id="conclu" class="slide-container">
+        <img src="logo.png" class="header-logo">
+        <h2 style="margin-top:50px;">Conclusion</h2>
+        <p>L'année 2025 a été marquée par des réussites significatives mais aussi par des tensions structurelles qui
+            interrogent profondément notre mission. D'un côté, la mise en place d’une permanence à la Justice de Paix et
+            la poursuite du projet de prévention des expulsions témoignent de notre capacité à innover et à répondre aux
+            besoins des habitants d'Anderlecht. De l'autre, la mobilisation exceptionnelle face aux dysfonctionnements
+            du CPAS a démontré notre engagement, mais aussi révélé les limites d'un modèle où les services de prévention
+            sont contraints de pallier durablement les carences institutionnelles.</p>
+        <p>La pérennité de nos projets dépendra également de la stabilité de nos équipes. Face aux défaillances
+            persistantes des institutions sociales majeures, nous réaffirmons notre volonté de ne pas abandonner les
+            habitants, tout en interpellant les décideurs sur la nécessité urgente d'un renforcement structurel des
+            services de première ligne.</p>
+        <!-- Retour à la highlight-box standard -->
+        <div class="highlight-box">
+            "Le travail social de rue ne peut continuer à être le dernier filet de sécurité d'un système en délitement."
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configuration couleurs
+            const colors = {
+                fonce: '#008C7A',
+                normal: '#00B4A7',
+                clair: '#66D1C9',
+                inter1: '#33C7B6',
+                inter2: '#009F8D',
+                gris: '#e0e0e0'
+            };
+
+            // Font settings for Chart.js
+            Chart.defaults.font.family = "'Source Sans Pro', sans-serif";
+            Chart.defaults.font.size = 13;
+            Chart.defaults.color = '#4a5568';
+
+            // 1. GRAPH MEDIATION STATS
+            new Chart(document.getElementById('chartMediationStats'), {
+                type: 'pie',
+                data: {
+                    labels: ['Entamées (74)', 'Refus/Sans rép. (58)', 'Réorientés (41)'],
+                    datasets: [{
+                        data: [74, 58, 41],
+                        backgroundColor: [colors.fonce, '#e74c3c', colors.inter1],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+
+            // NOUVEAU : 1 BIS. GRAPH REPARTITION AGE (Corrected Data)
+            new Chart(document.getElementById('chartAgeDistribution'), {
+                type: 'bar',
+                data: {
+                    labels: ['0-18 ans', '19-30 ans', '31-45 ans', '46-60 ans', '61+ ans'],
+                    datasets: [{
+                        label: 'Usagers',
+                        data: [14, 133, 169, 136, 60],
+                        backgroundColor: [colors.clair, colors.inter1, colors.normal, colors.inter2, colors.fonce],
+                        borderRadius: 5,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 2. GRAPH GENRE MEDIATION (Conservé)
+            new Chart(document.getElementById('chartGenreMediation'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Femmes (47%)', 'Hommes (53%)'],
+                    datasets: [{
+                        data: [47, 53],
+                        backgroundColor: [colors.inter1, colors.fonce],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
+            });
+
+            // 3. GRAPH EVOLUTION
+            new Chart(document.getElementById('chartEvolution'), {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    datasets: [{
+                        label: 'Ouvertures de dossiers',
+                        data: [36, 23, 30, 30, 23, 32, 98, 18, 39, 49, 19, 0],
+                        borderColor: colors.fonce,
+                        backgroundColor: 'rgba(0, 140, 122, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 4. GRAPH PROBLEMATIQUES (CPAS 250)
+            new Chart(document.getElementById('chartProblemes'), {
+                type: 'bar',
+                data: {
+                    labels: ['CPAS', 'Juridique', 'Fiscalité', 'Logement', 'Famille'],
+                    datasets: [{
+                        label: 'Dossiers',
+                        data: [250, 136, 132, 100, 70],
+                        backgroundColor: [colors.fonce, colors.normal, colors.inter1, colors.clair, colors.gris],
+                        borderRadius: 6,
+                        borderWidth: 0
+                    }]
+                },
+                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } } }
+            });
+
+            // 5. MEDIATION RESULTATS (Batonnets)
+            new Chart(document.getElementById('chartMediationResultats'), {
+                type: 'bar',
+                data: {
+                    labels: ['Orientés (28)', 'Entretiens (14)', 'Accords (9)'],
+                    datasets: [{
+                        label: 'Dossiers',
+                        data: [28, 14, 9],
+                        backgroundColor: [colors.clair, colors.normal, colors.fonce],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(0,0,0,0.05)' } } }
+                }
+            });
+
+            // 6. EXPULSIONS VOLUME (68/81/26)
+            new Chart(document.getElementById('chartExpulsionVol'), {
+                type: 'bar',
+                data: {
+                    labels: ['Requêtes', 'VAD', 'Dossiers'],
+                    datasets: [{
+                        label: 'Volume',
+                        data: [68, 81, 26],
+                        backgroundColor: [colors.clair, colors.normal, colors.fonce],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+
+            // 7. EXPULSIONS ISSUES (Total 26 - 8/10/8)
+            new Chart(document.getElementById('chartExpulsionIssue'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Maintenus', 'Relogés', 'En cours'],
+                    datasets: [{
+                        data: [8, 10, 8],
+                        backgroundColor: [colors.normal, colors.fonce, '#95a5a6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 8. CONTENTIEUX CONSOLIDÉ
+            new Chart(document.getElementById('chartContentieuxGlobal'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Contentieux/Avocat (111)', 'Réglé Amiable (75)', 'En cours/Autre (64)'],
+                    datasets: [{
+                        data: [111, 75, 64],
+                        backgroundColor: [colors.fonce, colors.normal, colors.gris],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            // 9. IMPACT CENTRE
+            new Chart(document.getElementById('chartImpactCentre'), {
+                type: 'bar',
+                data: {
+                    labels: ['Paiements Débloqués', 'Condamnations', 'Expulsions Évitées'],
+                    datasets: [{
+                        label: 'Nombre de dossiers',
+                        data: [100, 97, 14],
+                        backgroundColor: [colors.normal, colors.fonce, colors.inter1],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

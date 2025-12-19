@@ -1,0 +1,428 @@
+/*
+Copyright (C) 2025 ABDEL KADER CHATAR
+SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
+*/
+
+/**
+ * Modern Dashboard Styles - Light Theme
+ * Clean, professional design with PASQ teal accents
+ */
+
+/* =============== CSS Variables =============== */
+:root {
+    /* Primary Colors */
+    --dashboard-bg: #F8FAFC;
+    --dashboard-surface: #FFFFFF;
+    --dashboard-border: #E2E8F0;
+    --dashboard-border-hover: #CBD5E1;
+
+    /* PASQ Accent Colors */
+    --dashboard-primary: #008C7A;
+    --dashboard-primary-light: #00B4A7;
+    --dashboard-primary-dark: #006B5E;
+    --dashboard-accent-cyan: #22D3EE;
+    --dashboard-accent-purple: #A855F7;
+    --dashboard-accent-amber: #F59E0B;
+
+    /* Text Colors */
+    --dashboard-text-primary: #1E293B;
+    --dashboard-text-secondary: #64748B;
+    --dashboard-text-muted: #94A3B8;
+
+    /* Status Colors */
+    --dashboard-success: #10B981;
+    --dashboard-warning: #F59E0B;
+    --dashboard-danger: #EF4444;
+    --dashboard-info: #3B82F6;
+
+    /* Shadows */
+    --dashboard-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --dashboard-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --dashboard-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --dashboard-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* Gradients */
+    --dashboard-gradient-primary: linear-gradient(135deg, #008C7A 0%, #00B4A7 100%);
+    --dashboard-gradient-surface: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+}
+
+/* =============== Dashboard Layout =============== */
+.dashboard-container {
+    min-height: 100vh;
+    background: var(--dashboard-bg);
+    padding: 1.5rem;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+    background: var(--dashboard-surface);
+    border-radius: 12px;
+    border: 1px solid var(--dashboard-border);
+    box-shadow: var(--dashboard-shadow-sm);
+}
+
+.dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dashboard-text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dashboard-title-accent {
+    color: var(--dashboard-primary);
+}
+
+.dashboard-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1280px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-container {
+        padding: 1rem;
+    }
+}
+
+/* =============== Widget Cards =============== */
+.widget-card {
+    background: var(--dashboard-surface);
+    border-radius: 16px;
+    border: 1px solid var(--dashboard-border);
+    box-shadow: var(--dashboard-shadow-md);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.widget-card:hover {
+    box-shadow: var(--dashboard-shadow-lg);
+    border-color: var(--dashboard-border-hover);
+    transform: translateY(-2px);
+}
+
+.widget-card--small {
+    grid-column: span 1;
+}
+
+.widget-card--medium {
+    grid-column: span 2;
+}
+
+.widget-card--large {
+    grid-column: span 3;
+}
+
+.widget-card--full {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+
+    .widget-card--small,
+    .widget-card--medium,
+    .widget-card--large,
+    .widget-card--full {
+        grid-column: span 1;
+    }
+}
+
+.widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.widget-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dashboard-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.widget-content {
+    padding: 1.25rem;
+}
+
+/* =============== KPI Cards =============== */
+.kpi-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.kpi-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--dashboard-primary);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.kpi-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--dashboard-text-secondary);
+}
+
+.kpi-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.kpi-trend--up {
+    color: var(--dashboard-success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.kpi-trend--down {
+    color: var(--dashboard-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.kpi-trend--stable {
+    color: var(--dashboard-text-muted);
+    background: rgba(148, 163, 184, 0.1);
+}
+
+/* =============== Buttons & Controls =============== */
+.dashboard-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: 1px solid var(--dashboard-border);
+    background: var(--dashboard-surface);
+    color: var(--dashboard-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboard-btn:hover {
+    background: var(--dashboard-bg);
+    border-color: var(--dashboard-border-hover);
+}
+
+.dashboard-btn--primary {
+    background: var(--dashboard-gradient-primary);
+    border-color: var(--dashboard-primary);
+    color: white;
+}
+
+.dashboard-btn--primary:hover {
+    opacity: 0.9;
+}
+
+.dashboard-btn--icon {
+    padding: 0.5rem;
+    width: 36px;
+    height: 36px;
+    justify-content: center;
+}
+
+/* =============== Refresh Timer =============== */
+.refresh-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--dashboard-text-muted);
+}
+
+.refresh-countdown {
+    font-variant-numeric: tabular-nums;
+    color: var(--dashboard-primary);
+    font-weight: 600;
+}
+
+.refresh-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--dashboard-border);
+    border-top-color: var(--dashboard-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =============== Skeleton Loaders =============== */
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--dashboard-border) 0%,
+            var(--dashboard-bg) 50%,
+            var(--dashboard-border) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton--text {
+    height: 1rem;
+    width: 60%;
+}
+
+.skeleton--title {
+    height: 2rem;
+    width: 40%;
+}
+
+.skeleton--chart {
+    height: 200px;
+    width: 100%;
+}
+
+/* =============== Animations =============== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-countUp {
+    animation: countUp 0.6s ease-out forwards;
+}
+
+/* Stagger children animation */
+.stagger-children>* {
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.stagger-children>*:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.stagger-children>*:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.stagger-children>*:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+.stagger-children>*:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+.stagger-children>*:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+.stagger-children>*:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+/* =============== Settings Panel =============== */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100vh;
+    background: var(--dashboard-surface);
+    border-left: 1px solid var(--dashboard-border);
+    box-shadow: var(--dashboard-shadow-xl);
+    z-index: 50;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.settings-panel--open {
+    transform: translateX(0);
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.settings-title {
+    font-weight: 600;
+    color: var(--dashboard-text-primary);
+}
+
+.widget-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--dashboard-border);
+}
+
+.widget-toggle:last-child {
+    border-bottom: none;
+}
+
+.widget-toggle-label {
+    font-size: 0.875rem;
+    color: var(--dashboard-text-primary);
+}
