@@ -161,6 +161,8 @@ export default function HelpPage() {
                     <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">U</kbd> : Liste des <strong>U</strong>sagers</li>
                     <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">N</kbd> : Créer un <strong>N</strong>ouveau dossier usager</li>
                     <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">H</kbd> : Ouvrir cette page d'aide (<strong>H</strong>elp)</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">P</kbd> : <strong>P</strong>rimer (Imprimer le manuel)</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">S</kbd> : Activer la recherche (<strong>S</strong>earch)</li>
                   </ul>
                 </div>
 

@@ -256,7 +256,7 @@ export default function HomePage() {
               <ul className="text-xs text-slate-600 space-y-1">
                 <li>• Guides téléchargeables</li>
                 <li>• Modèles de documents</li>
-                <li>• <strong>Raccourcis :</strong> Alt+A (Accueil), Alt+D (Dashboard), Alt+U (Usagers), Alt+N (Nouveau), Alt+H (Aide)</li>
+                <li>• <strong>Raccourcis :</strong> Alt+A (Accueil), Alt+D (Dashboard), Alt+U (Usagers), Alt+N (Nouveau), Alt+H (Aide), Alt+P (Imprimer), Alt+S (Rechercher)</li>
               </ul>
             </div>
           </div>

@@ -46,6 +46,25 @@ export const useKeyboardShortcuts = () => {
                         event.preventDefault();
                         router.push('/');
                         break;
+                    case 'p':
+                        {
+                            const isHelpPage = window.location.pathname.includes('/help') ||
+                                window.location.pathname.includes('MANUEL_UTILISATEUR.html');
+                            if (isHelpPage) {
+                                event.preventDefault();
+                                window.print();
+                            }
+                        }
+                        break;
+                    case 's':
+                        {
+                            const searchInput = document.querySelector('input[type="search"], input[placeholder*="rechercher" i]') as HTMLInputElement;
+                            if (searchInput) {
+                                event.preventDefault();
+                                searchInput.focus();
+                            }
+                        }
+                        break;
                     default:
                         break;
                 }
