@@ -1,6 +1,6 @@
 # SocialConnect - Gestion des Usagers
 
-![Version](https://img.shields.io/badge/version-v35-blue.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg?style=flat-square)
 ![License](https://img.shields.io/badge/license-GNU%20GPL%20v3-green.svg?style=flat-square)
 ![Status](https://img.shields.io/badge/status-production-success.svg?style=flat-square)
 ![Tech](https://img.shields.io/badge/stack-Next.js%20%7C%20MariaDB%20%7C%20Docker-blueviolet.svg?style=flat-square)

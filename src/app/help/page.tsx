@@ -67,14 +67,14 @@ export default function HelpPage() {
         {/* Section Manuel d'Utilisation Complet */}
         <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl shadow-lg border border-blue-200">
           <div className="flex items-center text-blue-700 mb-4">
-            <BookOpenIcon className="h-8 w-8 mr-3"/>
+            <BookOpenIcon className="h-8 w-8 mr-3" />
             <h2 className="text-2xl font-bold">Manuel d'Utilisation Complet</h2>
           </div>
           <p className="text-blue-600 mb-4 text-sm leading-relaxed">
             Pour une documentation exhaustive de toutes les fonctionnalités de l'application, consultez notre manuel d'utilisation détaillé.
             Ce guide couvre tous les aspects de l'application, de la connexion initiale aux fonctionnalités avancées d'administration.
           </p>
-          
+
           <div className="bg-white p-4 rounded-lg border border-blue-200 mb-4">
             <h3 className="font-semibold text-blue-700 mb-2">Contenu du Manuel :</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-600">
@@ -92,23 +92,23 @@ export default function HelpPage() {
               <div>• Support et ressources</div>
             </div>
           </div>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
-            <a 
-              href="/documents_aide/README Pense.pdf" 
-              target="_blank" 
+            <a
+              href="/documents_aide/MANUEL_UTILISATEUR.html"
+              target="_blank"
               className={primaryButtonClasses}
             >
-              <BookOpenIcon className="h-5 w-5 mr-2"/>
-              Consulter le Manuel Complet (PDF)
+              <BookOpenIcon className="h-5 w-5 mr-2" />
+              Consulter le Manuel Complet
             </a>
-            <a 
-              href="/documents_aide/README Pense.pdf" 
-              download="Manuel_Utilisateur_PASQ.pdf"
+            <a
+              href="/documents_aide/MANUEL_UTILISATEUR.html"
+              download="Manuel_Utilisateur_PASQ.html"
               className={primaryButtonClasses}
             >
-              <ArrowDownTrayIcon className="h-5 w-5 mr-2"/>
-              Télécharger le Manuel (PDF)
+              <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+              Télécharger le Manuel
             </a>
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function HelpPage() {
             {/* Section d'Aide Générale */}
             <div>
               <div className="flex items-center mb-4">
-                <QuestionMarkCircleIcon className="h-6 w-6 mr-2 text-primary"/>
+                <QuestionMarkCircleIcon className="h-6 w-6 mr-2 text-primary" />
                 <h2 className="text-2xl font-semibold text-gray-900 border-b pb-2">Aide Générale</h2>
               </div>
               <div className="space-y-6 text-text_dark"> {/* Espacement entre les sous-sections */}
@@ -147,6 +147,21 @@ export default function HelpPage() {
                   <p className="text-sm leading-relaxed">
                     Si vous disposez des droits administrateur, vous avez accès à la section "Paramètres" (via le bouton sur la page d'accueil ou dans le menu). Cette section vous permet de gérer les comptes des gestionnaires qui utilisent l'application, d'attribuer des rôles (Admin/User) et de gérer leurs informations.
                   </p>
+                </div>
+
+                {/* Raccourcis Clavier */}
+                <div>
+                  <h3 className="text-xl font-semibold text-primary mb-2">Raccourcis Clavier</h3>
+                  <p className="text-sm leading-relaxed mb-2">
+                    Pour naviguer plus rapidement dans l'application, vous pouvez utiliser les raccourcis clavier suivants (touche Alt + Lettre) :
+                  </p>
+                  <ul className="list-disc list-inside text-sm space-y-1 ml-4">
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">A</kbd> : Retour à l'<strong>A</strong>ccueil</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">D</kbd> : Accéder au <strong>D</strong>ashboard</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">U</kbd> : Liste des <strong>U</strong>sagers</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">N</kbd> : Créer un <strong>N</strong>ouveau dossier usager</li>
+                    <li><kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">Alt</kbd> + <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded shadow-sm">H</kbd> : Ouvrir cette page d'aide (<strong>H</strong>elp)</li>
+                  </ul>
                 </div>
 
                 {/* Importation de Données */}
@@ -177,8 +192,8 @@ export default function HelpPage() {
                 <div>
                   <h3 className="text-xl font-semibold text-primary mb-2">Foire Aux Questions (FAQ)</h3>
                   <div className="space-y-3 text-sm">
-                    <p><span className="font-semibold">Q: Comment ajouter un nouveau gestionnaire ?</span><br/>R: Les administrateurs peuvent ajouter de nouveaux gestionnaires via la section "Paramètres".</p>
-                    <p><span className="font-semibold">Q: Que faire si je ne trouve pas une rue dans l'autocomplétion d'adresse ?</span><br/>R: L'autocomplétion se base sur les rues d'Anderlecht. Si la rue n'apparaît pas, vérifiez l'orthographe ou saisissez l'adresse manuellement. Le secteur sera déterminé si l'adresse est reconnue.</p>
+                    <p><span className="font-semibold">Q: Comment ajouter un nouveau gestionnaire ?</span><br />R: Les administrateurs peuvent ajouter de nouveaux gestionnaires via la section "Paramètres".</p>
+                    <p><span className="font-semibold">Q: Que faire si je ne trouve pas une rue dans l'autocomplétion d'adresse ?</span><br />R: L'autocomplétion se base sur les rues d'Anderlecht. Si la rue n'apparaît pas, vérifiez l'orthographe ou saisissez l'adresse manuellement. Le secteur sera déterminé si l'adresse est reconnue.</p>
                   </div>
                 </div>
 
@@ -188,7 +203,7 @@ export default function HelpPage() {
             {/* Nouvelle Section : Procédures et Guides d'Utilisation */}
             <div>
               <div className="flex items-center mb-4">
-                <DocumentTextIcon className="h-6 w-6 mr-2 text-primary"/>
+                <DocumentTextIcon className="h-6 w-6 mr-2 text-primary" />
                 <h2 className="text-2xl font-semibold text-gray-900 border-b pb-2">Procédures et Guides d'Utilisation</h2>
               </div>
               <p className="text-sm leading-relaxed text-text_dark mb-4">
@@ -222,10 +237,10 @@ export default function HelpPage() {
             {/* Section Formation et Support */}
             <div className="mt-8">
               <div className="flex items-center mb-4">
-                <AcademicCapIcon className="h-6 w-6 mr-2 text-primary"/>
+                <AcademicCapIcon className="h-6 w-6 mr-2 text-primary" />
                 <h2 className="text-2xl font-semibold text-gray-900 border-b pb-2">Formation et Support</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Manuel d'Utilisation */}
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -233,38 +248,38 @@ export default function HelpPage() {
                   <p className="text-sm text-blue-600 mb-3">
                     Guide complet et détaillé couvrant toutes les fonctionnalités de l'application.
                   </p>
-                  <a 
-                    href="/documents_aide/README Pense.pdf" 
-                    target="_blank" 
+                  <a
+                    href="/documents_aide/MANUEL_UTILISATEUR.html"
+                    target="_blank"
                     className={useButtonClasses('primary', 'sm')}
                   >
-                    <BookOpenIcon className="h-4 w-4 mr-1"/>
-                    Consulter le PDF
+                    <BookOpenIcon className="h-4 w-4 mr-1" />
+                    Consulter le Manuel
                   </a>
                 </div>
-                
+
                 {/* Documentation Technique */}
                 <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                   <h3 className="text-lg font-semibold text-green-700 mb-2">Documentation Technique</h3>
                   <p className="text-sm text-green-600 mb-3">
                     Instructions de démarrage, commandes de développement et documentation technique.
                   </p>
-                  <a 
-                    href="/documents_aide/README Pense.pdf" 
-                    target="_blank" 
+                  <a
+                    href="/documents_aide/MANUEL_UTILISATEUR.html"
+                    target="_blank"
                     className={useButtonClasses('secondary', 'sm')}
                   >
-                    <DocumentTextIcon className="h-4 w-4 mr-1"/>
-                    Voir le README
+                    <DocumentTextIcon className="h-4 w-4 mr-1" />
+                    Voir le Manuel Complet
                   </a>
                 </div>
               </div>
             </div>
-            
+
             {/* Contact et Support */}
             <div className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <div className="flex items-center mb-3">
-                <InformationCircleIcon className="h-6 w-6 mr-2 text-amber-600"/>
+                <InformationCircleIcon className="h-6 w-6 mr-2 text-amber-600" />
                 <h3 className="text-lg font-semibold text-amber-700">Besoin d'aide supplémentaire ?</h3>
               </div>
               <p className="text-sm text-amber-600 mb-3">

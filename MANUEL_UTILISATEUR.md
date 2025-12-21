@@ -187,17 +187,16 @@ En cliquant sur un usager, vous accédez à sa fiche complète contenant :
 - Informations sur le bail
 - Loyer et charges
 
-#### Étape 5 : Problématiques
-- Sélection des problématiques rencontrées
-- Description détaillée
-- Priorité des problématiques
-- Date d'identification
+#### Étape 5 : Problématiques & Actions
+- Sélection des problématiques rencontrées (Logement, Santé, Financier, etc.)
+- Description détaillée de la situation
+- Actions entreprises et suivi des démarches
+- Date d'identification et priorisation
 
-#### Étape 6 : Actions et Suivi
-- Actions entreprises
-- Rendez-vous programmés
-- Objectifs fixés
-- Échéances importantes
+#### Étape 6 : Notes & Informations
+- Notes générales complémentaires
+- Informations importantes (alertes)
+- Historique et commentaires
 
 ### Validation et Sauvegarde
 
@@ -563,6 +562,18 @@ L'application gère plusieurs types de documents :
 
 ---
 
+## Raccourcis Clavier
+
+Pour une navigation plus efficace, l'application propose des raccourcis clavier globaux (utilisez la touche **Alt** combinée avec une lettre) :
+
+- **Alt + A** : Retour à l'**A**ccueil (Page principale)
+- **Alt + D** : Accéder au Tableau de Bord (**D**ashboard)
+- **Alt + U** : Consulter la liste des **U**sagers
+- **Alt + N** : Créer un **N**ouveau dossier usager
+- **Alt + H** : Ouvrir l'aide en ligne (**H**elp)
+
+---
+
 ## Glossaire
 
 **Antenne** : Structure locale de PASQ responsable d'un secteur géographique
@@ -583,14 +594,14 @@ L'application gère plusieurs types de documents :
 
 ## Historique des Versions
 
-- **Version 1.0** (Date) : Version initiale du manuel
-- **Version 1.1** (Date) : Ajout des fonctionnalités de rapport
-- **Version 1.2** (Date) : Mise à jour de l'interface utilisateur
+- **Version 1.0** (09/06/2025) : Version initiale du manuel
+- **Version 1.1** (15/12/2025) : Ajout des fonctionnalités de rapport et refactorisation feature-based
+- **Version 1.2** (21/12/2025) : Mise à jour de la structure du formulaire et du design system premium
 
 ---
 
 *Ce manuel d'utilisation est un document évolutif. Il est mis à jour régulièrement pour refléter les améliorations apportées à l'application. Pour toute suggestion d'amélioration de ce manuel, contactez l'équipe de développement.*
 
-**Dernière mise à jour** : [Date actuelle]
-**Version de l'application** : [Version actuelle]
+**Dernière mise à jour** : 21 décembre 2025
+**Version de l'application** : 0.1.0
 **Contact** : support@pasq.be

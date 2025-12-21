@@ -18,8 +18,11 @@ interface ProvidersProps {
 
 import { HolidayOverlay } from "@/components/HolidayOverlay";
 import { FloatingHomeButton } from "@/components/ui/FloatingHomeButton";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function Providers({ children }: ProvidersProps) {
+  useKeyboardShortcuts();
+
   return (
     <SessionProvider>
       <AdminProvider>

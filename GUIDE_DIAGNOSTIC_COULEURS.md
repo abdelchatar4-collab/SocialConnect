@@ -3,7 +3,7 @@
 ## ✅ Checklist de Diagnostic
 
 ### 1. **Palette de Couleurs** ✅ RÉSOLU
-- [x] Palette restaurée avec 18 couleurs plus belles
+- [x] Palette restaurée avec 24 couleurs sophistiquées
 - [x] Interface simplifiée et plus claire
 - [x] Grille `3 sm:4 lg:6` pour un affichage optimal
 

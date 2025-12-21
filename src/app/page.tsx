@@ -256,7 +256,7 @@ export default function HomePage() {
               <ul className="text-xs text-slate-600 space-y-1">
                 <li>• Guides téléchargeables</li>
                 <li>• Modèles de documents</li>
-                <li>• Raccourcis clavier</li>
+                <li>• <strong>Raccourcis :</strong> Alt+A (Accueil), Alt+D (Dashboard), Alt+U (Usagers), Alt+N (Nouveau), Alt+H (Aide)</li>
               </ul>
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function HomePage() {
           {/* Boutons d'action */}
           <div className="flex flex-col sm:flex-row gap-3">
             <a
-              href="/documents_aide/README Pense.pdf"
+              href="/documents_aide/MANUEL_UTILISATEUR.html"
               target="_blank"
               className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
             >
@@ -272,9 +272,9 @@ export default function HomePage() {
               Consulter le Manuel Complet
             </a>
             <a
-              href="/documents_aide/README Pense.pdf"
-              download="Manuel_Utilisateur_PASQ.pdf"
-              className="flex items-center justify-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
+              href="/documents_aide/MANUEL_UTILISATEUR.html"
+              download="Manuel_Utilisateur_PASQ.html"
+              className="flex items-center justify-center px-6 py-3 bg-white text-blue-600 font-medium rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors shadow-sm"
             >
               <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
               Télécharger le Manuel

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuel d'Utilisation - Gestion des Usagers PASQ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm 1.5cm;
+        }
+
+        @media print {
+            body {
+                background: white;
+                font-size: 10pt;
+            }
+
+            .container {
+                box-shadow: none;
+                margin: 0;
+                max-width: none;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 26pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .header h2 {
+            font-size: 14pt;
+            font-weight: 400;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+
+        .metadata {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 10pt;
+            color: var(--gray-600);
+        }
+
+        /* Content Styling */
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: var(--primary);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 18pt;
+            border-bottom: 2px solid var(--gray-100);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            font-size: 14pt;
+            color: var(--gray-800);
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul,
+        ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 30px 0;
+        }
+
+        code,
+        kbd {
+            background: var(--gray-100);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 95%;
+        }
+
+        strong {
+            color: var(--gray-900);
+        }
+
+        /* TOC */
+        .toc {
+            background: var(--gray-50);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            margin-top: 0;
+            font-size: 16pt;
+            border-bottom: 2px solid var(--primary-light);
+            color: var(--primary);
+        }
+
+        .toc ol {
+            columns: 2;
+            column-gap: 40px;
+        }
+
+        .toc a {
+            color: var(--gray-700);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+            font-size: 9pt;
+            color: var(--gray-600);
+        }
+
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+            transition: all 0.2s;
+        }
+
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            background: var(--primary-light);
+        }
+    </style>
+</head>
+
+<body>
+    <button class="print-button no-print" onclick="window.print()">
+        <span>🖨️</span> Imprimer / Sauvegarder en PDF
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>Manuel d'Utilisation</h1>
+            <h2>Application de Gestion des Usagers PASQ</h2>
+            <div class="metadata">
+                <span><strong>Version :</strong> 0.1.0</span>
+                <span><strong>Date :</strong> 21 décembre 2025</span>
+                <span><strong>Contact :</strong> support@pasq.be</span>
+            </div>
+        </div>
+
+        <div class="toc no-break">
+            <h2>📑 Table des Matières</h2>
+            <ol>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#connexion-et-authentification">Connexion</a></li>
+                <li><a href="#tableau-de-bord">Tableau de Bord</a></li>
+                <li><a href="#gestion-des-usagers">Gestion des Usagers</a></li>
+                <li><a href="#création-dun-nouveau-dossier">Nouveau Dossier</a></li>
+                <li><a href="#modification-dun-dossier-existant">Modification</a></li>
+                <li><a href="#recherche-et-filtrage">Recherche & Filtres</a></li>
+                <li><a href="#génération-de-rapports">Rapports</a></li>
+                <li><a href="#gestion-des-documents">Documents & RGPD</a></li>
+                <li><a href="#administration">Administration</a></li>
+                <li><a href="#aide-et-support">Aide & Support</a></li>
+                <li><a href="#raccourcis-clavier">Raccourcis Clavier</a></li>
+            </ol>
+        </div>
+
+        <div class="content">
+<h1
+id="manuel-dutilisation---application-de-gestion-des-usagers-pasq">Manuel
+d’Utilisation - Application de Gestion des Usagers PASQ</h1>
+<h2 id="table-des-matières">Table des Matières</h2>
+<ol type="1">
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#connexion-et-authentification">Connexion et
+Authentification</a></li>
+<li><a href="#tableau-de-bord">Tableau de Bord</a></li>
+<li><a href="#gestion-des-usagers">Gestion des Usagers</a></li>
+<li><a href="#création-dun-nouveau-dossier">Création d’un Nouveau
+Dossier</a></li>
+<li><a href="#modification-dun-dossier-existant">Modification d’un
+Dossier Existant</a></li>
+<li><a href="#recherche-et-filtrage">Recherche et Filtrage</a></li>
+<li><a href="#génération-de-rapports">Génération de Rapports</a></li>
+<li><a href="#gestion-des-documents">Gestion des Documents</a></li>
+<li><a href="#administration">Administration</a></li>
+<li><a href="#aide-et-support">Aide et Support</a></li>
+<li><a href="#dépannage">Dépannage</a></li>
+</ol>
+<hr />
+<h2 id="introduction">Introduction</h2>
+<p>L’application de Gestion des Usagers PASQ est un outil complet conçu
+pour faciliter la gestion des dossiers des personnes accompagnées par
+votre organisation. Cette plateforme permet de centraliser toutes les
+informations relatives aux usagers, de suivre leur parcours et de
+générer des rapports détaillés.</p>
+<h3 id="fonctionnalités-principales">Fonctionnalités principales :</h3>
+<ul>
+<li>Gestion complète des dossiers usagers</li>
+<li>Système de recherche avancée</li>
+<li>Génération automatique de rapports</li>
+<li>Gestion des documents et attestations</li>
+<li>Interface intuitive et responsive</li>
+<li>Respect des normes RGPD</li>
+</ul>
+<hr />
+<h2 id="connexion-et-authentification">Connexion et
+Authentification</h2>
+<h3 id="première-connexion">Première Connexion</h3>
+<ol type="1">
+<li><strong>Accès à l’application</strong> :
+<ul>
+<li>Ouvrez votre navigateur web</li>
+<li>Rendez-vous à l’adresse fournie par votre administrateur</li>
+<li>Vous arrivez sur la page de connexion</li>
+</ul></li>
+<li><strong>Saisie des identifiants</strong> :
+<ul>
+<li>Entrez votre nom d’utilisateur</li>
+<li>Saisissez votre mot de passe</li>
+<li>Cliquez sur “Se connecter”</li>
+</ul></li>
+<li><strong>Première utilisation</strong> :
+<ul>
+<li>Si c’est votre première connexion, vous pourrez être invité à
+modifier votre mot de passe</li>
+<li>Suivez les instructions à l’écran</li>
+</ul></li>
+</ol>
+<h3 id="gestion-de-session">Gestion de Session</h3>
+<ul>
+<li>Votre session reste active pendant votre utilisation</li>
+<li>Pour des raisons de sécurité, déconnectez-vous toujours en fin
+d’utilisation</li>
+<li>Utilisez le bouton “Déconnexion” dans le menu principal</li>
+</ul>
+<hr />
+<h2 id="tableau-de-bord">Tableau de Bord</h2>
+<p>Le tableau de bord est votre page d’accueil après connexion. Il vous
+donne un aperçu rapide de votre activité.</p>
+<h3 id="éléments-du-tableau-de-bord">Éléments du Tableau de Bord</h3>
+<ol type="1">
+<li><strong>Statistiques Générales</strong> :
+<ul>
+<li>Nombre total d’usagers</li>
+<li>Nombre de dossiers récents</li>
+<li>Répartition par statut</li>
+<li>Activité récente</li>
+</ul></li>
+<li><strong>Accès Rapides</strong> :
+<ul>
+<li>Bouton “Nouvel Usager” pour créer un dossier</li>
+<li>Lien vers la liste complète des usagers</li>
+<li>Accès aux rapports et analyses</li>
+<li>Paramètres (pour les administrateurs)</li>
+</ul></li>
+<li><strong>Usagers Récents</strong> :
+<ul>
+<li>Liste des derniers dossiers consultés ou modifiés</li>
+<li>Accès direct aux détails de chaque usager</li>
+</ul></li>
+</ol>
+<h3 id="navigation">Navigation</h3>
+<ul>
+<li><strong>Menu principal</strong> : Accessible via l’icône hamburger
+(☰)</li>
+<li><strong>Barre de recherche</strong> : Recherche rapide
+d’usagers</li>
+<li><strong>Profil utilisateur</strong> : Accès aux paramètres
+personnels</li>
+</ul>
+<hr />
+<h2 id="gestion-des-usagers">Gestion des Usagers</h2>
+<h3 id="accès-à-la-liste-des-usagers">Accès à la Liste des Usagers</h3>
+<ol type="1">
+<li>Depuis le tableau de bord, cliquez sur “Usagers” ou “Voir tous les
+usagers”</li>
+<li>Vous accédez à la liste complète avec :
+<ul>
+<li>Vue d’ensemble de tous les dossiers</li>
+<li>Informations de base (nom, prénom, statut, gestionnaire)</li>
+<li>Options de tri et de filtrage</li>
+</ul></li>
+</ol>
+<h3 id="interface-de-la-liste">Interface de la Liste</h3>
+<ul>
+<li><strong>Colonnes affichées</strong> :
+<ul>
+<li>Nom et Prénom</li>
+<li>État du dossier</li>
+<li>Antenne</li>
+<li>Gestionnaire assigné</li>
+<li>Date de dernière modification</li>
+</ul></li>
+<li><strong>Actions disponibles</strong> :
+<ul>
+<li>Clic sur un nom pour voir les détails</li>
+<li>Bouton “Modifier” pour éditer un dossier</li>
+<li>Options de tri par colonne</li>
+</ul></li>
+</ul>
+<h3 id="détails-dun-usager">Détails d’un Usager</h3>
+<p>En cliquant sur un usager, vous accédez à sa fiche complète contenant
+:</p>
+<ol type="1">
+<li><strong>Informations Personnelles</strong> :
+<ul>
+<li>État civil complet</li>
+<li>Coordonnées</li>
+<li>Situation familiale</li>
+</ul></li>
+<li><strong>Adresse et Logement</strong> :
+<ul>
+<li>Adresse actuelle</li>
+<li>Historique des logements</li>
+<li>Détails du logement actuel</li>
+</ul></li>
+<li><strong>Situation Administrative</strong> :
+<ul>
+<li>Statut de séjour</li>
+<li>Documents administratifs</li>
+<li>Démarches en cours</li>
+</ul></li>
+<li><strong>Problématiques et Actions</strong> :
+<ul>
+<li>Problématiques identifiées</li>
+<li>Actions entreprises</li>
+<li>Suivi des démarches</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="création-dun-nouveau-dossier">Création d’un Nouveau Dossier</h2>
+<h3 id="démarrage-de-la-création">Démarrage de la Création</h3>
+<ol type="1">
+<li>Cliquez sur le bouton “+ Nouvel Usager” depuis :
+<ul>
+<li>Le tableau de bord</li>
+<li>La page de liste des usagers</li>
+<li>Le menu principal</li>
+</ul></li>
+<li>Vous accédez au formulaire de création structuré en étapes</li>
+</ol>
+<h3 id="étapes-du-formulaire">Étapes du Formulaire</h3>
+<h4 id="étape-1-informations-personnelles">Étape 1 : Informations
+Personnelles</h4>
+<ul>
+<li><strong>Champs obligatoires</strong> :
+<ul>
+<li>Nom de famille</li>
+<li>Prénom</li>
+<li>Date de naissance</li>
+<li>Genre</li>
+</ul></li>
+<li><strong>Champs optionnels</strong> :
+<ul>
+<li>Nom de jeune fille</li>
+<li>Lieu de naissance</li>
+<li>Nationalité</li>
+<li>Statut de séjour</li>
+</ul></li>
+</ul>
+<h4 id="étape-2-contact-et-communication">Étape 2 : Contact et
+Communication</h4>
+<ul>
+<li>Numéro de téléphone</li>
+<li>Adresse email</li>
+<li>Préférences de contact</li>
+<li>Langue de communication</li>
+</ul>
+<h4 id="étape-3-adresse">Étape 3 : Adresse</h4>
+<ul>
+<li><strong>Saisie assistée</strong> :
+<ul>
+<li>Commencez à taper le nom de la rue</li>
+<li>L’autocomplétion propose les rues d’Anderlecht</li>
+<li>Sélectionnez la rue appropriée</li>
+</ul></li>
+<li><strong>Informations complémentaires</strong> :
+<ul>
+<li>Numéro</li>
+<li>Boîte postale (si applicable)</li>
+<li>Le secteur est automatiquement déterminé</li>
+</ul></li>
+</ul>
+<h4 id="étape-4-situation-de-logement">Étape 4 : Situation de
+Logement</h4>
+<ul>
+<li>Type de logement</li>
+<li>Statut (propriétaire, locataire, hébergé, etc.)</li>
+<li>Nombre de pièces</li>
+<li>Informations sur le bail</li>
+<li>Loyer et charges</li>
+</ul>
+<h4 id="étape-5-problématiques-actions">Étape 5 : Problématiques &amp;
+Actions</h4>
+<ul>
+<li>Sélection des problématiques rencontrées (Logement, Santé,
+Financier, etc.)</li>
+<li>Description détaillée de la situation</li>
+<li>Actions entreprises et suivi des démarches</li>
+<li>Date d’identification et priorisation</li>
+</ul>
+<h4 id="étape-6-notes-informations">Étape 6 : Notes &amp;
+Informations</h4>
+<ul>
+<li>Notes générales complémentaires</li>
+<li>Informations importantes (alertes)</li>
+<li>Historique et commentaires</li>
+</ul>
+<h3 id="validation-et-sauvegarde">Validation et Sauvegarde</h3>
+<ol type="1">
+<li><strong>Vérification</strong> :
+<ul>
+<li>Relisez toutes les informations saisies</li>
+<li>Les champs obligatoires manquants sont signalés</li>
+</ul></li>
+<li><strong>Sauvegarde</strong> :
+<ul>
+<li>Cliquez sur “Enregistrer le dossier”</li>
+<li>Une confirmation s’affiche</li>
+<li>Le dossier est créé avec un identifiant unique</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="modification-dun-dossier-existant">Modification d’un Dossier
+Existant</h2>
+<h3 id="accès-à-la-modification">Accès à la Modification</h3>
+<ol type="1">
+<li>Depuis la liste des usagers, cliquez sur “Modifier” ou sur le nom de
+l’usager</li>
+<li>Dans la fiche détaillée, cliquez sur “Modifier les
+informations”</li>
+<li>Le formulaire s’ouvre en mode édition</li>
+</ol>
+<h3 id="processus-de-modification">Processus de Modification</h3>
+<ol type="1">
+<li><strong>Navigation</strong> :
+<ul>
+<li>Utilisez les onglets pour naviguer entre les sections</li>
+<li>Modifiez uniquement les champs nécessaires</li>
+</ul></li>
+<li><strong>Sauvegarde</strong> :
+<ul>
+<li>Cliquez sur “Sauvegarder” après chaque modification</li>
+<li>Les changements sont enregistrés immédiatement</li>
+</ul></li>
+<li><strong>Historique</strong> :
+<ul>
+<li>Toutes les modifications sont tracées</li>
+<li>L’historique est accessible dans la fiche usager</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="recherche-et-filtrage">Recherche et Filtrage</h2>
+<h3 id="recherche-simple">Recherche Simple</h3>
+<ol type="1">
+<li><strong>Barre de recherche principale</strong> :
+<ul>
+<li>Tapez le nom, prénom ou email</li>
+<li>Les résultats s’affichent en temps réel</li>
+<li>Cliquez sur un résultat pour accéder au dossier</li>
+</ul></li>
+</ol>
+<h3 id="recherche-avancée">Recherche Avancée</h3>
+<ol type="1">
+<li><strong>Accès</strong> :
+<ul>
+<li>Depuis la page des usagers</li>
+<li>Cliquez sur “Recherche avancée” ou l’icône de filtre</li>
+</ul></li>
+<li><strong>Critères de recherche</strong> :
+<ul>
+<li><strong>Par champ spécifique</strong> :
+<ul>
+<li>Nom</li>
+<li>Prénom</li>
+<li>Email</li>
+<li>Secteur</li>
+<li>Antenne</li>
+<li>Gestionnaire</li>
+<li>État du dossier</li>
+</ul></li>
+</ul></li>
+<li><strong>Filtres disponibles</strong> :
+<ul>
+<li>État du dossier (actif, fermé, en attente)</li>
+<li>Antenne d’affectation</li>
+<li>Gestionnaire assigné</li>
+<li>Période de création</li>
+<li>Problématiques spécifiques</li>
+</ul></li>
+</ol>
+<h3 id="utilisation-des-filtres">Utilisation des Filtres</h3>
+<ol type="1">
+<li><strong>Application</strong> :
+<ul>
+<li>Sélectionnez vos critères</li>
+<li>Cliquez sur “Appliquer les filtres”</li>
+<li>La liste se met à jour automatiquement</li>
+</ul></li>
+<li><strong>Sauvegarde</strong> :
+<ul>
+<li>Possibilité de sauvegarder vos filtres favoris</li>
+<li>Accès rapide aux recherches fréquentes</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="génération-de-rapports">Génération de Rapports</h2>
+<h3 id="accès-aux-rapports">Accès aux Rapports</h3>
+<ol type="1">
+<li>Depuis le menu principal, cliquez sur “Analyses &amp;
+Documents”</li>
+<li>Vous accédez à l’interface de génération de rapports</li>
+</ol>
+<h3 id="types-de-rapports-disponibles">Types de Rapports
+Disponibles</h3>
+<h4 id="rapports-statistiques">Rapports Statistiques</h4>
+<ul>
+<li><strong>Répartition par secteur</strong> : Nombre d’usagers par
+secteur géographique</li>
+<li><strong>Analyse des problématiques</strong> : Fréquence et types de
+problématiques</li>
+<li><strong>Suivi temporel</strong> : Évolution du nombre de
+dossiers</li>
+<li><strong>Performance des gestionnaires</strong> : Charge de travail
+par gestionnaire</li>
+</ul>
+<h4 id="rapports-détaillés">Rapports Détaillés</h4>
+<ul>
+<li><strong>Liste complète des usagers</strong> : Export Excel avec tous
+les champs</li>
+<li><strong>Dossiers par période</strong> : Usagers créés/modifiés sur
+une période</li>
+<li><strong>Rapports personnalisés</strong> : Sélection de champs
+spécifiques</li>
+</ul>
+<h3 id="génération-dun-rapport">Génération d’un Rapport</h3>
+<ol type="1">
+<li><strong>Sélection du type</strong> :
+<ul>
+<li>Choisissez le type de rapport souhaité</li>
+<li>Définissez la période d’analyse</li>
+</ul></li>
+<li><strong>Paramétrage</strong> :
+<ul>
+<li>Sélectionnez les critères de filtrage</li>
+<li>Choisissez les champs à inclure</li>
+<li>Définissez le format de sortie (PDF, Excel)</li>
+</ul></li>
+<li><strong>Génération</strong> :
+<ul>
+<li>Cliquez sur “Générer le rapport”</li>
+<li>Le traitement peut prendre quelques secondes</li>
+<li>Le fichier est automatiquement téléchargé</li>
+</ul></li>
+</ol>
+<h3 id="rapports-automatiques">Rapports Automatiques</h3>
+<ul>
+<li><strong>Rapports mensuels</strong> : Générés automatiquement chaque
+mois</li>
+<li><strong>Alertes</strong> : Notifications pour les dossiers
+nécessitant un suivi</li>
+<li><strong>Statistiques hebdomadaires</strong> : Envoyées par email aux
+gestionnaires</li>
+</ul>
+<hr />
+<h2 id="gestion-des-documents">Gestion des Documents</h2>
+<h3 id="types-de-documents">Types de Documents</h3>
+<p>L’application gère plusieurs types de documents :</p>
+<ol type="1">
+<li><strong>Documents usagers</strong> :
+<ul>
+<li>Pièces d’identité</li>
+<li>Justificatifs de domicile</li>
+<li>Documents administratifs</li>
+</ul></li>
+<li><strong>Attestations générées</strong> :
+<ul>
+<li>Attestations RGPD</li>
+<li>Récapitulatifs de dossier</li>
+<li>Courriers officiels</li>
+</ul></li>
+<li><strong>Documents de travail</strong> :
+<ul>
+<li>Rapports d’activité</li>
+<li>Exports de données</li>
+<li>Guides et procédures</li>
+</ul></li>
+</ol>
+<h3 id="génération-dattestations-rgpd">Génération d’Attestations
+RGPD</h3>
+<ol type="1">
+<li><strong>Accès</strong> :
+<ul>
+<li>Depuis la fiche détaillée d’un usager</li>
+<li>Cliquez sur “Générer attestation RGPD”</li>
+</ul></li>
+<li><strong>Contenu</strong> :
+<ul>
+<li>Informations sur les données collectées</li>
+<li>Finalités du traitement</li>
+<li>Droits de la personne</li>
+<li>Coordonnées du responsable de traitement</li>
+</ul></li>
+<li><strong>Téléchargement</strong> :
+<ul>
+<li>L’attestation est générée au format PDF</li>
+<li>Téléchargement automatique</li>
+<li>Possibilité d’impression directe</li>
+</ul></li>
+</ol>
+<h3 id="gestion-des-fichiers">Gestion des Fichiers</h3>
+<ol type="1">
+<li><strong>Upload de documents</strong> :
+<ul>
+<li>Glissez-déposez vos fichiers</li>
+<li>Ou utilisez le bouton “Parcourir”</li>
+<li>Formats acceptés : PDF, Word, Excel, images</li>
+</ul></li>
+<li><strong>Organisation</strong> :
+<ul>
+<li>Classement par catégories</li>
+<li>Système de tags</li>
+<li>Recherche par nom ou contenu</li>
+</ul></li>
+<li><strong>Partage</strong> :
+<ul>
+<li>Liens de partage sécurisés</li>
+<li>Contrôle des permissions</li>
+<li>Historique des accès</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="administration">Administration</h2>
+<p><em>Section réservée aux utilisateurs ayant les droits
+administrateur</em></p>
+<h3 id="gestion-des-utilisateurs">Gestion des Utilisateurs</h3>
+<h4 id="création-dun-nouveau-gestionnaire">Création d’un Nouveau
+Gestionnaire</h4>
+<ol type="1">
+<li><strong>Accès</strong> :
+<ul>
+<li>Menu “Paramètres” → “Gestion des utilisateurs”</li>
+<li>Cliquez sur “+ Nouveau gestionnaire”</li>
+</ul></li>
+<li><strong>Informations requises</strong> :
+<ul>
+<li>Nom et prénom</li>
+<li>Adresse email (identifiant de connexion)</li>
+<li>Rôle (Administrateur ou Utilisateur)</li>
+<li>Antenne d’affectation</li>
+</ul></li>
+<li><strong>Paramètres avancés</strong> :
+<ul>
+<li>Permissions spécifiques</li>
+<li>Couleur du médaillon (identification visuelle)</li>
+<li>Restrictions d’accès</li>
+</ul></li>
+</ol>
+<h4 id="modification-des-droits">Modification des Droits</h4>
+<ol type="1">
+<li><strong>Rôles disponibles</strong> :
+<ul>
+<li><strong>Administrateur</strong> : Accès complet à toutes les
+fonctionnalités</li>
+<li><strong>Utilisateur</strong> : Accès limité à la gestion des
+usagers</li>
+</ul></li>
+<li><strong>Permissions granulaires</strong> :
+<ul>
+<li>Lecture seule sur certains dossiers</li>
+<li>Restriction par secteur géographique</li>
+<li>Limitation des exports de données</li>
+</ul></li>
+</ol>
+<h3 id="configuration-système">Configuration Système</h3>
+<h4 id="paramètres-généraux">Paramètres Généraux</h4>
+<ul>
+<li>Configuration des antennes</li>
+<li>Gestion des secteurs géographiques</li>
+<li>Paramétrage des types de problématiques</li>
+<li>Configuration des statuts de dossier</li>
+</ul>
+<h4 id="maintenance">Maintenance</h4>
+<ul>
+<li>Sauvegarde des données</li>
+<li>Nettoyage des fichiers temporaires</li>
+<li>Mise à jour des référentiels</li>
+<li>Monitoring des performances</li>
+</ul>
+<hr />
+<h2 id="aide-et-support">Aide et Support</h2>
+<h3 id="documentation-intégrée">Documentation Intégrée</h3>
+<ol type="1">
+<li><strong>Page d’aide</strong> :
+<ul>
+<li>Accessible via le menu principal</li>
+<li>Guides détaillés par fonctionnalité</li>
+<li>FAQ (Foire Aux Questions)</li>
+</ul></li>
+<li><strong>Tooltips contextuels</strong> :
+<ul>
+<li>Aide en survol sur les champs complexes</li>
+<li>Explications des fonctionnalités</li>
+<li>Raccourcis clavier</li>
+</ul></li>
+</ol>
+<h3 id="ressources-disponibles">Ressources Disponibles</h3>
+<ol type="1">
+<li><strong>Guides téléchargeables</strong> :
+<ul>
+<li>Manuel utilisateur complet (ce document)</li>
+<li>Guides de procédures spécifiques</li>
+<li>Modèles de documents</li>
+</ul></li>
+<li><strong>Vidéos tutoriels</strong> :
+<ul>
+<li>Démonstrations des fonctionnalités principales</li>
+<li>Cas d’usage pratiques</li>
+<li>Bonnes pratiques</li>
+</ul></li>
+</ol>
+<h3 id="contact-support">Contact Support</h3>
+<ul>
+<li><strong>Email</strong> : support@pasq.be</li>
+<li><strong>Téléphone</strong> : [Numéro à définir]</li>
+<li><strong>Heures d’ouverture</strong> : Lundi-Vendredi, 9h-17h</li>
+</ul>
+<hr />
+<h2 id="dépannage">Dépannage</h2>
+<h3 id="problèmes-courants">Problèmes Courants</h3>
+<h4 id="problèmes-de-connexion">Problèmes de Connexion</h4>
+<p><strong>Symptôme</strong> : Impossible de se connecter
+<strong>Solutions</strong> : 1. Vérifiez vos identifiants 2.
+Assurez-vous que Caps Lock est désactivé 3. Videz le cache de votre
+navigateur 4. Contactez votre administrateur si le problème persiste</p>
+<h4 id="problèmes-daffichage">Problèmes d’Affichage</h4>
+<p><strong>Symptôme</strong> : Interface déformée ou incomplète
+<strong>Solutions</strong> : 1. Actualisez la page (F5 ou Ctrl+R) 2.
+Vérifiez votre connexion internet 3. Essayez un autre navigateur 4.
+Désactivez temporairement les extensions de navigateur</p>
+<h4 id="problèmes-de-sauvegarde">Problèmes de Sauvegarde</h4>
+<p><strong>Symptôme</strong> : Les modifications ne sont pas
+enregistrées <strong>Solutions</strong> : 1. Vérifiez votre connexion
+internet 2. Attendez quelques secondes et réessayez 3. Copiez vos
+données importantes avant de rafraîchir 4. Contactez le support si le
+problème persiste</p>
+<h3 id="optimisation-des-performances">Optimisation des
+Performances</h3>
+<h4 id="navigateurs-recommandés">Navigateurs Recommandés</h4>
+<ul>
+<li><strong>Chrome</strong> : Version 90 ou supérieure</li>
+<li><strong>Firefox</strong> : Version 88 ou supérieure</li>
+<li><strong>Safari</strong> : Version 14 ou supérieure</li>
+<li><strong>Edge</strong> : Version 90 ou supérieure</li>
+</ul>
+<h4 id="configuration-recommandée">Configuration Recommandée</h4>
+<ul>
+<li><strong>Résolution</strong> : Minimum 1366x768</li>
+<li><strong>Connexion</strong> : Haut débit recommandé</li>
+<li><strong>JavaScript</strong> : Doit être activé</li>
+<li><strong>Cookies</strong> : Doivent être autorisés</li>
+</ul>
+<h3 id="sauvegarde-et-récupération">Sauvegarde et Récupération</h3>
+<h4 id="sauvegarde-automatique">Sauvegarde Automatique</h4>
+<ul>
+<li>Les données sont sauvegardées automatiquement</li>
+<li>Sauvegarde quotidienne complète</li>
+<li>Rétention de 30 jours</li>
+</ul>
+<h4 id="récupération-de-données">Récupération de Données</h4>
+<ul>
+<li>En cas de perte de données, contactez immédiatement le support</li>
+<li>Fournissez la date et l’heure approximatives</li>
+<li>Décrivez les actions effectuées avant la perte</li>
+</ul>
+<hr />
+<h2 id="bonnes-pratiques">Bonnes Pratiques</h2>
+<h3 id="sécurité">Sécurité</h3>
+<ol type="1">
+<li><strong>Mots de passe</strong> :
+<ul>
+<li>Utilisez un mot de passe fort et unique</li>
+<li>Changez-le régulièrement</li>
+<li>Ne le partagez jamais</li>
+</ul></li>
+<li><strong>Session</strong> :
+<ul>
+<li>Déconnectez-vous toujours en fin d’utilisation</li>
+<li>Ne laissez pas votre session ouverte sans surveillance</li>
+<li>Verrouillez votre écran lors d’absences</li>
+</ul></li>
+<li><strong>Données</strong> :
+<ul>
+<li>Ne partagez les informations usagers qu’avec les personnes
+autorisées</li>
+<li>Respectez la confidentialité des données</li>
+<li>Signalez tout incident de sécurité</li>
+</ul></li>
+</ol>
+<h3 id="efficacité">Efficacité</h3>
+<ol type="1">
+<li><strong>Saisie de données</strong> :
+<ul>
+<li>Complétez les dossiers progressivement</li>
+<li>Utilisez les fonctions d’autocomplétion</li>
+<li>Sauvegardez régulièrement</li>
+</ul></li>
+<li><strong>Organisation</strong> :
+<ul>
+<li>Utilisez les filtres pour organiser votre travail</li>
+<li>Créez des recherches sauvegardées pour les cas fréquents</li>
+<li>Planifiez vos tâches de saisie</li>
+</ul></li>
+<li><strong>Suivi</strong> :
+<ul>
+<li>Mettez à jour régulièrement les dossiers</li>
+<li>Utilisez les rappels pour les échéances</li>
+<li>Consultez les rapports pour suivre votre activité</li>
+</ul></li>
+</ol>
+<hr />
+<h2 id="raccourcis-clavier">Raccourcis Clavier</h2>
+<p>Pour une navigation plus efficace, l’application propose des
+raccourcis clavier globaux (utilisez la touche <strong>Alt</strong>
+combinée avec une lettre) :</p>
+<ul>
+<li><strong>Alt + A</strong> : Retour à l’<strong>A</strong>ccueil (Page
+principale)</li>
+<li><strong>Alt + D</strong> : Accéder au Tableau de Bord
+(<strong>D</strong>ashboard)</li>
+<li><strong>Alt + U</strong> : Consulter la liste des
+<strong>U</strong>sagers</li>
+<li><strong>Alt + N</strong> : Créer un <strong>N</strong>ouveau dossier
+usager</li>
+<li><strong>Alt + H</strong> : Ouvrir l’aide en ligne
+(<strong>H</strong>elp)</li>
+</ul>
+<hr />
+<h2 id="glossaire">Glossaire</h2>
+<p><strong>Antenne</strong> : Structure locale de PASQ responsable d’un
+secteur géographique</p>
+<p><strong>Dossier usager</strong> : Ensemble des informations relatives
+à une personne accompagnée</p>
+<p><strong>Gestionnaire</strong> : Professionnel de PASQ responsable du
+suivi des usagers</p>
+<p><strong>RGPD</strong> : Règlement Général sur la Protection des
+Données</p>
+<p><strong>Secteur</strong> : Zone géographique définie pour
+l’organisation du travail</p>
+<p><strong>Statut de séjour</strong> : Situation administrative d’une
+personne étrangère</p>
+<p><strong>Usager</strong> : Personne accompagnée par les services de
+PASQ</p>
+<hr />
+<h2 id="historique-des-versions">Historique des Versions</h2>
+<ul>
+<li><strong>Version 1.0</strong> (09/06/2025) : Version initiale du
+manuel</li>
+<li><strong>Version 1.1</strong> (15/12/2025) : Ajout des
+fonctionnalités de rapport et refactorisation feature-based</li>
+<li><strong>Version 1.2</strong> (21/12/2025) : Mise à jour de la
+structure du formulaire et du design system premium</li>
+</ul>
+<hr />
+<p><em>Ce manuel d’utilisation est un document évolutif. Il est mis à
+jour régulièrement pour refléter les améliorations apportées à
+l’application. Pour toute suggestion d’amélioration de ce manuel,
+contactez l’équipe de développement.</em></p>
+<p><strong>Dernière mise à jour</strong> : 21 décembre 2025
+<strong>Version de l’application</strong> : 0.1.0
+<strong>Contact</strong> : support@pasq.be</p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 PASQ - SocialConnect. Tous droits réservés.</p>
+            <p>Ce document est généré dynamiquement à partir du manuel de référence.</p>
+        </div>
+    </div>
+</body>
+
+</html>
