@@ -231,12 +231,14 @@ export default function RapportsPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/users');
+      const response = await fetch('/api/users?take=5000'); // Get all for reports
       if (!response.ok) {
         throw new Error(`Error fetching users: ${response.statusText}`);
       }
-      const data = await response.json();
-      setUsers(data);
+      const result = await response.json();
+      // Handle both old (array) and new ({ users, metadata }) response formats
+      const usersData = Array.isArray(result) ? result : (result.users || []);
+      setUsers(usersData);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       setMessage(`Erreur lors du chargement des usagers : ${error.message}`);
@@ -510,22 +512,20 @@ export default function RapportsPage() {
           <nav className="flex space-x-8 px-6" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('generate')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
-                activeTab === 'generate'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${activeTab === 'generate'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               <ChartBarIcon className="h-5 w-5 inline mr-2" />
               Générer un Rapport
             </button>
             <button
               onClick={() => setActiveTab('manage')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
-                activeTab === 'manage'
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${activeTab === 'manage'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+                }`}
             >
               <FolderOpenIcon className="h-5 w-5 inline mr-2" />
               Bibliothèque de Documents
@@ -534,11 +534,10 @@ export default function RapportsPage() {
         </div>
 
         {message && (
-          <div className={`mb-6 p-4 rounded-xl border-l-4 ${
-            message.startsWith('Erreur')
+          <div className={`mb-6 p-4 rounded-xl border-l-4 ${message.startsWith('Erreur')
               ? 'bg-red-50 text-red-800 border-red-400 shadow-red-100'
               : 'bg-green-50 text-green-800 border-green-400 shadow-green-100'
-          } shadow-lg`}>
+            } shadow-lg`}>
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 {message.startsWith('Erreur') ? (
@@ -629,22 +628,20 @@ export default function RapportsPage() {
                       <div className="flex bg-white border border-gray-300 rounded-lg shadow-sm">
                         <button
                           onClick={() => setViewMode('grid')}
-                          className={`flex items-center px-4 py-2 text-sm font-medium rounded-l-lg transition-all ${
-                            viewMode === 'grid'
+                          className={`flex items-center px-4 py-2 text-sm font-medium rounded-l-lg transition-all ${viewMode === 'grid'
                               ? 'bg-blue-600 text-white shadow-sm'
                               : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                          }`}
+                            }`}
                         >
                           <Squares2X2Icon className="h-4 w-4 mr-2" />
                           Grille
                         </button>
                         <button
                           onClick={() => setViewMode('list')}
-                          className={`flex items-center px-4 py-2 text-sm font-medium rounded-r-lg transition-all ${
-                            viewMode === 'list'
+                          className={`flex items-center px-4 py-2 text-sm font-medium rounded-r-lg transition-all ${viewMode === 'list'
                               ? 'bg-blue-600 text-white shadow-sm'
                               : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-blue-600'
-                          }`}
+                            }`}
                         >
                           <ListBulletIcon className="h-4 w-4 mr-2" />
                           Liste
@@ -705,23 +702,20 @@ export default function RapportsPage() {
                         </div>
                       </div>
                       {selectedFile && (
-                        <div className={`mt-4 p-3 rounded-lg ${
-                          selectedFile.size <= getMaxSizeForFile(selectedFile.name)
+                        <div className={`mt-4 p-3 rounded-lg ${selectedFile.size <= getMaxSizeForFile(selectedFile.name)
                             ? 'bg-green-50 border border-green-200'
                             : 'bg-red-50 border border-red-200'
-                        }`}>
-                          <p className={`text-sm font-medium ${
-                            selectedFile.size <= getMaxSizeForFile(selectedFile.name)
+                          }`}>
+                          <p className={`text-sm font-medium ${selectedFile.size <= getMaxSizeForFile(selectedFile.name)
                               ? 'text-green-900'
                               : 'text-red-900'
-                          }`}>
+                            }`}>
                             Fichier sélectionné : {selectedFile.name}
                           </p>
-                          <p className={`text-xs ${
-                            selectedFile.size <= getMaxSizeForFile(selectedFile.name)
+                          <p className={`text-xs ${selectedFile.size <= getMaxSizeForFile(selectedFile.name)
                               ? 'text-green-700'
                               : 'text-red-700'
-                          }`}>
+                            }`}>
                             Taille : {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                           <p className="text-xs text-gray-600">
@@ -812,8 +806,8 @@ export default function RapportsPage() {
                                     {getDocumentIcon(doc.type)}
                                     <div className="flex-1 min-w-0">
                                       <h4 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors cursor-pointer"
-                                          title={doc.name}
-                                          onClick={() => window.open(`/api/rapports/${encodeURIComponent(doc.name)}`, '_blank')}>
+                                        title={doc.name}
+                                        onClick={() => window.open(`/api/rapports/${encodeURIComponent(doc.name)}`, '_blank')}>
                                         {doc.name}
                                       </h4>
                                       <div className="flex items-center space-x-2 mt-1">
@@ -875,8 +869,8 @@ export default function RapportsPage() {
                                   {getDocumentIcon(doc.type)}
                                   <div className="flex-1 min-w-0">
                                     <h4 className="text-sm font-medium text-gray-900 truncate cursor-pointer hover:text-blue-600 transition-colors"
-                                        title={doc.name}
-                                        onClick={() => window.open(`/api/rapports/${encodeURIComponent(doc.name)}`, '_blank')}>
+                                      title={doc.name}
+                                      onClick={() => window.open(`/api/rapports/${encodeURIComponent(doc.name)}`, '_blank')}>
                                       {doc.name}
                                     </h4>
                                     <div className="flex items-center space-x-4 mt-1">

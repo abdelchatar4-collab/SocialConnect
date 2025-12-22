@@ -7,8 +7,8 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import React from 'react';
 import { UserFormData } from '@/types';
-import { FieldWrapper } from '@/components/shared/FieldWrapper';
-import { TextAreaInput } from '@/components/shared/TextAreaInput';
+import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextAreaInput } from '../shared/TextAreaInput';
 
 interface NotesStepProps {
   formData: UserFormData;

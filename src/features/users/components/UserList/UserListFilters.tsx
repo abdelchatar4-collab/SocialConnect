@@ -6,14 +6,14 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 /**
- * UserListFilters - Advanced filtering and search component
+ * UserListFilters - Advanced filtering and search component with Glassmorphism
  */
 
 import React, { Fragment } from 'react';
 import { Popover, Transition, Menu } from '@headlessui/react';
-import { SearchInput, Button } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
-import { SlidersHorizontal, ChevronDown, Check, LayoutGrid, List, AlertCircle } from 'lucide-react';
+import { SlidersHorizontal, ChevronDown, Check, LayoutGrid, List, AlertCircle, Users, UserCheck, Copy } from 'lucide-react';
 import { User } from '@/types/user';
 
 export type FilterType = 'all' | 'nom' | 'prenom' | 'email' | 'gestionnaire' | 'secteur' | 'antenne' | 'etat' | 'adresse';
@@ -135,16 +135,16 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
     ].filter(Boolean).length;
 
     return (
-        <div className="space-y-6">
-            {/* Top Row: Search Bar and Add Button */}
+        <div className="relative z-10 p-6 bg-slate-50/40 backdrop-blur-md border-b border-slate-200/60 space-y-8">
+            {/* SEARCH SECTION - Main Focus */}
             <div className="flex flex-col sm:flex-row gap-4">
                 {/* Search Input Group */}
-                <div className="relative flex flex-1 items-center rounded-md border border-gray-300 bg-white shadow-sm transition-all focus-within:ring-2 focus-within:ring-primary-600 focus-within:border-primary-600">
+                <div className="relative flex flex-1 items-center rounded-xl border border-white/40 bg-white/60 shadow-sm backdrop-blur-md transition-all focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50">
                     <div className="relative">
                         <select
                             value={searchField}
                             onChange={(e) => onSearchFieldChange(e.target.value as FilterType)}
-                            className="h-full rounded-l-md border-0 bg-transparent py-2.5 pl-3 pr-8 text-gray-500 text-sm focus:ring-0 cursor-pointer hover:bg-gray-50 border-r border-gray-200"
+                            className="h-full rounded-l-xl border-0 bg-transparent py-2.5 pl-3 pr-8 text-slate-600 text-sm focus:ring-0 cursor-pointer hover:bg-white/40 border-r border-slate-200/60"
                         >
                             {searchFields.map((field) => (
                                 <option key={field.value} value={field.value}>{field.label}</option>
@@ -155,11 +155,11 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                         type="text"
                         value={searchTerm}
                         onChange={(e) => onSearchTermChange(e.target.value)}
-                        placeholder="Rechercher..."
-                        className="block w-full border-0 bg-transparent py-2.5 pl-3 pr-10 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+                        placeholder="Rechercher par nom, prénom, email..."
+                        className="block w-full border-0 bg-transparent py-2.5 pl-3 pr-10 text-slate-900 placeholder:text-slate-400 focus:ring-0 sm:text-sm"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        <MagnifyingGlassIcon className="h-5 w-5 text-slate-400" aria-hidden="true" />
                     </div>
                 </div>
 
@@ -168,7 +168,7 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                     <div className="flex-shrink-0">
                         <Button
                             onClick={onAddUser}
-                            className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white"
+                            className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl h-full px-6 shadow-md transition-all active:scale-95"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -179,80 +179,78 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                 )}
             </div>
 
-            {/* Stats Cards Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Total Dossiers */}
-                <div className="bg-purple-50 rounded-lg p-4 flex items-center gap-4">
-                    <div className="p-3 bg-purple-100 rounded-lg text-purple-600">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
+            {/* STATS CARDS SECTION */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-white/40 shadow-sm flex items-center gap-4 transition-all hover:shadow-md hover:bg-white/80 group">
+                    <div className="bg-blue-500/10 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                        <Users className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-600">Total des dossiers</p>
-                        <p className="text-2xl font-bold text-gray-900">{totalUsersCount}</p>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Usagers</p>
+                        <p className="text-2xl font-bold text-slate-900">{totalUsersCount}</p>
                     </div>
                 </div>
 
-                {/* Dernier ajout - CLICKABLE */}
+                <div className="bg-white/60 backdrop-blur-md p-5 rounded-2xl border border-white/40 shadow-sm flex items-center gap-4 transition-all hover:shadow-md hover:bg-white/80 group">
+                    <div className="bg-teal-500/10 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                        <UserCheck className="w-6 h-6 text-teal-600" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mes Dossiers</p>
+                        <p className="text-2xl font-bold text-slate-900">{myDossiersCount}</p>
+                    </div>
+                </div>
+
                 <div
-                    onClick={() => lastAddedUser && onLastAddedClick && onLastAddedClick(lastAddedUser.id)}
-                    className={`bg-blue-50 rounded-lg p-4 flex items-center gap-4 transition-all duration-200
-                        ${lastAddedUser && onLastAddedClick ? 'cursor-pointer hover:bg-blue-100 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]' : ''}
-                    `}
-                    role={lastAddedUser && onLastAddedClick ? "button" : undefined}
-                    tabIndex={lastAddedUser && onLastAddedClick ? 0 : undefined}
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer shadow-sm flex items-center gap-4 group ${showImportantInfoOnly
+                        ? 'bg-amber-100/80 border-amber-300 shadow-amber-100'
+                        : 'bg-white/60 backdrop-blur-md border-white/40 hover:bg-white/80'
+                        }`}
+                    onClick={() => onShowImportantInfoOnlyChange(!showImportantInfoOnly)}
                 >
-                    <div className="p-3 bg-blue-100 rounded-lg text-blue-600">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
+                    <div className={`p-3 rounded-xl group-hover:scale-110 transition-transform ${showImportantInfoOnly ? 'bg-amber-500/20' : 'bg-amber-500/10'}`}>
+                        <AlertCircle className={`w-6 h-6 ${showImportantInfoOnly ? 'text-amber-700' : 'text-amber-600'}`} />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-600">Dernier ajout de {
-                            (lastAddedUser?.gestionnaire && typeof lastAddedUser.gestionnaire === 'object')
-                                ? ('initiales' in lastAddedUser.gestionnaire ? (lastAddedUser.gestionnaire as any).initiales : (lastAddedUser.gestionnaire.prenom ? lastAddedUser.gestionnaire.prenom[0] : '') + (lastAddedUser.gestionnaire.nom ? lastAddedUser.gestionnaire.nom[0] : ''))
-                                : 'System'
-                        }</p>
-                        <p className="text-lg font-bold text-gray-900 leading-tight">
-                            {lastAddedUser ? `${lastAddedUser.prenom} ${lastAddedUser.nom}` : 'Aucun dossier récent'}
-                        </p>
-                        {lastAddedUser && <p className="text-xs text-gray-500">{formatDate(lastAddedUser.dateOuverture ? new Date(lastAddedUser.dateOuverture).toISOString() : undefined)}</p>}
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${showImportantInfoOnly ? 'text-amber-700' : 'text-slate-500'}`}>Infos Importantes</p>
+                        <p className={`text-2xl font-bold ${showImportantInfoOnly ? 'text-amber-700' : 'text-slate-900'}`}>{importantInfoCount}</p>
                     </div>
                 </div>
 
-                {/* Mes dossiers gérés */}
-                <div className="bg-green-50 rounded-lg p-4 flex items-center gap-4">
-                    <div className="p-3 bg-green-100 rounded-lg text-green-600">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                <div
+                    className={`p-5 rounded-2xl border transition-all cursor-pointer shadow-sm flex items-center gap-4 group ${showDuplicates
+                        ? 'bg-rose-100/80 border-rose-300 shadow-rose-100'
+                        : 'bg-white/60 backdrop-blur-md border-white/40 hover:bg-white/80'
+                        }`}
+                    onClick={() => onShowDuplicatesChange(!showDuplicates)}
+                >
+                    <div className={`p-3 rounded-xl group-hover:scale-110 transition-transform ${showDuplicates ? 'bg-rose-500/20' : 'bg-rose-500/10'}`}>
+                        <Copy className={`w-6 h-6 ${showDuplicates ? 'text-rose-700' : 'text-rose-600'}`} />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-gray-600">Mes dossiers gérés</p>
-                        <p className="text-2xl font-bold text-gray-900">{myDossiersCount}</p>
-                        <p className="text-xs text-gray-500">Gestionnaire: {currentUserIdentifier || 'Moi'}</p>
+                        <p className={`text-xs font-semibold uppercase tracking-wider ${showDuplicates ? 'text-rose-700' : 'text-slate-500'}`}>Doublons</p>
+                        <p className={`text-2xl font-bold ${showDuplicates ? 'text-rose-700' : 'text-slate-900'}`}>{duplicatesCount}</p>
                     </div>
                 </div>
             </div>
 
             {/* Toolbar Row: Filters & View Options */}
-            <div className="flex flex-wrap items-center justify-between gap-4 py-2 border-t border-gray-100 mt-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-t border-slate-200/60 mt-4">
 
                 {/* Left: Filter Popover */}
                 <Popover className="relative">
                     {({ open }) => (
                         <>
                             <Popover.Button className={`
-                                inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all shadow-sm
+                                inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all shadow-sm backdrop-blur-sm
                                 ${open || activeFiltersCount > 0
-                                    ? 'bg-blue-50 border-blue-200 text-blue-700 ring-1 ring-blue-200'
-                                    : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}
+                                    ? 'bg-blue-600 border-blue-600 text-white shadow-blue-200'
+                                    : 'bg-white/60 border-slate-200 text-slate-700 hover:bg-white'}
                             `}>
                                 <SlidersHorizontal className="w-4 h-4" />
-                                <span>Filtres</span>
+                                <span>Options d'affichage</span>
                                 {activeFiltersCount > 0 && (
-                                    <span className="ml-1 inline-flex items-center justify-center bg-blue-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                                    <span className="ml-1 inline-flex items-center justify-center bg-white/20 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                                         {activeFiltersCount}
                                     </span>
                                 )}
@@ -268,15 +266,15 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                                 leaveFrom="opacity-100 translate-y-0"
                                 leaveTo="opacity-0 translate-y-1"
                             >
-                                <Popover.Panel className="absolute z-10 left-0 mt-2 w-80 origin-top-left rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none p-4">
+                                <Popover.Panel className="absolute z-40 left-0 mt-3 w-80 origin-top-left rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none p-5">
                                     <div className="space-y-6">
 
                                         {/* Section: Affichage */}
                                         <div>
-                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                                Colonnes affichées
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+                                                Colonnes du tableau
                                             </h4>
-                                            <div className="space-y-2">
+                                            <div className="space-y-3">
                                                 <CheckboxRow checked={showPhone} onChange={onShowPhoneChange} label="Téléphone" />
                                                 <CheckboxRow checked={showAdresse} onChange={onShowAdresseChange} label="Adresse" />
                                                 <CheckboxRow checked={showDossier} onChange={onShowDossierChange} label="Numéro de dossier" />
@@ -285,42 +283,16 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                                             </div>
                                         </div>
 
-                                        <div className="h-px bg-gray-100" />
+                                        <div className="h-px bg-slate-100" />
 
-                                        {/* Section: Filtres Spéciaux */}
+                                        {/* Section: Autres Options */}
                                         <div>
-                                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-                                                Filtres avancés
+                                            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+                                                Autres filtres
                                             </h4>
-                                            <div className="space-y-2">
-                                                <CheckboxRow
-                                                    checked={showImportantInfoOnly}
-                                                    onChange={onShowImportantInfoOnlyChange}
-                                                    label="Notes importantes"
-                                                    badge={importantInfoCount}
-                                                    badgeColor="bg-amber-100 text-amber-700"
-                                                />
-                                                <CheckboxRow
-                                                    checked={showDonneesConfidentielles}
-                                                    onChange={onShowDonneesConfidentiellesChange}
-                                                    label="Données confidentielles"
-                                                    badge={donneesConfidentiellesCount}
-                                                    badgeColor="bg-purple-100 text-purple-700"
-                                                />
-                                                <CheckboxRow
-                                                    checked={showMissingBirthDate}
-                                                    onChange={onShowMissingBirthDateChange}
-                                                    label="Date de naissance manquante"
-                                                    badge={missingBirthDateCount}
-                                                    badgeColor="bg-red-100 text-red-700"
-                                                />
-                                                <CheckboxRow
-                                                    checked={showDuplicates}
-                                                    onChange={onShowDuplicatesChange}
-                                                    label="Doublons potentiels"
-                                                    badge={duplicatesCount}
-                                                    badgeColor="bg-orange-100 text-orange-700"
-                                                />
+                                            <div className="space-y-3">
+                                                <CheckboxRow checked={showDonneesConfidentielles} onChange={onShowDonneesConfidentiellesChange} label="Données confidentielles" />
+                                                <CheckboxRow checked={showMissingBirthDate} onChange={onShowMissingBirthDateChange} label="Date de naissance manquante" />
                                             </div>
                                         </div>
 
@@ -332,17 +304,17 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                 </Popover>
 
                 {/* Right: View Toggles & Problematique */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
 
-                    {/* Problematique Dropdown - NOW MATCHING FILTERS BUTTON */}
+                    {/* Problematique Dropdown */}
                     <Menu as="div" className="relative inline-block text-left min-w-[240px]">
                         {({ open }) => (
                             <>
                                 <Menu.Button className={`
-                                    inline-flex w-full items-center justify-between gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all shadow-sm
+                                    inline-flex w-full items-center justify-between gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all shadow-sm backdrop-blur-sm
                                     ${open || (problematiqueFilter && problematiqueFilter !== 'all')
                                         ? 'bg-blue-50 border-blue-200 text-blue-700 ring-1 ring-blue-200'
-                                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'}
+                                        : 'bg-white/60 border-slate-200 text-slate-700 hover:bg-white'}
                                 `}>
                                     <div className="flex items-center gap-2 truncate">
                                         <AlertCircle className="w-4 h-4 flex-shrink-0" />
@@ -362,49 +334,25 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                                     leaveFrom="transform opacity-100 scale-100"
                                     leaveTo="transform opacity-0 scale-95"
                                 >
-                                    <Menu.Items className="absolute right-0 mt-2 w-full origin-top-right divide-y divide-gray-100 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20 max-h-80 overflow-auto">
-                                        <div className="p-1">
-                                            {/* Default Option */}
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => onProblematiqueFilterChange('')}
-                                                        className={`
-                                                            group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-left transition-colors
-                                                            ${active ? 'bg-blue-50' : 'hover:bg-gray-50'}
-                                                        `}
-                                                    >
-                                                        <div className={`
-                                                            w-5 h-5 rounded border flex items-center justify-center transition-colors flex-shrink-0
-                                                            ${problematiqueFilter === '' ? 'bg-primary-600 border-primary-600' : 'bg-white border-gray-300 group-hover:border-gray-400'}
-                                                        `}>
-                                                            {problematiqueFilter === '' && <Check className="w-3.5 h-3.5 text-white" />}
-                                                        </div>
-                                                        <span className={`truncate ${problematiqueFilter === '' ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
-                                                            Toutes problématiques
-                                                        </span>
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-
-                                            {/* Other Options */}
+                                    <Menu.Items className="absolute right-0 mt-3 w-full origin-top-right divide-y divide-slate-100 rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 focus:outline-none z-50 max-h-80 overflow-auto">
+                                        <div className="p-1.5">
                                             {problematiquesOptions.map((opt) => (
                                                 <Menu.Item key={opt.value}>
                                                     {({ active }) => (
                                                         <button
                                                             onClick={() => onProblematiqueFilterChange(opt.value)}
                                                             className={`
-                                                                group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-left transition-colors
-                                                                ${active ? 'bg-blue-50' : 'hover:bg-gray-50'}
+                                                                group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-left transition-colors
+                                                                ${active ? 'bg-blue-50' : 'hover:bg-slate-50'}
                                                             `}
                                                         >
                                                             <div className={`
-                                                                w-5 h-5 rounded border flex items-center justify-center transition-colors flex-shrink-0
-                                                                ${problematiqueFilter === opt.value ? 'bg-primary-600 border-primary-600' : 'bg-white border-gray-300 group-hover:border-gray-400'}
+                                                                w-5 h-5 rounded-lg border flex items-center justify-center transition-colors flex-shrink-0
+                                                                ${problematiqueFilter === opt.value ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300 group-hover:border-slate-400'}
                                                             `}>
                                                                 {problematiqueFilter === opt.value && <Check className="w-3.5 h-3.5 text-white" />}
                                                             </div>
-                                                            <span className={`truncate ${problematiqueFilter === opt.value ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
+                                                            <span className={`truncate ${problematiqueFilter === opt.value ? 'text-blue-700 font-semibold' : 'text-slate-700'}`}>
                                                                 {opt.label}
                                                             </span>
                                                         </button>
@@ -419,20 +367,20 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                     </Menu>
 
                     {/* View Toggles */}
-                    <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                    <div className="flex items-center bg-slate-200/50 backdrop-blur-sm rounded-xl p-1 shadow-inner border border-white/40">
                         <button
                             onClick={() => onViewModeChange('table')}
-                            className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                            title="Vue Tableau"
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'table' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
                         >
                             <List className="w-4 h-4" />
+                            <span className="hidden sm:inline">Tableau</span>
                         </button>
                         <button
                             onClick={() => onViewModeChange('cards')}
-                            className={`p-1.5 rounded-md transition-all ${viewMode === 'cards' ? 'bg-white text-primary-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                            title="Vue Cartes"
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${viewMode === 'cards' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
                         >
                             <LayoutGrid className="w-4 h-4" />
+                            <span className="hidden sm:inline">Cartes</span>
                         </button>
                     </div>
 
@@ -447,98 +395,26 @@ const CheckboxRow = ({
     checked,
     onChange,
     label,
-    badge,
-    badgeColor
 }: {
     checked: boolean;
     onChange: (v: boolean) => void;
     label: string;
-    badge?: number;
-    badgeColor?: string;
 }) => (
-    <label className="flex items-center justify-between group cursor-pointer p-1 rounded hover:bg-gray-50 transition-colors">
-        <div className="flex items-center gap-3">
-            <div className={`
-                w-5 h-5 rounded border flex items-center justify-center transition-colors
-                ${checked ? 'bg-primary-600 border-primary-600' : 'bg-white border-gray-300 group-hover:border-gray-400'}
-            `}>
-                {checked && <Check className="w-3.5 h-3.5 text-white" />}
-            </div>
-            <span className={`text-sm ${checked ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>
-                {label}
-            </span>
+    <label className="flex items-center gap-3 group cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-colors">
+        <div className={`
+            w-5 h-5 rounded-lg border flex items-center justify-center transition-colors
+            ${checked ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300 group-hover:border-slate-400'}
+        `}>
+            {checked && <Check className="w-3.5 h-3.5 text-white" />}
         </div>
-
+        <span className={`text-sm ${checked ? 'text-slate-900 font-semibold' : 'text-slate-600'}`}>
+            {label}
+        </span>
         <input
             type="checkbox"
             className="hidden"
             checked={checked}
             onChange={(e) => onChange(e.target.checked)}
         />
-
-        {badge !== undefined && badge > 0 && (
-            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeColor || 'bg-gray-100 text-gray-600'}`}>
-                {badge}
-            </span>
-        )}
     </label>
 );
-
-
-// Helper component for filter chips
-const FilterChip = ({
-    label,
-    checked, // Keeping for back-compat or mapping
-    active,  // New prop
-    onChange, // Keeping for back-compat
-    onClick, // New prop
-    color,    // Keeping for back-compat
-    activeColor, // Keeping for back-compat
-    count,
-    variant
-}: {
-    label: string;
-    checked?: boolean;
-    active?: boolean;
-    onChange?: (checked: boolean) => void;
-    onClick?: () => void;
-    color?: string;
-    activeColor?: string;
-    count?: number;
-    variant?: 'neutral' | 'warning' | 'danger' | 'success';
-}) => {
-    const isChecked = active !== undefined ? active : checked;
-    const handleChange = onClick ? onClick : () => onChange?.(!isChecked);
-
-    // Determine colors based on variant or custom colors
-    let baseClass = "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100";
-    let activeClass = "bg-primary-50 text-primary-700 border-primary-200 ring-1 ring-primary-200";
-
-    if (variant === 'neutral') {
-        baseClass = "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100";
-        activeClass = "bg-gray-100 text-gray-900 border-gray-300 ring-1 ring-gray-300";
-    } else if (color && activeColor) {
-        baseClass = color.replace('text-', 'text-opacity-80 text-').replace('bg-', 'bg-opacity-50 bg-');
-        activeClass = activeColor;
-    }
-
-    return (
-        <button
-            onClick={handleChange}
-            className={`
-                inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border transition-all
-                ${isChecked ? activeClass : baseClass}
-            `}
-        >
-            {label}
-            {count !== undefined && count > 0 && (
-                <span className={`
-                    ml-1 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-bold
-                    ${isChecked ? 'bg-white bg-opacity-30' : 'bg-gray-200 text-gray-700'}
-                `}>
-                    {count}
-                </span>
-            )}
-        </button>
-    );
-};

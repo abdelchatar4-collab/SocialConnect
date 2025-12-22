@@ -8,10 +8,10 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from 'react';
 import { UserFormData } from '@/types/user';
 import { FormErrors, displayError } from '@/types';
-import { FieldWrapper } from '@/components/shared/FieldWrapper';
-import { TextInput } from '@/components/shared/TextInput';
-import { SelectInput } from '@/components/shared/SelectInput';
-import { MultiSelectInput } from '@/components/shared/MultiSelectInput';
+import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextInput } from '../shared/TextInput';
+import { SelectInput } from '../shared/SelectInput';
+import { MultiSelectInput } from '../shared/MultiSelectInput';
 import { PrevExpFields } from './PrevExpFields';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { LisserButton, useAiAvailable } from '@/components/ai/LisserButton';

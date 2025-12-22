@@ -95,9 +95,9 @@ export const UserListTable: React.FC<UserListTableProps> = ({
     );
 
     return (
-        <div className="relative w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-lg ring-1 ring-slate-900/5">
+        <div className="relative w-full overflow-auto rounded-xl border border-slate-200/60 bg-white/40 backdrop-blur-sm shadow-xl ring-1 ring-slate-900/5 transition-all duration-300">
             <Table>
-                <TableHeader className="bg-slate-100 border-b-2 border-slate-200 sticky top-0 z-20 shadow-sm">
+                <TableHeader className="bg-slate-50/80 border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-sm">
                     <TableRow className="hover:bg-transparent border-none">
                         <TableHead className="w-12 py-4 pl-4">
                             <input

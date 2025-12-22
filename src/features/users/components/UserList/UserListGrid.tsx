@@ -9,7 +9,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from 'react';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { User, Gestionnaire, ActionSuivi, Problematique } from '@/types';
-import { GestionnaireIcon } from '@/components/shared/GestionnaireIcon';
+import { GestionnaireIcon } from '../shared/GestionnaireIcon';
 import { useMemo } from 'react';
 import { extractActionsFromNotes, getActionsForUser, deduceActionType } from '@/utils/actionUtils';
 import { getGestionnaireColor } from '@/features/users/utils/userUtils';

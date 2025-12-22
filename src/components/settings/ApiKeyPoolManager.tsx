@@ -7,7 +7,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     KeyIcon,
     PlusIcon,
@@ -15,43 +15,97 @@ import {
     CheckCircleIcon,
     ExclamationTriangleIcon,
     UserGroupIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    CloudIcon
 } from '@heroicons/react/24/outline';
-import {
-    getKeyPool,
-    addKeyToPool,
-    removeKeyFromPool,
-    getKeyPoolStats,
-    GroqApiKey,
-    KeyPoolStats
-} from '@/lib/groq-key-pool';
+
+// Database-backed API key type
+interface DbApiKey {
+    id: string;
+    key: string; // Masked
+    label: string;
+    isActive: boolean;
+    lastUsedAt: string | null;
+    requestsToday: number;
+    isRateLimited: boolean;
+    rateLimitedUntil: string | null;
+    createdAt: string;
+}
+
+interface KeyPoolStats {
+    totalKeys: number;
+    activeKeys: number;
+    rateLimitedKeys: number;
+    totalRequestsToday: number;
+}
 
 interface ApiKeyPoolManagerProps {
     onPoolChange?: () => void;
 }
 
 export default function ApiKeyPoolManager({ onPoolChange }: ApiKeyPoolManagerProps) {
-    const [keys, setKeys] = useState<GroqApiKey[]>([]);
+    const [keys, setKeys] = useState<DbApiKey[]>([]);
     const [stats, setStats] = useState<KeyPoolStats | null>(null);
     const [newKeyValue, setNewKeyValue] = useState('');
     const [newKeyLabel, setNewKeyLabel] = useState('');
     const [isAdding, setIsAdding] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [isDbMode, setIsDbMode] = useState(true);
 
-    // Load keys on mount
-    const refreshKeys = () => {
-        const pool = getKeyPool();
-        setKeys(pool);
-        setStats(getKeyPoolStats());
-    };
+    // Calculate stats from keys
+    const calculateStats = useCallback((keyList: DbApiKey[]): KeyPoolStats => {
+        return {
+            totalKeys: keyList.length,
+            activeKeys: keyList.filter(k => !k.isRateLimited && k.isActive).length,
+            rateLimitedKeys: keyList.filter(k => k.isRateLimited).length,
+            totalRequestsToday: keyList.reduce((sum, k) => sum + k.requestsToday, 0),
+        };
+    }, []);
+
+    // Fetch keys from database API
+    const refreshKeys = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/admin/api-keys');
+            if (response.ok) {
+                const data: DbApiKey[] = await response.json();
+                setKeys(data);
+                setStats(calculateStats(data));
+                setIsDbMode(true);
+            } else {
+                throw new Error('API unavailable');
+            }
+        } catch (err) {
+            console.warn('Database API unavailable, falling back to localStorage');
+            setIsDbMode(false);
+            // Fallback to localStorage
+            const { getKeyPool, getKeyPoolStats } = await import('@/lib/groq-key-pool');
+            const localKeys = getKeyPool();
+            setKeys(localKeys.map(k => ({
+                id: k.id,
+                key: k.key.substring(0, 8) + '...' + k.key.substring(k.key.length - 4),
+                label: k.label,
+                isActive: true,
+                lastUsedAt: k.lastUsed || null,
+                requestsToday: k.requestsToday,
+                isRateLimited: k.isRateLimited,
+                rateLimitedUntil: k.rateLimitedUntil || null,
+                createdAt: k.addedAt,
+            })));
+            setStats(getKeyPoolStats());
+        } finally {
+            setIsLoading(false);
+        }
+    }, [calculateStats]);
 
     useEffect(() => {
         refreshKeys();
-    }, []);
+    }, [refreshKeys]);
 
     // Add new key
-    const handleAddKey = () => {
+    const handleAddKey = async () => {
         if (!newKeyValue || !newKeyLabel) {
             setError('Remplissez la clé API et le nom');
             return;
@@ -65,33 +119,61 @@ export default function ApiKeyPoolManager({ onPoolChange }: ApiKeyPoolManagerPro
         setIsAdding(true);
         setError(null);
 
-        const result = addKeyToPool(newKeyValue, newKeyLabel);
+        try {
+            if (isDbMode) {
+                const response = await fetch('/api/admin/api-keys', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key: newKeyValue, label: newKeyLabel }),
+                });
 
-        if (result) {
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || 'Erreur lors de l\'ajout');
+                }
+            } else {
+                // Fallback to localStorage
+                const { addKeyToPool } = await import('@/lib/groq-key-pool');
+                const result = addKeyToPool(newKeyValue, newKeyLabel);
+                if (!result) {
+                    throw new Error('Cette clé existe déjà dans le pool');
+                }
+            }
+
             setNewKeyValue('');
             setNewKeyLabel('');
             setShowAddForm(false);
             refreshKeys();
             onPoolChange?.();
-        } else {
-            setError('Cette clé existe déjà dans le pool');
+        } catch (err: any) {
+            setError(err.message || 'Erreur inconnue');
+        } finally {
+            setIsAdding(false);
         }
-
-        setIsAdding(false);
     };
 
     // Remove key
-    const handleRemoveKey = (keyId: string) => {
-        if (confirm('Êtes-vous sûr de vouloir supprimer cette clé ?')) {
-            removeKeyFromPool(keyId);
+    const handleRemoveKey = async (keyId: string) => {
+        if (!confirm('Êtes-vous sûr de vouloir supprimer cette clé ?')) return;
+
+        try {
+            if (isDbMode) {
+                await fetch(`/api/admin/api-keys?id=${keyId}`, { method: 'DELETE' });
+            } else {
+                const { removeKeyFromPool } = await import('@/lib/groq-key-pool');
+                removeKeyFromPool(keyId);
+            }
             refreshKeys();
             onPoolChange?.();
+        } catch (err) {
+            console.error('Failed to remove key:', err);
         }
     };
 
-    // Mask API key for display
+    // Mask API key for display (in case it wasn't masked by API)
     const maskKey = (key: string) => {
-        if (key.length < 12) return '****';
+        if (!key || key.length < 12) return key || '****';
+        if (key.includes('...')) return key; // Already masked
         return key.substring(0, 8) + '...' + key.substring(key.length - 4);
     };
 
@@ -148,8 +230,8 @@ export default function ApiKeyPoolManager({ onPoolChange }: ApiKeyPoolManagerPro
                         <div
                             key={key.id}
                             className={`flex items-center justify-between p-3 rounded-lg border ${key.isRateLimited
-                                    ? 'bg-amber-50 border-amber-200'
-                                    : 'bg-gray-50 border-gray-200'
+                                ? 'bg-amber-50 border-amber-200'
+                                : 'bg-gray-50 border-gray-200'
                                 }`}
                         >
                             <div className="flex items-center">

@@ -7,8 +7,8 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { UserFormData, Problematique, ActionSuivi } from '@/types/user';
-import { FieldWrapper } from '@/components/shared/FieldWrapper';
-import { TextAreaInput } from '@/components/shared/TextAreaInput';
+import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextAreaInput } from '../shared/TextAreaInput';
 import { aiClient } from '@/lib/ai-client';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';

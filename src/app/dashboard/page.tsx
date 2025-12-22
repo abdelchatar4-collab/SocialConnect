@@ -34,11 +34,13 @@ export default function DashboardPage() {
         setError(null);
 
         // Fetch the list of all users
-        const usersResponse = await fetch('/api/users');
+        const usersResponse = await fetch('/api/users?take=5000'); // Request a large batch for dashboard stats
         if (!usersResponse.ok) {
           throw new Error(`Error fetching all users: ${usersResponse.statusText}`);
         }
-        const usersData: User[] = await usersResponse.json();
+        const usersResult = await usersResponse.json();
+        // Handle both old (array) and new ({ users, metadata }) response formats
+        const usersData: User[] = Array.isArray(usersResult) ? usersResult : (usersResult.users || []);
         setUsers(usersData);
 
         // Fetch the list of recent users (top 10)

@@ -211,3 +211,20 @@ model Settings {
 
   @@map("settings")
 }
+
+// API Keys for AI providers (Groq, OpenAI, etc.)
+model ApiKey {
+  id               String    @id @default(cuid())
+  provider         String    @default("groq") // "groq", "openai", etc.
+  key              String    @db.VarChar(255)
+  label            String    // e.g., "Pauline", "Ahmed"
+  isActive         Boolean   @default(true)
+  lastUsedAt       DateTime?
+  requestsToday    Int       @default(0)
+  isRateLimited    Boolean   @default(false)
+  rateLimitedUntil DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("api_keys")
+}

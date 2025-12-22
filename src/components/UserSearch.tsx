@@ -33,10 +33,12 @@ export const UserSearch = ({ onSelectUser, onCreateNew, currentYear }: UserSearc
             // Rechercher dans l'année précédente (ou toutes les années sauf la courante)
             // Pour l'instant, on récupère tout et on filtre côté client pour la démo
             // Idéalement, l'API devrait supporter une recherche textuelle + filtre année
-            const response = await fetch('/api/users');
+            const response = await fetch('/api/users?take=5000'); // Get all for search
             if (!response.ok) throw new Error('Erreur lors de la recherche');
 
-            const allUsers: User[] = await response.json();
+            const result = await response.json();
+            // Handle both old (array) and new ({ users, metadata }) response formats
+            const allUsers: User[] = Array.isArray(result) ? result : (result.users || []);
 
             // Filtrer :
             // 1. Correspondance nom/prénom

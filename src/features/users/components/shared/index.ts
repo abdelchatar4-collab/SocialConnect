@@ -10,3 +10,8 @@ export { FieldWrapper } from './FieldWrapper';
 export { TextInput } from './TextInput';
 export { SelectInput } from './SelectInput';
 export { TextAreaInput } from './TextAreaInput';
+export { ComboBox } from './ComboBox';
+export { MultiSelectInput } from './MultiSelectInput';
+export { GestionnaireIcon } from './GestionnaireIcon';
+export { PartenairesManager } from './PartenairesManager';
+export * from './VisibilityHelpers';

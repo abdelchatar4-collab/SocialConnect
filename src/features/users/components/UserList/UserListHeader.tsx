@@ -51,7 +51,7 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
     loading = false
 }) => {
     return (
-        <div className="border-b border-gray-200 bg-white px-4 py-5 sm:px-6">
+        <div className="border-b border-slate-200/60 bg-white/70 backdrop-blur-md px-4 py-5 sm:px-6 sticky top-0 z-30 shadow-sm first:rounded-t-xl">
             <div className="flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div className="flex-1">
                     <h3 className="text-xl font-semibold leading-6 text-gray-900">
@@ -72,9 +72,9 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
                     {/* ACTIONS MENU (The Burger) */}
                     <Menu as="div" className="relative inline-block text-left">
                         <div>
-                            <Menu.Button className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white border border-gray-300 shadow-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 hover:border-blue-300 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <Menu.Button className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm text-slate-700 hover:bg-white hover:text-blue-600 hover:border-blue-300 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 group">
                                 <span className="sr-only">Options</span>
-                                <MenuIcon className="h-5 w-5" strokeWidth={2.5} />
+                                <MenuIcon className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" strokeWidth={2.5} />
                             </Menu.Button>
                         </div>
 
@@ -87,7 +87,7 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                         >
-                            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
                                 <div className="px-1 py-1">
                                     {/* Rafraichir */}
                                     <Menu.Item>

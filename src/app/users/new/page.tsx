@@ -201,6 +201,35 @@ export default function NewUserPage() {
     setError(null);
 
     try {
+      // Vérifier d'abord s'il existe des doublons potentiels
+      const duplicateCheckResponse = await fetch('/api/users/check-duplicate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nom: userData.nom,
+          prenom: userData.prenom,
+          dateNaissance: userData.dateNaissance,
+        }),
+      });
+
+      if (duplicateCheckResponse.ok) {
+        const { hasDuplicate, duplicates } = await duplicateCheckResponse.json();
+
+        if (hasDuplicate && duplicates.length > 0) {
+          // Construire le message d'avertissement
+          const duplicatesList = duplicates.map((d: any) =>
+            `- ${d.prenom} ${d.nom} (ID: ${d.id}, Antenne: ${d.antenne || 'N/A'})`
+          ).join('\n');
+
+          const confirmMessage = `⚠️ ATTENTION : Un ou plusieurs usagers avec le même nom/prénom existent déjà :\n\n${duplicatesList}\n\nVoulez-vous quand même créer ce nouvel usager ?`;
+
+          if (!window.confirm(confirmMessage)) {
+            setIsSubmitting(false);
+            return; // L'utilisateur a annulé
+          }
+        }
+      }
+
       // Déterminer l'année en fonction de la date d'ouverture
       let anneeDossier = selectedYear;
 

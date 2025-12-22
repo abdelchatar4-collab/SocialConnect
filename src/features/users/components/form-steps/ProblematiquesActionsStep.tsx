@@ -8,11 +8,11 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React, { useState, useMemo, useCallback } from 'react';
 import { UserFormData, Problematique, ActionSuivi } from '@/types/user';
 import { FormErrors, displayError } from '@/types';
-import { FieldWrapper } from '@/components/shared/FieldWrapper';
-import { TextInput } from '@/components/shared/TextInput';
-import { SelectInput } from '@/components/shared/SelectInput';
-import { ComboBox } from '@/components/shared/ComboBox';
-import { TextAreaInput } from '@/components/shared/TextAreaInput';
+import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextInput } from '../shared/TextInput';
+import { SelectInput } from '../shared/SelectInput';
+import { ComboBox } from '../shared/ComboBox';
+import { TextAreaInput } from '../shared/TextAreaInput';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';

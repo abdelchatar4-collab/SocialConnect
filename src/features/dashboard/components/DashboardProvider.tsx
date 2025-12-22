@@ -56,7 +56,7 @@ interface DashboardProviderProps {
     users: User[];
 }
 
-export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, users }) => {
+export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, users = [] }) => {
     const [state, setState] = useState<DashboardState>(() => {
         // Try to load saved widget config from localStorage
         if (typeof window !== 'undefined') {
@@ -92,6 +92,10 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
 
     // Calculate statistics from users
     const calculateStats = useCallback((userList: User[]): DashboardStats => {
+        // Defensive check for null/undefined
+        if (!userList || !Array.isArray(userList)) {
+            userList = [];
+        }
         const total = userList.length;
         const actifs = userList.filter(u => u.etat === 'Actif' || u.etat === 'En cours').length;
         const pourcentageActifs = total > 0 ? (actifs / total) * 100 : 0;

@@ -193,7 +193,11 @@ const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesLi
   const formatDate = (date: any): string => {
     if (!date) return '—';
     try {
-      const dateObj = new Date(date);
+      const dateObj = date instanceof Date ? date : new Date(date);
+      // Check if the date is valid
+      if (isNaN(dateObj.getTime())) {
+        return '—';
+      }
       return dateObj.toLocaleDateString('fr-FR', {
         day: '2-digit',
         month: '2-digit',
@@ -203,6 +207,20 @@ const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesLi
       return '—';
     }
   };
+
+  // Date actuelle formatée (générée une fois au render)
+  const currentDateFormatted = (() => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const year = now.getFullYear();
+    return `${day}/${month}/${year}`;
+  })();
+
+  const currentTimeFormatted = (() => {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+  })();
 
   // Gestionnaire avec sécurité
   const getGestionnaireNom = (gestionnaireValue: any): string => {
@@ -266,7 +284,7 @@ const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesLi
                 {safeValue(user.prenom)} {safeValue(user.nom)}
               </Text>
               <Text style={styles.subtitle}>
-                Dossier N° {safeValue(user.id)} • {formatDate(new Date())}
+                Dossier N° {safeValue(user.id)} • {currentDateFormatted}
               </Text>
             </View>
           </View>
@@ -466,7 +484,7 @@ const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesLi
 
         {/* Pied de page */}
         <Text style={styles.footer}>
-          Document confidentiel • Service d&apos;Accueil Social • Généré le {formatDate(new Date())} à {new Date().toLocaleTimeString('fr-FR')}
+          Document confidentiel • Service d&apos;Accueil Social • Généré le {currentDateFormatted} à {currentTimeFormatted}
         </Text>
       </Page>
     </Document>

@@ -12,7 +12,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React, { memo } from 'react';
 import { User, ActionSuivi, Problematique, Gestionnaire } from '@/types';
 import { TableRow, TableCell, Checkbox, Badge } from '@/components/ui';
-import { GestionnaireIcon } from '@/components/shared/GestionnaireIcon';
+import { GestionnaireIcon } from '../shared/GestionnaireIcon';
 import { getEtatBadgeVariant } from '@/features/users/utils/userUtils';
 import { formatDate } from '@/utils/formatters';
 import { getLastThreeActions, getActionsForUser, deduceActionType } from '@/utils/actionUtils';

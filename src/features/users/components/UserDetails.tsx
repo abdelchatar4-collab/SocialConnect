@@ -99,8 +99,11 @@ const UserDetailDisplay = React.memo(
 
     return (
       <div className="space-y-6">
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Informations Personnelles</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
+            Informations Personnelles
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div>
               <span className="font-medium text-gray-700">Nom :</span> {displayValue(user.nom)}
@@ -132,8 +135,11 @@ const UserDetailDisplay = React.memo(
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Coordonnées / Adresse</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-green-500 rounded-full mr-3"></span>
+            Coordonnées / Adresse
+          </h2>
           {user.adresse ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
               <div>
@@ -158,8 +164,11 @@ const UserDetailDisplay = React.memo(
           )}
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Dossier Administratif</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-purple-500 rounded-full mr-3"></span>
+            Dossier Administratif
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div>
               <span className="font-medium text-gray-700">État du dossier :</span>{" "}
@@ -220,8 +229,11 @@ const UserDetailDisplay = React.memo(
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Notes Générales</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-amber-500 rounded-full mr-3"></span>
+            Notes Générales
+          </h2>
           {user.notesGenerales ? (
             <div className="text-gray-800 text-sm whitespace-pre-wrap">{user.notesGenerales}</div>
           ) : (
@@ -230,8 +242,11 @@ const UserDetailDisplay = React.memo(
         </div>
 
         {/* Nouvelle section pour les Problématiques */}
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Problématiques</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-red-500 rounded-full mr-3"></span>
+            Problématiques
+          </h2>
           {user.problematiques && user.problematiques.length > 0 ? (
             <ul className="space-y-4">
               {user.problematiques.map((problematique, index) => (
@@ -257,8 +272,11 @@ const UserDetailDisplay = React.memo(
           )}
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3 border-b pb-2">Actions et suivi</h2>
+        <div className="backdrop-blur-md bg-white/80 p-6 rounded-2xl shadow-xl border border-white/40 ring-1 ring-black/5 transition-all duration-300 hover:shadow-2xl">
+          <h2 className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200/50 flex items-center">
+            <span className="w-2 h-8 bg-indigo-500 rounded-full mr-3"></span>
+            Actions et suivi
+          </h2>
           {/* Message d'information si actions extraites des notes */}
           {(!user.actions || user.actions.length === 0) && actionsToDisplay.length > 0 && (
             <div className="text-xs text-amber-600 mb-2 flex items-center gap-1">
@@ -291,6 +309,67 @@ const UserDetailDisplay = React.memo(
           ) : (
             <div className="text-gray-600 italic text-sm">Aucune action enregistrée.</div>
           )}
+        </div>
+
+        {/* Pied de page : Audit Trail - Créé par / Modifié par */}
+        <div className="mt-6 pt-4 border-t border-gray-200/50">
+          <div className="backdrop-blur-md bg-gray-50/80 p-4 rounded-xl border border-gray-200/40">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+              {/* Créé par */}
+              {(user as any).createdBy ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400">📝</span>
+                  <span>
+                    Créé par <strong className="text-gray-700">{(user as any).createdBy}</strong>
+                    {user.createdAt && (
+                      <> le <strong className="text-gray-700">{formatDate(user.createdAt)}</strong></>
+                    )}
+                  </span>
+                </div>
+              ) : (
+                /* Fallback: show gestionnaire for old records */
+                user.gestionnaire && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">📝</span>
+                    <span>
+                      Créé par <strong className="text-gray-700">
+                        {typeof user.gestionnaire === 'object' && user.gestionnaire !== null
+                          ? `${(user.gestionnaire as any).prenom || ''} ${(user.gestionnaire as any).nom || ''}`.trim() || 'Gestionnaire'
+                          : gestionnaires.find(g => g.id === user.gestionnaire)?.prenom || 'Gestionnaire'
+                        } (présumé)
+                      </strong>
+                      {user.createdAt && (
+                        <> le <strong className="text-gray-700">{formatDate(user.createdAt)}</strong></>
+                      )}
+                    </span>
+                  </div>
+                )
+              )}
+
+              {/* Séparateur */}
+              {((user as any).createdBy || user.gestionnaire) && ((user as any).updatedBy || user.updatedAt) && (
+                <span className="text-gray-300">|</span>
+              )}
+
+              {/* Modifié par */}
+              {(user as any).updatedBy && (
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400">✏️</span>
+                  <span>
+                    Modifié par <strong className="text-gray-700">{(user as any).updatedBy}</strong>
+                    {user.updatedAt && (
+                      <> le <strong className="text-gray-700">{formatDate(user.updatedAt)}</strong></>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {/* Message si aucune traçabilité */}
+              {!(user as any).createdBy && !(user as any).updatedBy && !user.gestionnaire && (
+                <span className="italic text-gray-400">Traçabilité non disponible (dossier créé avant activation)</span>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -358,7 +437,9 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, isLoading, error, gesti
       ["Date d'ouverture", formatDate(currentUser.dateOuverture)],
       ["État du dossier", currentUser.etat || ""],
       ["Nationalité", currentUser.nationalite || ""],
-      ["Gestionnaire", currentUser.gestionnaire || ""],
+      ["Gestionnaire", typeof currentUser.gestionnaire === 'object' && currentUser.gestionnaire
+        ? `${(currentUser.gestionnaire as any).prenom || ''} ${(currentUser.gestionnaire as any).nom || ''}`.trim()
+        : (currentUser.gestionnaire || "")],
       ["Secteur", currentUser.secteur || ""],
       ["Notes", currentUser.notesGenerales || ""],
     ];
@@ -455,8 +536,8 @@ const UserDetails: React.FC<UserDetailsProps> = ({ user, isLoading, error, gesti
   }
 
   return (
-    <div className="bg-white shadow-lg overflow-hidden sm:rounded-lg my-8 max-w-5xl mx-auto">
-      <div className="px-6 py-5 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 flex flex-wrap justify-between items-center gap-4">
+    <div className="backdrop-blur-xl bg-white/70 shadow-2xl overflow-hidden sm:rounded-3xl my-8 max-w-5xl mx-auto border border-white/40 ring-1 ring-black/5">
+      <div className="px-8 py-8 bg-gradient-to-br from-white/40 to-transparent border-b border-white/20 flex flex-wrap justify-between items-center gap-6">
         <div>
           <h1 className="text-2xl leading-8 font-bold text-gray-900 mb-1">
             Fiche Usager : {user.prenom} {user.nom}

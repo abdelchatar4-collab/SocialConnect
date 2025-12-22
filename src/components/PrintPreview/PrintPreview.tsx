@@ -29,7 +29,7 @@ interface User {
   dateCloture?: string;
   etat: string;
   antenne: string;
-  gestionnaire: string;
+  gestionnaire: string | { nom?: string; prenom?: string; id?: string };
   secteur?: string;
   premierContact?: string;
   importedAt?: string; // Champ pour les enregistrements importés
@@ -70,6 +70,18 @@ const PrintPreview: React.FC<PrintPreviewProps> = ({ user }) => {
   //   return new Date(date).toLocaleDateString('fr-BE');
   // };
 
+
+  // Helper function to format gestionnaire name
+  const getGestionnaireName = (gestionnaire: string | { nom?: string; prenom?: string; id?: string } | undefined): string => {
+    if (!gestionnaire) return 'Non spécifié';
+    if (typeof gestionnaire === 'string') return gestionnaire;
+    if (typeof gestionnaire === 'object') {
+      const fullName = `${gestionnaire.prenom || ''} ${gestionnaire.nom || ''}`.trim();
+      return fullName || gestionnaire.id || 'Non spécifié';
+    }
+    return 'Non spécifié';
+  };
+
   return (
     <div className="print-preview p-8">
       <h2 className="text-2xl font-bold mb-6">Fiche usager - {user.id}</h2>
@@ -99,7 +111,7 @@ const PrintPreview: React.FC<PrintPreviewProps> = ({ user }) => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p><span className="font-semibold">Antenne:</span> {user.antenne}</p>
-            <p><span className="font-semibold">Gestionnaire:</span> {user.gestionnaire}</p>
+            <p><span className="font-semibold">Gestionnaire:</span> {getGestionnaireName(user.gestionnaire)}</p>
             <p><span className="font-semibold">Secteur:</span> {user.secteur || 'Non spécifié'}</p> {/* Ajout du secteur */}
             <p><span className="font-semibold">État du dossier:</span> {user.etat}</p>
           </div>
@@ -220,16 +232,16 @@ const PrintPreview: React.FC<PrintPreviewProps> = ({ user }) => {
                 )}
                 {user.prevExpDateExpulsion && (
                   <div className={`flex-1 min-w-[100px] p-2 rounded border-2 ${new Date(user.prevExpDateExpulsion) > new Date()
-                      ? 'bg-red-50 border-red-600'
-                      : 'bg-gray-100 border-transparent'
+                    ? 'bg-red-50 border-red-600'
+                    : 'bg-gray-100 border-transparent'
                     }`}>
                     <p className={`text-xs font-bold ${new Date(user.prevExpDateExpulsion) > new Date()
-                        ? 'text-red-600'
-                        : 'text-gray-600'
+                      ? 'text-red-600'
+                      : 'text-gray-600'
                       }`}>⚠ EXPULSION</p>
                     <p className={`text-sm font-bold ${new Date(user.prevExpDateExpulsion) > new Date()
-                        ? 'text-red-600'
-                        : 'text-gray-900'
+                      ? 'text-red-600'
+                      : 'text-gray-900'
                       }`}>{formatDate(user.prevExpDateExpulsion)}</p>
                   </div>
                 )}

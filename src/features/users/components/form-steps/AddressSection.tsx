@@ -7,8 +7,8 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import React from 'react';
 import { UserFormData } from '@/types/user';
-import { FieldWrapper } from '@/components/shared/FieldWrapper';
-import { TextInput } from '@/components/shared/TextInput';
+import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextInput } from '../shared/TextInput';
 import { useAddressSearch } from '@/hooks/useAddressSearch';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 

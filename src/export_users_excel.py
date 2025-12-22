@@ -61,6 +61,25 @@ def format_date(date_str):
     sys.stderr.write(f"Error: Could not parse date '{date_str}', returning empty string\n")
     return ""
 
+def get_gestionnaire_name(gestionnaire):
+    """Extracts gestionnaire name from object or returns string directly."""
+    if not gestionnaire:
+        return ""
+
+    # Si c'est un dictionnaire/objet (cas où Prisma inclut la relation)
+    if isinstance(gestionnaire, dict):
+        prenom = gestionnaire.get('prenom', '') or ''
+        nom = gestionnaire.get('nom', '') or ''
+        full_name = f"{prenom} {nom}".strip()
+        return full_name if full_name else gestionnaire.get('id', '')
+
+    # Si c'est déjà une chaîne, la retourner
+    if isinstance(gestionnaire, str):
+        return gestionnaire
+
+    # Autre type inattendu
+    return str(gestionnaire) if gestionnaire else ""
+
 def create_excel_export(users_data, output_path):
     """Creates an Excel file from user data."""
     workbook = openpyxl.Workbook()
@@ -148,7 +167,7 @@ def create_excel_export(users_data, output_path):
             format_date(user.get("dateCloture")),
             user.get("etat", ""),
             user.get("antenne", ""),
-            user.get("gestionnaire", ""),
+            get_gestionnaire_name(user.get("gestionnaire")),
             user.get("premierContact", ""),
             user.get("notesGenerales", ""),
             "Oui" if user.get("hasPrevExp") else "Non",
