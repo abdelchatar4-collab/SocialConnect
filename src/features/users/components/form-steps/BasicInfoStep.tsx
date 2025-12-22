@@ -5,32 +5,25 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { UserFormData, Adresse } from '@/types/user';
+import React from 'react';
+import { UserFormData } from '@/types/user';
 import { FormErrors } from '@/types';
 import { FormFieldValue } from '@/types/common';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { FieldWrapper } from '../shared/FieldWrapper';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
-import { displayError } from '@/types/errors';
 import { AddressSection } from './AddressSection';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
+import { useDuplicateCheck } from '../../hooks/useDuplicateCheck';
 
-interface DuplicateInfo {
-  id: string;
-  nom: string;
-  prenom: string;
-  antenne?: string;
-  gestionnaire?: string;
-}
+// Sub-components
+import { IdentitySection } from './IdentitySection';
+import { ContactSection } from './ContactSection';
 
 interface BasicInfoStepProps {
   formData: UserFormData;
   errors: FormErrors;
   onInputChange: (field: keyof UserFormData, value: FormFieldValue) => void;
   disabled?: boolean;
-  mode?: 'create' | 'edit'; // Add mode to skip check in edit mode
+  mode?: 'create' | 'edit';
 }
 
 export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
@@ -41,61 +34,25 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   mode = 'create'
 }) => {
   const { isRequired } = useRequiredFields();
-  const [duplicates, setDuplicates] = useState<DuplicateInfo[]>([]);
-  const [isCheckingDuplicates, setIsCheckingDuplicates] = useState(false);
 
-  // Check for duplicates when nom or prenom changes (with debounce)
-  const checkDuplicates = useCallback(async () => {
-    // Only check in create mode
-    if (mode !== 'create') return;
+  // Logic: Duplicate check
+  const {
+    duplicates,
+    isCheckingDuplicates,
+    checkDuplicates
+  } = useDuplicateCheck({
+    mode,
+    nom: formData.nom,
+    prenom: formData.prenom
+  });
 
-    const nom = formData.nom?.trim();
-    const prenom = formData.prenom?.trim();
-
-    // Need both fields to check
-    if (!nom || !prenom || nom.length < 2 || prenom.length < 2) {
-      setDuplicates([]);
-      return;
-    }
-
-    setIsCheckingDuplicates(true);
-    try {
-      const response = await fetch('/api/users/check-duplicate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nom, prenom }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDuplicates(data.duplicates || []);
-      } else {
-        setDuplicates([]);
-      }
-    } catch (error) {
-      console.error('Error checking duplicates:', error);
-      setDuplicates([]);
-    } finally {
-      setIsCheckingDuplicates(false);
-    }
-  }, [formData.nom, formData.prenom, mode]);
-
-  // Check duplicates when either field loses focus
-  const handleNameBlur = useCallback(() => {
-    checkDuplicates();
-  }, [checkDuplicates]);
-
-  // ✅ Utilisation correcte de l'API
-  const { options: premierContactOptionsAPI, loading: loadingPremierContact } = useDropdownOptionsAPI('premierContact', 10000);
-
-  const premierContactOptions = premierContactOptionsAPI.map(opt => ({
-    value: opt.value,
-    label: opt.label
-  }));
+  // Logic: Dropdown options
+  const { options: premierContactOptionsAPI } = useDropdownOptionsAPI('premierContact', 10000);
 
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
+        {/* Header */}
         <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
           <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -104,156 +61,30 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         </h3>
         <p className="text-blue-700 mb-6">Informations d&apos;identification, adresse et moyens de contact</p>
 
-        {/* Section Identité */}
-        <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-4 rounded-lg border border-purple-200 mb-6">
-          <h4 className="text-md font-semibold text-purple-900 mb-3 flex items-center">
-            <svg className="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
-            </svg>
-            Identité
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Nom */}
-            <FieldWrapper
-              htmlFor="nom"
-              label="Nom"
-              error={displayError(errors.nom)}
-              required={isRequired('nom')}
-            >
-              <TextInput
-                id="nom"
-                value={formData.nom || ''}
-                onChange={(value) => onInputChange('nom', value)}
-                onBlur={handleNameBlur}
-                disabled={disabled}
-                placeholder="Nom de famille"
-              />
-            </FieldWrapper>
-
-            {/* Prénom */}
-            <FieldWrapper
-              htmlFor="prenom"
-              label="Prénom"
-              error={displayError(errors.prenom)}
-              required={isRequired('prenom')}
-            >
-              <TextInput
-                id="prenom"
-                value={formData.prenom || ''}
-                onChange={(value) => onInputChange('prenom', value)}
-                onBlur={handleNameBlur}
-                disabled={disabled}
-                placeholder="Prénom"
-              />
-            </FieldWrapper>
-          </div>
-
-          {/* Duplicate Warning Banner */}
-          {duplicates.length > 0 && (
-            <div className="mt-4 p-4 bg-amber-50 border border-amber-300 rounded-lg">
-              <div className="flex items-start">
-                <svg className="w-6 h-6 text-amber-600 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <div>
-                  <h5 className="font-semibold text-amber-800">⚠️ Doublon potentiel détecté !</h5>
-                  <p className="text-sm text-amber-700 mt-1">
-                    {duplicates.length === 1 ? 'Un usager' : `${duplicates.length} usagers`} avec ce nom existe{duplicates.length > 1 ? 'nt' : ''} déjà :
-                  </p>
-                  <ul className="mt-2 space-y-1">
-                    {duplicates.map((d) => (
-                      <li key={d.id} className="text-sm text-amber-800 bg-amber-100 p-2 rounded">
-                        <strong>{d.prenom} {d.nom}</strong>
-                        <span className="text-amber-600 ml-2">
-                          (ID: {d.id}{d.antenne ? `, ${d.antenne}` : ''}{d.gestionnaire ? ` - Gestionnaire: ${d.gestionnaire}` : ''})
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="text-xs text-amber-600 mt-2">
-                    Vous pouvez continuer la création si c&apos;est bien un nouvel usager distinct.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isCheckingDuplicates && (
-            <div className="mt-2 text-sm text-gray-500 flex items-center">
-              <svg className="animate-spin h-4 w-4 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Vérification des doublons...
-            </div>
-          )}
-        </div>
+        {/* Section Identité (inclut check doublons) */}
+        <IdentitySection
+          nom={formData.nom || ''}
+          prenom={formData.prenom || ''}
+          onInputChange={(field, value) => onInputChange(field, value)}
+          onBlur={checkDuplicates}
+          errors={errors}
+          isRequired={isRequired}
+          disabled={disabled}
+          duplicates={duplicates}
+          isCheckingDuplicates={isCheckingDuplicates}
+        />
 
         {/* Section Contact */}
-        <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-lg border border-rose-200 mb-6">
-          <h4 className="text-md font-semibold text-rose-900 mb-3 flex items-center">
-            <svg className="w-5 h-5 text-rose-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
-            Contact
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Téléphone */}
-            <FieldWrapper
-              htmlFor="telephone"
-              label="Téléphone"
-              error={displayError(errors.telephone)}
-              required={isRequired('telephone')}
-            >
-              <TextInput
-                id="telephone"
-                value={formData.telephone || ''}
-                onChange={(value) => onInputChange('telephone', value)}
-                disabled={disabled}
-                placeholder="Numéro de téléphone"
-              />
-            </FieldWrapper>
-
-            {/* Email */}
-            <FieldWrapper
-              htmlFor="email"
-              label="Email"
-              error={displayError(errors.email)}
-              required={isRequired('email')}
-            >
-              <TextInput
-                id="email"
-                type="email"
-                value={formData.email || ''}
-                onChange={(value) => onInputChange('email', value)}
-                disabled={disabled}
-                placeholder="Adresse email"
-              />
-            </FieldWrapper>
-
-            {/* Premier contact */}
-            <FieldWrapper
-              htmlFor="premierContact"
-              label="Premier contact"
-              error={displayError(errors.premierContact)}
-              required={isRequired('premierContact')}
-            >
-              <SelectInput
-                id="premierContact"
-                value={formData.premierContact || ''}
-                onChange={(value) => onInputChange('premierContact', value)}
-                disabled={disabled}
-                options={[
-                  { value: '', label: 'Sélectionner...' },
-                  ...premierContactOptions.map(option => ({
-                    value: option.value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
-                    label: option.label
-                  }))
-                ]}
-              />
-            </FieldWrapper>
-          </div>
-        </div>
+        <ContactSection
+          telephone={formData.telephone}
+          email={formData.email}
+          premierContact={formData.premierContact}
+          onInputChange={onInputChange}
+          errors={errors}
+          isRequired={isRequired}
+          disabled={disabled}
+          premierContactOptions={premierContactOptionsAPI}
+        />
 
         {/* Section Adresse */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">

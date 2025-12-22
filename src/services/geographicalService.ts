@@ -348,7 +348,6 @@ export function resetGeographicalData(): boolean {
     localStorage.setItem(GEOGRAPHICAL_STORAGE_KEY, JSON.stringify(defaultGeographicalData));
     localStorage.setItem(GEOGRAPHICAL_INIT_FLAG_KEY, 'true');
     notifyGeographicalDataChange(); // Ajouter cette ligne
-    console.log('Données géographiques réinitialisées avec les valeurs par défaut');
     return true;
   } catch (error) {
     console.error('Erreur lors de la réinitialisation des données géographiques:', error);
@@ -362,7 +361,6 @@ export function resetGeographicalData(): boolean {
 export function resetInitializationFlag(): boolean {
   try {
     localStorage.removeItem(GEOGRAPHICAL_INIT_FLAG_KEY);
-    console.log('Flag d\'initialisation réinitialisé');
     return true;
   } catch (error) {
     console.error('Erreur lors de la réinitialisation du flag d\'initialisation:', error);
@@ -390,7 +388,6 @@ export function ensureDefaultGeographicalData(): boolean {
       if (!existingSector) {
         currentData.push(defaultSector);
         hasChanges = true;
-        console.log(`Secteur ajouté: ${defaultSector.name}`);
       } else {
         // Vérifier si des rues sont manquantes dans le secteur existant
         for (const defaultStreet of defaultSector.streets) {
@@ -416,7 +413,6 @@ export function ensureDefaultGeographicalData(): boolean {
     if (hasChanges) {
       localStorage.setItem(GEOGRAPHICAL_STORAGE_KEY, JSON.stringify(currentData));
       notifyGeographicalDataChange(); // Ajouter cette ligne
-      console.log('Données géographiques mises à jour dans le localStorage');
     }
 
     return true;
@@ -429,11 +425,11 @@ export function ensureDefaultGeographicalData(): boolean {
 /**
  * Recherche de rues avec autocomplétion
  */
-export function searchStreets(query: string, limit: number = 10): Array<{street: string, sector: string}> {
+export function searchStreets(query: string, limit: number = 10): Array<{ street: string, sector: string }> {
   if (!query.trim()) return [];
 
   const allSectors = getAllSectors();
-  const results: Array<{street: string, sector: string}> = [];
+  const results: Array<{ street: string, sector: string }> = [];
   const normalizedQuery = normalizeString(query);
 
   for (const sector of allSectors) {
@@ -488,7 +484,6 @@ export function importGeographicalData(data: GeographicalSector[]): boolean {
     localStorage.setItem(GEOGRAPHICAL_STORAGE_KEY, JSON.stringify(sortedData));
     notifyGeographicalDataChange(); // Ajouter cette ligne
 
-    console.log('Données géographiques importées avec succès');
     return true;
   } catch (error) {
     console.error('Erreur lors de l\'importation des données géographiques:', error);

@@ -77,24 +77,20 @@ class OptionsClient {
     if (useCache) {
       const cached = this.getFromCache(cacheKey);
       if (cached) {
-        console.log(`📦 Cache hit pour ${category}`);
         return cached;
       }
     }
 
     try {
       if (this.isLocalStorageMode()) {
-        console.log(`💾 Mode localStorage pour ${category}`);
         return await this.getOptionsFromLocalStorage(category);
       } else {
-        console.log(`🌐 Mode API pour ${category}`);
         return await this.getOptionsFromAPI(category);
       }
     } catch (error) {
       console.error(`Erreur lors de la récupération des options ${category}:`, error);
       // Fallback vers localStorage en cas d'erreur API
       if (!this.isLocalStorageMode()) {
-        console.log(`🔄 Fallback localStorage pour ${category}`);
         return await this.getOptionsFromLocalStorage(category);
       }
       throw error;

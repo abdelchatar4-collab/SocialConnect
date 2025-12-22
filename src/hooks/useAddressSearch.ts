@@ -99,7 +99,6 @@ export const useAddressSearch = ({ address, onChange, onSecteurChange, disabled 
       await new Promise(resolve => setTimeout(resolve, 200));
       setSuggestions(localSuggestions);
       setShowSuggestions(localSuggestions.length > 0);
-      console.log(`🔍 Suggestions trouvées pour "${query}":`, localSuggestions);
     } catch (error) {
       console.log('Erreur autocomplétion:', error);
       setSuggestions([]);
@@ -126,7 +125,6 @@ export const useAddressSearch = ({ address, onChange, onSecteurChange, disabled 
       // Calculer automatiquement le secteur quand la rue change
       if (value && value.trim().length > 0) {
         const secteurCalcule = findSectorByStreetAPI(value);
-        console.log(`🎯 Secteur calculé pour "${value}": ${secteurCalcule}`);
 
         // Notifier le composant parent du changement de secteur
         if (onSecteurChange) {
@@ -187,7 +185,6 @@ export const useAddressSearch = ({ address, onChange, onSecteurChange, disabled 
     // Calculer automatiquement le secteur pour la rue sélectionnée
     if (rue && rue.trim().length > 0) {
       const secteurCalcule = findSectorByStreetAPI(rue);
-      console.log(`🎯 Secteur calculé pour la suggestion "${rue}": ${secteurCalcule}`);
 
       // Notifier le composant parent du changement de secteur
       if (onSecteurChange) {

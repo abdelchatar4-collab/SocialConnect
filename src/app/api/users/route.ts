@@ -141,14 +141,6 @@ export async function GET(
       }
     });
 
-    // Ne filtre plus les problématiques, ou adapte selon ton besoin
-    /* for (const user of users) {
-      if (user.problematiques) {
-        user.problematiques = user.problematiques.filter(
-          (p: any) => p.dateSignalement !== null
-        );
-      }
-    } */
 
     // Fonction utilitaire pour normaliser les chaînes (minuscules, sans accents)
     function normalize(str: string) {
@@ -215,7 +207,6 @@ export async function POST(request: NextRequest) { // Utiliser NextRequest
   }
   try {
     const body = await request.json() as CreateUserRequestBody & { annee?: number; dossierPrecedentId?: string }; // Ajout des types pour l'année
-    console.log("Données reçues pour création:", JSON.stringify(body, null, 2));
 
     // Dans la fonction POST, ajouter dans dataToCreate :
     const dataToCreate: Prisma.UserCreateInput = {
@@ -298,8 +289,6 @@ export async function POST(request: NextRequest) { // Utiliser NextRequest
       // actions: ... (similaire si vous les créez en même temps)
     };
 
-    console.log("Données préparées pour Prisma.user.create:", JSON.stringify(dataToCreate, null, 2));
-
     // Créer une copie de dataToCreate sans le champ gestionnaire
     const { gestionnaire, ...dataToCreateWithoutGestionnaire } = dataToCreate;
 
@@ -307,7 +296,6 @@ export async function POST(request: NextRequest) { // Utiliser NextRequest
     const newUser = await prisma.user.create({
       data: {
         ...dataToCreateWithoutGestionnaire,
-        // Supprimer cette ligne : id: generateUserIdByAntenne(body.antenne),
         ...(body.gestionnaire ? {
           gestionnaire: {
             connect: { id: body.gestionnaire.toString() }
@@ -321,7 +309,7 @@ export async function POST(request: NextRequest) { // Utiliser NextRequest
       },
     });
 
-    return NextResponse.json(newUser, { status: 201 }); // Status 201 pour une création réussie
+    return NextResponse.json(newUser, { status: 201 });
 
   } catch (error: unknown) {
     console.error("[API POST /api/users] Erreur de création:", error);
