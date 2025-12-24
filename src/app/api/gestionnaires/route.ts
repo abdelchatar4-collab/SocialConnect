@@ -25,6 +25,10 @@ export async function GET() {
           id: true,
           nom: true,
           prenom: true,
+          email: true,
+          role: true,
+          couleurMedaillon: true,
+          isActive: true,
           serviceId: true
         }
       });
@@ -39,6 +43,10 @@ export async function GET() {
         id: true,
         nom: true,
         prenom: true,
+        email: true,
+        role: true,
+        couleurMedaillon: true,
+        isActive: true,
         serviceId: true
       },
       orderBy: {
