@@ -42,7 +42,19 @@ interface ActionSuiviImportData {
 
 export async function POST(request: Request) {
   try {
-    const usersToImport = await request.json();
+    const body = await request.json();
+    let usersToImport;
+    let targetYear = new Date().getFullYear();
+
+    // Support both direct array (legacy) and { users, annee } object
+    if (Array.isArray(body)) {
+      usersToImport = body;
+    } else {
+      usersToImport = body.users;
+      if (body.annee) {
+        targetYear = parseInt(String(body.annee), 10);
+      }
+    }
 
     if (!Array.isArray(usersToImport) || usersToImport.length === 0) {
       return NextResponse.json({ error: 'Invalid or empty data array provided' }, { status: 400 });
@@ -210,6 +222,7 @@ export async function POST(request: Request) {
           const createdUser = await prisma.user.create({
             data: {
               id: userData.id,
+              annee: userData.annee || targetYear, // Utiliser l'année cible ou celle de l'usager
               nom: sanitizedNom,
               prenom: sanitizedPrenom,
               dateNaissance: userData.dateNaissance ? new Date(userData.dateNaissance) : null,

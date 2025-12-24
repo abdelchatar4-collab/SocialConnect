@@ -22,10 +22,11 @@ export default function DevLoginPage() {
     }
   }, [status, router])
 
-  const handleDevLogin = async () => {
+  const handleDevLogin = async (email?: string) => {
     try {
       const result = await signIn('dev-admin', {
         redirect: false,
+        email: email
       })
 
       if (result?.ok) {
@@ -100,11 +101,13 @@ export default function DevLoginPage() {
           </div>
 
           <button
-            onClick={handleDevLogin}
+            onClick={() => handleDevLogin()}
             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
-            🔓 Dev Admin (Bypass)
+            🔓 Dev Admin (PASQ)
           </button>
+
+
         </div>
 
         <div className="mt-6 text-center">

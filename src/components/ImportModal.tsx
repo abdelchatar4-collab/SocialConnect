@@ -8,6 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx'; // Importez XLSX
 import { mapExcelToUserStructure, transformDateExcel } from '@/utils/importHelpers'; // Importez mapExcelToUserStructure et transformDateExcel
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface ImportModalProps {
   isOpen: boolean;
@@ -56,7 +57,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
-  // const { environment } = useAdmin(); // Ligne supprimée
+  const { selectedYear } = useAdmin();
 
   // Utilisez process.env.NODE_ENV directement
   const currentEnvironment = process.env.NODE_ENV;
@@ -98,7 +99,7 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
       try {
         // Vérifier que e.target et e.target.result ne sont pas nuls
         if (!e.target || !e.target.result) {
-            throw new Error("Erreur lors de la lecture du fichier: Résultat vide.");
+          throw new Error("Erreur lors de la lecture du fichier: Résultat vide.");
         }
         const data = new Uint8Array(e.target.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: 'array', cellDates: false, cellText: false, cellNF: false });
@@ -119,20 +120,20 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
         let headerRowIndex = -1;
         // Trouver l'index de la première ligne non vide (qui devrait être les en-têtes)
         for (let i = 0; i < rawSheetData.length; i++) {
-            const row = rawSheetData[i];
-            // Vérifier si la ligne n'est pas vide (contient au moins une cellule non vide)
-            if (row && row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')) {
-                headerRowIndex = i;
-                break;
-            }
+          const row = rawSheetData[i];
+          // Vérifier si la ligne n'est pas vide (contient au moins une cellule non vide)
+          if (row && row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '')) {
+            headerRowIndex = i;
+            break;
+          }
         }
 
         if (headerRowIndex === -1) {
-            // Gérer le cas où tout le fichier est vide
-            setMessage("Le fichier ne contient aucune donnée valide.");
-            setIsError(true);
-            setIsLoading(false);
-            return;
+          // Gérer le cas où tout le fichier est vide
+          setMessage("Le fichier ne contient aucune donnée valide.");
+          setIsError(true);
+          setIsLoading(false);
+          return;
         }
 
         // Extraire les en-têtes à partir de la ligne trouvée
@@ -155,9 +156,9 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
             // Assurez-vous que l'en-tête est une chaîne pour l'utiliser comme clé
             const headerString = String(header || '').trim();
             if (headerString) { // Ignorer les en-têtes vides
-                const cellAddress = XLSX.utils.encode_cell({r: headerRowIndex + 1 + i, c: index});
-                // Utiliser la fonction parseCellValue copiée/définie localement
-                rowObject[headerString] = parseCellValue({ v: rowData[index], t: worksheet[cellAddress]?.t }, headerString);
+              const cellAddress = XLSX.utils.encode_cell({ r: headerRowIndex + 1 + i, c: index });
+              // Utiliser la fonction parseCellValue copiée/définie localement
+              rowObject[headerString] = parseCellValue({ v: rowData[index], t: worksheet[cellAddress]?.t }, headerString);
             }
           });
 
@@ -188,7 +189,10 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
             'Content-Type': 'application/json',
             'x-admin-auth': 'admin123' // Assurez-vous que cet en-tête est toujours nécessaire
           },
-          body: JSON.stringify(processedUsers), // Envoyer le tableau d'objets JSON
+          body: JSON.stringify({
+            users: processedUsers,
+            annee: selectedYear || new Date().getFullYear()
+          }), // Envoyer le tableau d'objets JSON enveloppé avec l'année
         });
 
         const resultData = await apiResponse.json();
@@ -269,9 +273,8 @@ const ImportModal: React.FC<ImportModalProps> = ({ isOpen, onClose, onImportSucc
 
         {message && (
           <div
-            className={`mb-4 p-2 rounded ${
-              isError ? 'bg-red-100 border border-red-400 text-red-700' : 'bg-green-100 border border-green-400 text-green-700'
-            }`}
+            className={`mb-4 p-2 rounded ${isError ? 'bg-red-100 border border-red-400 text-red-700' : 'bg-green-100 border border-green-400 text-green-700'
+              }`}
           >
             {message}
           </div>

@@ -14,7 +14,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { useState } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import { Check, Palette, Type, Eye, ClipboardCheck, RotateCcw, Save, Loader2 } from 'lucide-react';
+import { Check, Palette, Type, Eye, ClipboardCheck, RotateCcw, Save, Loader2, Plus, X } from 'lucide-react';
 
 export default function CustomizationSettings() {
     const {
@@ -26,6 +26,8 @@ export default function CustomizationSettings() {
         setShowCommunalLogo,
         requiredFields,
         setRequiredFields,
+        availableYears,
+        setAvailableYears,
         saveSettings
     } = useAdmin();
 
@@ -122,6 +124,19 @@ export default function CustomizationSettings() {
         }
     };
 
+    const handleAddYear = () => {
+        const nextYear = Math.max(...availableYears, new Date().getFullYear()) + 1;
+        setAvailableYears([...availableYears, nextYear].sort((a, b) => a - b));
+    };
+
+    const handleRemoveYear = (yearToRemove: number) => {
+        if (availableYears.length <= 1) {
+            alert("Vous devez garder au moins une année d'exercice.");
+            return;
+        }
+        setAvailableYears(availableYears.filter(y => y !== yearToRemove));
+    };
+
     return (
         <div className="space-y-6">
             {/* Color Section */}
@@ -143,8 +158,8 @@ export default function CustomizationSettings() {
                                 key={preset.color}
                                 onClick={() => setPrimaryColor(preset.color)}
                                 className={`aspect-square rounded-lg transition-all relative ${primaryColor === preset.color
-                                        ? 'ring-2 ring-offset-2 ring-cyan-500 scale-110'
-                                        : 'hover:scale-105'
+                                    ? 'ring-2 ring-offset-2 ring-cyan-500 scale-110'
+                                    : 'hover:scale-105'
                                     }`}
                                 style={{ backgroundColor: preset.color }}
                                 title={preset.name}
@@ -232,6 +247,46 @@ export default function CustomizationSettings() {
                             <p className="text-sm text-gray-500">Logo visible dans le header</p>
                         </div>
                     </label>
+                </div>
+            </div>
+
+            {/* Exercise Period Section */}
+            <div className="settings-card">
+                <div className="settings-card-header">
+                    <div className="settings-card-icon settings-card-icon--purple">
+                        <RotateCcw className="w-4 h-4" />
+                    </div>
+                    <div>
+                        <h3 className="settings-card-title">Période d'exercice</h3>
+                        <p className="settings-card-subtitle">Gérez les années disponibles</p>
+                    </div>
+                </div>
+                <div className="settings-card-body">
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        {availableYears.map((year) => (
+                            <div
+                                key={year}
+                                className="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full border border-purple-100 group transition-all"
+                            >
+                                <span className="font-semibold">{year}</span>
+                                <button
+                                    onClick={() => handleRemoveYear(year)}
+                                    className="p-0.5 hover:bg-purple-200 rounded-full transition-colors"
+                                    title={`Supprimer ${year}`}
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            onClick={handleAddYear}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-dashed border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 transition-all font-medium text-sm"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Ajouter une année
+                        </button>
+                    </div>
+                    <p className="settings-hint">Ces années apparaissent dans le sélecteur de période en haut de l'application.</p>
                 </div>
             </div>
 

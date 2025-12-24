@@ -44,8 +44,12 @@ describe('UserListFilters Component', () => {
         onShowPhoneChange: vi.fn(),
         showAdresse: false,
         onShowAdresseChange: vi.fn(),
+        showDateNaissance: false,
+        onShowDateNaissanceChange: vi.fn(),
         viewMode: 'table' as const,
         onViewModeChange: vi.fn(),
+        includeDateInDuplicates: true,
+        onIncludeDateInDuplicatesChange: vi.fn(),
     };
 
     it('renders search input correctly', () => {

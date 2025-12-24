@@ -7,49 +7,22 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 /**
  * API Client centralisé pour l'application Gestion Usagers
- *
- * Ce module centralise tous les appels API et la logique de gestion des données
- * pour éliminer les duplications et améliorer la maintenabilité.
- *
  * @version 1.0.0
- * @author Équipe Refactorisation
  */
 
-import type { User, UserFormData, Gestionnaire } from '@/types';
+import {
+  API_CONFIG,
+  ApiResponse,
+  BulkDeleteRequest,
+  PaginationParams,
+  RequestOptions,
+  User,
+  UserFormData,
+  Gestionnaire
+} from './apiClient.types';
 
-// Configuration API
-const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://192.168.2.147:3001',
-  TIMEOUT: 5000,
-  STORAGE_KEY: 'gestionUsagers_users',
-  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
-} as const;
-
-// Types pour les réponses API
-export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-export interface BulkDeleteRequest {
-  ids: string[];
-}
-
-export interface PaginationParams {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-}
-
-// Types pour les options de requête
-interface RequestOptions extends RequestInit {
-  timeout?: number;
-  useCache?: boolean;
-  cacheKey?: string;
-}
+// Re-export types for convenience
+export type { ApiResponse, BulkDeleteRequest, PaginationParams };
 
 /**
  * Classe principale du client API centralisé
@@ -578,5 +551,6 @@ export class ApiClient {
 // Instance singleton exportée
 export const apiClient = ApiClient.getInstance();
 
-// Export des types pour une utilisation externe
-export type { User, UserFormData, Gestionnaire };
+// Re-export des types pour une utilisation externe
+export type { User, UserFormData, Gestionnaire } from './apiClient.types';
+

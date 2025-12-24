@@ -10,6 +10,7 @@ import { UserFormData } from '@/types/user';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';
 import { useProblematiquesActions } from '../../hooks/useProblematiquesActions';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 // Sub-components
 import { ProblematiquesSection } from './ProblematiquesSection';
@@ -28,6 +29,13 @@ export const ProblematiquesActionsStep: React.FC<ProblematiquesActionsStepProps>
   disabled = false,
   errors = {}
 }) => {
+  const { isSectionVisible } = useFormSectionVisibility();
+
+  // If problems section is disabled, don't render anything
+  if (!isSectionVisible('problems')) {
+    return null;
+  }
+
   // Logic & State
   const {
     editingProblematique,

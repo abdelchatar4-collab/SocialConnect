@@ -11,12 +11,13 @@ import { TextInput } from '../shared/TextInput';
 import { SelectInput } from '../shared/SelectInput';
 import { displayError } from '@/types/errors';
 import { FormErrors } from '@/types';
+import { UserFormData } from '@/types/user';
 
 interface ContactSectionProps {
     telephone?: string;
     email?: string;
     premierContact?: string;
-    onInputChange: (field: string, value: any) => void;
+    onInputChange: (field: keyof UserFormData, value: any) => void;
     errors: FormErrors;
     isRequired: (field: string) => boolean;
     disabled?: boolean;
@@ -90,7 +91,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         options={[
                             { value: '', label: 'Sélectionner...' },
                             ...premierContactOptions.map(option => ({
-                                value: option.value.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+                                value: option.value,
                                 label: option.label
                             }))
                         ]}

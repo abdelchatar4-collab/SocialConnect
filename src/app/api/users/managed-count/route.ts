@@ -7,12 +7,22 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 // src/app/api/users/managed-count/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 // Force cette route à être dynamique
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
+
   try {
     // Utiliser nextUrl pour éviter le dynamic server warning
     const { searchParams } = request.nextUrl;

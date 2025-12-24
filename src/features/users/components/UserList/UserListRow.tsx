@@ -26,6 +26,8 @@ interface UserListRowProps {
         showDossier: boolean;
         showPhone: boolean;
         showAdresse: boolean;
+        showAntenne: boolean;
+        showDateNaissance: boolean;
     };
     onSelect: (userId: string, checked: boolean) => void;
     onClick: (userId: string) => void;
@@ -186,10 +188,12 @@ export const UserListRow = memo<UserListRowProps>(({
                 {user.prenom || '-'}
             </TableCell>
 
-            {/* Date Naissance */}
-            <TableCell className="text-center py-4 text-sm text-gray-500">
-                {user.dateNaissance ? formatDate(user.dateNaissance) : <span className="text-gray-300 italic">-</span>}
-            </TableCell>
+            {/* Date Naissance (conditionnel) */}
+            {showColumns.showDateNaissance && (
+                <TableCell className="text-center py-4 text-sm text-gray-500">
+                    {user.dateNaissance ? formatDate(user.dateNaissance) : <span className="text-gray-300 italic">-</span>}
+                </TableCell>
+            )}
 
             {/* Téléphone (conditionnel) */}
             {showColumns.showPhone && (
@@ -225,9 +229,11 @@ export const UserListRow = memo<UserListRowProps>(({
             </TableCell>
 
             {/* Antenne */}
-            <TableCell className="text-center py-4 text-sm font-medium text-gray-700">
-                {user.antenne || <span className="text-slate-400 italic">N/A</span>}
-            </TableCell>
+            {showColumns.showAntenne && (
+                <TableCell className="text-center py-4 text-sm font-medium text-gray-700">
+                    {user.antenne || <span className="text-slate-400 italic">N/A</span>}
+                </TableCell>
+            )}
 
             {/* État */}
             <TableCell className="text-center py-4">

@@ -34,6 +34,9 @@ interface UserListFiltersProps {
     onShowMissingBirthDateChange: (value: boolean) => void;
     showDuplicates: boolean;
     onShowDuplicatesChange: (value: boolean) => void;
+    // New props for duplicate filter flexibility
+    includeDateInDuplicates: boolean;
+    onIncludeDateInDuplicatesChange: (value: boolean) => void;
     importantInfoCount: number;
     donneesConfidentiellesCount: number;
     missingBirthDateCount: number;
@@ -56,6 +59,8 @@ interface UserListFiltersProps {
     onShowPhoneChange: (value: boolean) => void;
     showAdresse: boolean;
     onShowAdresseChange: (value: boolean) => void;
+    showDateNaissance: boolean;
+    onShowDateNaissanceChange: (value: boolean) => void;
 
     // View mode
     viewMode: 'table' | 'cards';
@@ -80,6 +85,8 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
     onShowMissingBirthDateChange,
     showDuplicates,
     onShowDuplicatesChange,
+    includeDateInDuplicates,
+    onIncludeDateInDuplicatesChange,
     importantInfoCount,
     donneesConfidentiellesCount,
     missingBirthDateCount,
@@ -98,6 +105,8 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
     onShowPhoneChange,
     showAdresse,
     onShowAdresseChange,
+    showDateNaissance,
+    onShowDateNaissanceChange,
     viewMode,
     onViewModeChange,
     onAddUser,
@@ -131,7 +140,8 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
         showActions,
         showDossier,
         showPhone,
-        showAdresse
+        showAdresse,
+        showDateNaissance
     ].filter(Boolean).length;
 
     return (
@@ -217,19 +227,34 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                     </div>
                 </div>
 
-                <div
-                    className={`p-5 rounded-2xl border transition-all cursor-pointer shadow-sm flex items-center gap-4 group ${showDuplicates
-                        ? 'bg-rose-100/80 border-rose-300 shadow-rose-100'
-                        : 'bg-white/60 backdrop-blur-md border-white/40 hover:bg-white/80'
-                        }`}
-                    onClick={() => onShowDuplicatesChange(!showDuplicates)}
-                >
-                    <div className={`p-3 rounded-xl group-hover:scale-110 transition-transform ${showDuplicates ? 'bg-rose-500/20' : 'bg-rose-500/10'}`}>
-                        <Copy className={`w-6 h-6 ${showDuplicates ? 'text-rose-700' : 'text-rose-600'}`} />
+                <div className="relative group">
+                    <div
+                        className={`p-5 rounded-2xl border transition-all cursor-pointer shadow-sm flex items-center gap-4 ${showDuplicates
+                            ? 'bg-rose-100/80 border-rose-300 shadow-rose-100'
+                            : 'bg-white/60 backdrop-blur-md border-white/40 hover:bg-white/80'
+                            }`}
+                        onClick={() => onShowDuplicatesChange(!showDuplicates)}
+                    >
+                        <div className={`p-3 rounded-xl group-hover:scale-110 transition-transform ${showDuplicates ? 'bg-rose-500/20' : 'bg-rose-500/10'}`}>
+                            <Copy className={`w-6 h-6 ${showDuplicates ? 'text-rose-700' : 'text-rose-600'}`} />
+                        </div>
+                        <div>
+                            <p className={`text-xs font-semibold uppercase tracking-wider ${showDuplicates ? 'text-rose-700' : 'text-slate-500'}`}>Doublons</p>
+                            <p className={`text-2xl font-bold ${showDuplicates ? 'text-rose-700' : 'text-slate-900'}`}>{duplicatesCount}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p className={`text-xs font-semibold uppercase tracking-wider ${showDuplicates ? 'text-rose-700' : 'text-slate-500'}`}>Doublons</p>
-                        <p className={`text-2xl font-bold ${showDuplicates ? 'text-rose-700' : 'text-slate-900'}`}>{duplicatesCount}</p>
+
+                    {/* Checkbox "Sans date de naissance" en dessous */}
+                    <div className="absolute -bottom-6 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <label className="flex items-center space-x-2 text-xs text-slate-500 cursor-pointer bg-white/80 px-2 py-1 rounded shadow-sm border border-slate-200">
+                            <input
+                                type="checkbox"
+                                checked={!includeDateInDuplicates}
+                                onChange={(e) => onIncludeDateInDuplicatesChange(!e.target.checked)}
+                                className="rounded border-slate-300 text-rose-600 focus:ring-rose-500 h-3 w-3"
+                            />
+                            <span>Ignorer date naiss.</span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -276,6 +301,7 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
                                             </h4>
                                             <div className="space-y-3">
                                                 <CheckboxRow checked={showPhone} onChange={onShowPhoneChange} label="Téléphone" />
+                                                <CheckboxRow checked={showDateNaissance} onChange={onShowDateNaissanceChange} label="Date de naissance" />
                                                 <CheckboxRow checked={showAdresse} onChange={onShowAdresseChange} label="Adresse" />
                                                 <CheckboxRow checked={showDossier} onChange={onShowDossierChange} label="Numéro de dossier" />
                                                 <CheckboxRow checked={showProblematiques} onChange={onShowProblematiquesChange} label="Problématique principale" />

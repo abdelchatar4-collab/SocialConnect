@@ -14,6 +14,7 @@ import { MultiSelectInput } from '../shared/MultiSelectInput';
 import { FieldWrapper } from '../shared/FieldWrapper';
 import { TextAreaInput } from '../shared/TextAreaInput';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 interface PersonalInfoStepProps {
   formData: UserFormData;
@@ -37,6 +38,12 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   disabled
 }) => {
   const { isRequired } = useRequiredFields();
+  const { isSectionVisible } = useFormSectionVisibility();
+
+  // If situation section is disabled, don't render anything
+  if (!isSectionVisible('situation')) {
+    return null;
+  }
 
   const displayError = (error: any): string => {
     if (typeof error === 'string') return error;
@@ -222,54 +229,56 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
       </div>
 
       {/* NOUVELLE SECTION: Données confidentielles */}
-      <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-lg border border-red-200">
-        <h4 className="text-md font-semibold text-red-900 mb-3 flex items-center">
-          <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          Données confidentielles
-        </h4>
+      {isSectionVisible('confidential') && (
+        <div className="bg-gradient-to-r from-red-50 to-pink-50 p-4 rounded-lg border border-red-200">
+          <h4 className="text-md font-semibold text-red-900 mb-3 flex items-center">
+            <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Données confidentielles
+          </h4>
 
-        {/* Case à cocher pour afficher les données confidentielles */}
-        <div className="mb-4">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.afficherDonneesConfidentielles || false}
-              onChange={(e) => onInputChange('afficherDonneesConfidentielles', e.target.checked)}
-              disabled={disabled}
-              className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
-            />
-            <span className="text-sm font-medium text-red-900">
-              Afficher les données confidentielles
-            </span>
-          </label>
-          <p className="text-xs text-red-600 mt-1 ml-6">
-            Cochez cette case pour rendre visible le champ de données confidentielles
-          </p>
-        </div>
-
-        {/* Champ de données confidentielles (visible seulement si la case est cochée) */}
-        {formData.afficherDonneesConfidentielles && (
-          <FieldWrapper
-            htmlFor="donneesConfidentielles"
-            label="Données confidentielles"
-            error={displayError(errors.donneesConfidentielles)}
-          >
-            <TextAreaInput
-              id="donneesConfidentielles"
-              value={formData.donneesConfidentielles || ''}
-              onChange={(value) => onInputChange('donneesConfidentielles', value)}
-              disabled={disabled}
-              placeholder="Informations confidentielles (accès restreint)..."
-              rows={3}
-            />
-            <p className="text-sm text-red-600 mt-2 italic">
-              🔒 Ces informations sont confidentielles et à accès restreint
+          {/* Case à cocher pour afficher les données confidentielles */}
+          <div className="mb-4">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.afficherDonneesConfidentielles || false}
+                onChange={(e) => onInputChange('afficherDonneesConfidentielles', e.target.checked)}
+                disabled={disabled}
+                className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
+              />
+              <span className="text-sm font-medium text-red-900">
+                Afficher les données confidentielles
+              </span>
+            </label>
+            <p className="text-xs text-red-600 mt-1 ml-6">
+              Cochez cette case pour rendre visible le champ de données confidentielles
             </p>
-          </FieldWrapper>
-        )}
-      </div>
+          </div>
+
+          {/* Champ de données confidentielles (visible seulement si la case est cochée) */}
+          {formData.afficherDonneesConfidentielles && (
+            <FieldWrapper
+              htmlFor="donneesConfidentielles"
+              label="Données confidentielles"
+              error={displayError(errors.donneesConfidentielles)}
+            >
+              <TextAreaInput
+                id="donneesConfidentielles"
+                value={formData.donneesConfidentielles || ''}
+                onChange={(value) => onInputChange('donneesConfidentielles', value)}
+                disabled={disabled}
+                placeholder="Informations confidentielles (accès restreint)..."
+                rows={3}
+              />
+              <p className="text-sm text-red-600 mt-2 italic">
+                🔒 Ces informations sont confidentielles et à accès restreint
+              </p>
+            </FieldWrapper>
+          )}
+        </div>
+      )}
     </div>
   );
 };

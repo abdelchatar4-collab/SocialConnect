@@ -12,6 +12,7 @@ import { SelectInput } from '../shared/SelectInput';
 import { MultiSelectInput } from '../shared/MultiSelectInput';
 import { LisserButton } from '@/components/ai/LisserButton';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
+import { UserFormData } from '@/types/user';
 
 interface HousingFinancialSectionProps {
     formData: any;
@@ -19,8 +20,8 @@ interface HousingFinancialSectionProps {
     optionsTypeLitige: Array<{ value: string; label: string }>;
     optionsPreavisPour: Array<{ value: string; label: string }>;
     revenusOptions: Array<{ value: string; label: string }>;
-    onInputChange: (field: string, value: any) => void;
-    onNestedInputChange: (parentField: string, childField: string, value: any) => void;
+    onInputChange: (field: keyof UserFormData, value: any) => void;
+    onNestedInputChange: (parentField: keyof UserFormData, childField: string, value: any) => void;
     isAiAvailable: boolean;
     disabled?: boolean;
 }

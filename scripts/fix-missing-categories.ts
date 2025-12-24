@@ -29,22 +29,28 @@ async function fixMissingCategories() {
   ];
 
   for (const option of premierContactOptions) {
-    await prisma.dropdownOption.upsert({
+    // Vérifier si l'option existe déjà
+    const existing = await prisma.dropdownOption.findFirst({
       where: {
-        type_value: {
-          type: 'premierContact',
-          value: option
-        }
-      },
-      update: {},
-      create: {
         type: 'premierContact',
         value: option,
-        label: option
+        serviceId: 'default'
       }
     });
+
+    if (!existing) {
+      await prisma.dropdownOption.create({
+        data: {
+          type: 'premierContact',
+          value: option,
+          label: option,
+          serviceId: 'default'
+        }
+      });
+      console.log(`  + Ajouté: ${option}`);
+    }
   }
-  console.log(`✅ Options 'premierContact' ajoutées`);
+  console.log(`✅ Options 'premierContact' vérifiées`);
 
   console.log('🎉 Correction terminée!');
 }

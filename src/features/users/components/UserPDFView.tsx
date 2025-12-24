@@ -178,9 +178,10 @@ const styles = StyleSheet.create({
 interface UserPDFDocumentProps {
   user: User;
   gestionnairesList: Gestionnaire[];
+  showAntenne?: boolean;
 }
 
-const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesList }) => {
+const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesList, showAntenne = true }) => {
   // Fonction sécurisée pour afficher les valeurs
   const safeValue = (value: any): string => {
     if (value === null || value === undefined || value === '') {
@@ -377,10 +378,12 @@ const UserPDFDocument: React.FC<UserPDFDocumentProps> = ({ user, gestionnairesLi
           </View>
           <View style={styles.sectionContent}>
             <View style={styles.row}>
-              <View style={styles.col}>
-                <Text style={styles.label}>Antenne</Text>
-                <Text style={styles.value}>{safeValue(user.antenne)}</Text>
-              </View>
+              {showAntenne && (
+                <View style={styles.col}>
+                  <Text style={styles.label}>Antenne</Text>
+                  <Text style={styles.value}>{safeValue(user.antenne)}</Text>
+                </View>
+              )}
               <View style={styles.col}>
                 <Text style={styles.label}>Secteur</Text>
                 <Text style={styles.value}>{safeValue(user.secteur)}</Text>

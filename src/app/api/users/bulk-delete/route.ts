@@ -25,7 +25,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Liste d\'IDs manquante ou invalide.' }, { status: 400 });
     }
 
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
       // For non-admins, verify every user is a duplicate before deleting
       for (const userId of ids) {
         const userToDelete = await prisma.user.findUnique({
@@ -33,7 +33,6 @@ export async function DELETE(req: NextRequest) {
         });
 
         if (!userToDelete) {
-          // Or just continue and let deleteMany handle it, but this is safer
           return NextResponse.json({ error: `Utilisateur avec ID ${userId} non trouvé.` }, { status: 404 });
         }
 
@@ -41,17 +40,41 @@ export async function DELETE(req: NextRequest) {
           return NextResponse.json({ error: `Impossible de vérifier si l'utilisateur ${userToDelete.id} est un doublon (données manquantes).` }, { status: 400 });
         }
 
-        const duplicateCount = await prisma.user.count({
+        // Fetch potential duplicates based on NOM only (case insensitive via finding many)
+        // Then filter in JS for precise match (ignoring case) on prenom and date
+        const potentialDuplicates = await prisma.user.findMany({
           where: {
-            nom: userToDelete.nom,
-            prenom: userToDelete.prenom,
-            dateNaissance: userToDelete.dateNaissance,
+            nom: userToDelete.nom, // Prisma might be case sensitive depending on DB collation
             id: { not: userId },
           },
         });
 
+        const targetNom = userToDelete.nom.toLowerCase();
+        const targetPrenom = userToDelete.prenom.toLowerCase();
+        const targetDate = new Date(userToDelete.dateNaissance).toDateString(); // Compare date part only
+
+        const duplicateCount = potentialDuplicates.filter(u => {
+          const uNom = u.nom?.toLowerCase() || '';
+          const uPrenom = u.prenom?.toLowerCase() || '';
+          const uDate = u.dateNaissance ? new Date(u.dateNaissance).toDateString() : '';
+
+          return uNom === targetNom && uPrenom === targetPrenom && uDate === targetDate;
+        }).length;
+
         if (duplicateCount === 0) {
-          return NextResponse.json({ error: `Accès non autorisé. L'utilisateur ${userToDelete.id} n'est pas un doublon.` }, { status: 403 });
+          // Fallback: Check if strict match works (in case DB had strict collation but JS normalization differs? unlikely but safe)
+          const strictCount = await prisma.user.count({
+            where: {
+              nom: userToDelete.nom,
+              prenom: userToDelete.prenom,
+              dateNaissance: userToDelete.dateNaissance,
+              id: { not: userId },
+            }
+          });
+
+          if (strictCount === 0) {
+            return NextResponse.json({ error: `Accès non autorisé. L'utilisateur ${userToDelete.prenom} ${userToDelete.nom} n'est pas identifié comme un doublon.` }, { status: 403 });
+          }
         }
       }
     }

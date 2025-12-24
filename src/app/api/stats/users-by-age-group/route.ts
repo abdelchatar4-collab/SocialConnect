@@ -7,20 +7,35 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServiceClient } from '@/lib/prisma-clients';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const { searchParams } = new URL(request.url);
+    const anneeParam = searchParams.get('annee');
+
+    const where: any = {};
+    if (anneeParam) {
+      const annee = parseInt(anneeParam, 10);
+      if (!isNaN(annee)) {
+        where.annee = annee;
+      }
     }
 
     const ageGroupStats = await prisma.user.groupBy({
       by: ['trancheAge'],
+      where,
       _count: {
         id: true
       },

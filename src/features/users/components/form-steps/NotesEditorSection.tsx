@@ -9,10 +9,11 @@ import React from 'react';
 import { FieldWrapper } from '../shared/FieldWrapper';
 import { TextAreaInput } from '../shared/TextAreaInput';
 import { ArrowPathIcon, CheckIcon, XMarkIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { UserFormData } from '@/types/user';
 
 interface NotesEditorSectionProps {
     formData: any;
-    onInputChange: (field: string, value: any) => void;
+    onInputChange: (field: keyof UserFormData, value: any) => void;
     disabled?: boolean;
     isAiAvailable: boolean;
     isReformulating: boolean;

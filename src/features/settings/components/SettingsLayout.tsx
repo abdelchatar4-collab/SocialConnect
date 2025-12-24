@@ -1,8 +1,6 @@
 /*
 Copyright (C) 2025 ABDEL KADER CHATAR
 SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
-
-Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
 /**
@@ -25,6 +23,12 @@ import GeographicalSettings from '@/components/settings/GeographicalSettings';
 import { BirthdaySettings } from '@/components/settings/BirthdaySettings';
 import AntennesSettings from '@/components/settings/AntennesSettings';
 import AiSettings from '@/components/settings/AiSettings';
+import ModuleSettings from '@/components/settings/ModuleSettings';
+import ColumnVisibilitySettings from '@/components/settings/ColumnVisibilitySettings';
+import FormSectionSettings from '@/components/settings/FormSectionSettings';
+import { PrestationAdmin } from '@/features/prestations/components/PrestationAdmin';
+import { PersonalPrestationSettings } from '@/features/prestations/components/PersonalPrestationSettings';
+import { useSession } from 'next-auth/react';
 
 // Section configuration
 interface SettingsSection {
@@ -42,6 +46,27 @@ const SETTINGS_SECTIONS: SettingsSection[] = [
         icon: '🎨',
         description: 'Couleurs, en-tête, champs obligatoires',
         keywords: ['couleur', 'theme', 'header', 'champs', 'obligatoire', 'logo', 'style'],
+    },
+    {
+        id: 'modules',
+        label: 'Modules',
+        icon: '🛡️',
+        description: 'Activer/Désactiver les fonctionnalités du service',
+        keywords: ['module', 'fonctionnalité', 'activation', 'médiation', 'simplified', 'flux'],
+    },
+    {
+        id: 'colonnes',
+        label: 'Colonnes Liste',
+        icon: '🗒️',
+        description: 'Personnaliser les colonnes de la liste usagers',
+        keywords: ['colonne', 'liste', 'affichage', 'tableau', 'usager', 'visible'],
+    },
+    {
+        id: 'formulaire',
+        label: 'Sections Formulaire',
+        icon: '📝',
+        description: 'Activer/désactiver les sections du formulaire usager',
+        keywords: ['formulaire', 'section', 'champ', 'cacher', 'afficher', 'logement', 'mediation'],
     },
     {
         id: 'general',
@@ -99,6 +124,20 @@ const SETTINGS_SECTIONS: SettingsSection[] = [
         description: 'Configuration Ollama et modèles',
         keywords: ['ia', 'ai', 'ollama', 'modèle', 'llm', 'gemma', 'qwen', 'mistral'],
     },
+    {
+        id: 'prestations',
+        label: 'Suivi Prestations',
+        icon: '⏱️',
+        description: 'Suivi des heures et bonis de l\'équipe',
+        keywords: ['prestation', 'heure', 'bonis', 'travail', 'suivi', 'équipe'],
+    },
+    {
+        id: 'mon-horaire',
+        label: 'Mon Horaire',
+        icon: '🕒',
+        description: 'Configurer votre horaire de travail habituel',
+        keywords: ['horaire', 'travail', 'pause', 'habituel', 'défaut', 'prestation'],
+    },
 ];
 
 // Toast notification state
@@ -117,23 +156,43 @@ interface SettingsLayoutProps {
 export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
     isOpen,
     onClose,
-    defaultSection = 'customization',
+    defaultSection,
 }) => {
-    const [activeSection, setActiveSection] = useState(defaultSection);
+    const { data: session } = useSession();
+    const userRole = (session?.user as any)?.role || 'USER';
+    const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
+    const [activeSection, setActiveSection] = useState(defaultSection || (isAdmin ? 'customization' : 'mon-horaire'));
     const [searchQuery, setSearchQuery] = useState('');
     const [toast, setToast] = useState<ToastState>({ show: false, type: 'success', message: '' });
 
-    // Filter sections based on search
+    // Filter sections based on SEARCH, SERVICE AND ROLE
     const filteredSections = useMemo(() => {
-        if (!searchQuery.trim()) return SETTINGS_SECTIONS;
+        const currentServiceId = (session?.user as any)?.serviceId || 'default';
+        const role = (session?.user as any)?.role || 'USER';
+        const isUserAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+
+        let sections = SETTINGS_SECTIONS;
+
+        // Restriction par rôle : Un USER ne voit que son horaire, la vie d'équipe et ses prestations
+        if (!isUserAdmin) {
+            sections = sections.filter(s => ['mon-horaire', 'equipe'].includes(s.id));
+        }
+
+        // MASQUER LES ANTENNES POUR LES SERVICES NON-DEFAULT (PASQ)
+        if (currentServiceId !== 'default') {
+            sections = sections.filter(s => s.id !== 'antennes');
+        }
+
+        if (!searchQuery.trim()) return sections;
 
         const query = searchQuery.toLowerCase();
-        return SETTINGS_SECTIONS.filter(section =>
+        return sections.filter(section =>
             section.label.toLowerCase().includes(query) ||
             section.description.toLowerCase().includes(query) ||
             section.keywords.some(kw => kw.includes(query))
         );
-    }, [searchQuery]);
+    }, [searchQuery, session]);
 
     // Show toast notification
     const showToast = useCallback((type: 'success' | 'error', message: string) => {
@@ -149,6 +208,8 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
         switch (activeSection) {
             case 'customization':
                 return <CustomizationSettings />;
+            case 'modules':
+                return <ModuleSettings />;
             case 'general':
                 return <GeneralSettings />;
             case 'gestionnaires':
@@ -165,6 +226,14 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
                 return <AntennesSettings />;
             case 'ai':
                 return <AiSettings />;
+            case 'colonnes':
+                return <ColumnVisibilitySettings />;
+            case 'formulaire':
+                return <FormSectionSettings />;
+            case 'prestations':
+                return <PrestationAdmin />;
+            case 'mon-horaire':
+                return <PersonalPrestationSettings />;
             default:
                 return <div className="p-8 text-center text-gray-500">Section non trouvée</div>;
         }

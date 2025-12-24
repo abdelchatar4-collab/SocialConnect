@@ -11,6 +11,7 @@ import React, { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import ReportGenerator from '@/components/ReportGenerator';
 import DocumentPreview from '@/components/DocumentPreview';
+import { useAdmin } from '@/contexts/AdminContext';
 import {
   FolderOpenIcon,
   ChartBarIcon
@@ -44,6 +45,8 @@ export default function RapportsPage() {
   const [activeTab, setActiveTab] = useState<'generate' | 'manage'>('generate');
   const [previewDocument, setPreviewDocument] = useState<DocumentInfo | null>(null);
 
+  const { selectedYear } = useAdmin();
+
   const {
     loading: loadingDocs,
     message,
@@ -61,11 +64,11 @@ export default function RapportsPage() {
     stats
   } = useDocumentManagement();
 
-  // Fetch users for ReportGenerator
+  // Fetch users for ReportGenerator - filtered by year
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch('/api/users?take=5000');
+        const response = await fetch(`/api/users?take=5000&annee=${selectedYear}`);
         if (!response.ok) throw new Error(`Error: ${response.statusText}`);
         const result = await response.json();
         setUsers(Array.isArray(result) ? result : (result.users || []));
@@ -76,7 +79,7 @@ export default function RapportsPage() {
       }
     };
     fetchUsers();
-  }, []);
+  }, [selectedYear]);
 
   const isLoading = loadingDocs || fetchingUsers;
 

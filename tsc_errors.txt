@@ -1,0 +1,109 @@
+node_modules/next-auth/adapters.d.ts(2,47): error TS2307: Cannot find module '@auth/core/adapters' or its corresponding type declarations.
+node_modules/next-auth/core/lib/cookie.d.ts(31,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+node_modules/next-auth/providers/email.d.ts(1,45): error TS2307: Cannot find module 'nodemailer' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(2,32): error TS2307: Cannot find module 'nodemailer/lib/json-transport/index.js' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(3,36): error TS2307: Cannot find module 'nodemailer/lib/sendmail-transport/index.js' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(4,31): error TS2307: Cannot find module 'nodemailer/lib/ses-transport/index.js' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(5,27): error TS2307: Cannot find module 'nodemailer/lib/smtp-pool/index.js' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(6,32): error TS2307: Cannot find module 'nodemailer/lib/smtp-transport/index.js' or its corresponding type declarations.
+node_modules/next-auth/providers/email.d.ts(7,34): error TS2307: Cannot find module 'nodemailer/lib/stream-transport/index.js' or its corresponding type declarations.
+node_modules/next-auth/react/index.d.ts(86,71): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/build/webpack/loaders/next-app-loader.d.ts(1,13): error TS2613: Module '"next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/error-boundary.d.ts(43,5): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/client/components/layout-router.d.ts(3,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/not-found-boundary.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/render-from-template-context.d.ts(2,54): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/client/components/static-generation-searchparams-bailout-provider.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/image-component.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/link.d.ts(2,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/script.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/script.d.ts(18,46): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_app.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_document.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/pages/_document.d.ts(21,40): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/pages/_document.d.ts(23,48): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/pages/_error.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/types.d.ts(10,8): error TS1192: Module '"next/dist/compiled/superstruct"' has no default export.
+node_modules/next/dist/server/render.d.ts(16,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/amp-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/dynamic.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/dynamic.d.ts(22,61): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/get-img-props.d.ts(15,31): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/get-img-props.d.ts(59,24): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head.d.ts(2,59): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/html-context.shared-runtime.d.ts(36,43): error TS2694: Namespace 'React' has no exported member 'ReactFragment'.
+node_modules/next/dist/shared/lib/html-context.shared-runtime.d.ts(37,18): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(12,13): error TS1192: Module '"fs"' has no default export.
+node_modules/next/dist/shared/lib/utils.d.ts(52,18): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/shared/lib/utils.d.ts(159,43): error TS2694: Namespace 'React' has no exported member 'ReactFragment'.
+node_modules/next/dist/shared/lib/utils.d.ts(159,59): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/css.d.ts(4,63): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/css.d.ts(9,8): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/css.d.ts(13,37): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/global.d.ts(6,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/styled-jsx/types/index.d.ts(3,43): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/index.d.ts(13,15): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/index.d.ts(15,7): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/styled-jsx/types/macro.d.ts(8,15): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/types/index.d.ts(10,13): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/features/users/components/UserList/index.ts(12,32): error TS6142: Module './UserListHeader' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListHeader.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(13,33): error TS6142: Module './UserListFilters' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListFilters.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(14,31): error TS6142: Module './UserListTable' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListTable.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(15,29): error TS6142: Module './UserListRow' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListRow.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(16,36): error TS6142: Module './UserListPagination' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListPagination.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(17,38): error TS6142: Module './UserListColumnToggle' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListColumnToggle.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(18,30): error TS6142: Module './UserListGrid' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListGrid.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/index.ts(19,15): error TS6142: Module './UserListFloatingActions' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListFloatingActions.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/UserList.tsx(15,8): error TS1259: Module '"/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/features/users/components/UserList/UserList.tsx(18,26): error TS2307: Cannot find module '@/contexts/AdminContext' or its corresponding type declarations.
+src/features/users/components/UserList/UserList.tsx(19,37): error TS2307: Cannot find module '@/constants/dropdownCategories' or its corresponding type declarations.
+src/features/users/components/UserList/UserList.tsx(20,39): error TS2307: Cannot find module '@/hooks/useDropdownOptionsAPI' or its corresponding type declarations.
+src/features/users/components/UserList/UserList.tsx(21,32): error TS2307: Cannot find module '@/config/constants' or its corresponding type declarations.
+src/features/users/components/UserList/UserList.tsx(22,45): error TS2307: Cannot find module '@/components/ui/Skeleton' or its corresponding type declarations.
+src/features/users/components/UserList/UserList.tsx(31,5): error TS2724: '"./index"' has no exported member named 'UserListFloatingActions'. Did you mean 'UserListPagination'?
+src/features/users/components/UserList/UserList.tsx(42,33): error TS6142: Module './UserListFilters' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListFilters.tsx', but '--jsx' is not set.
+src/features/users/components/UserList/UserList.tsx(138,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(139,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(154,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(155,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(156,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(157,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(159,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(160,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(161,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(162,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(165,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(166,51): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(166,80): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(173,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(174,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(187,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(188,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(234,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(235,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(236,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(238,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(239,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(242,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(244,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(266,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(267,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(283,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/components/UserList/UserList.tsx(292,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/features/users/hooks/usePagination.ts(13,51): error TS2307: Cannot find module '@/config/constants' or its corresponding type declarations.
+src/features/users/hooks/useUserActions.ts(13,22): error TS2307: Cannot find module '@/types' or its corresponding type declarations.
+src/features/users/hooks/useUserList.ts(13,36): error TS2307: Cannot find module '@/types' or its corresponding type declarations.
+src/features/users/hooks/useUserList.ts(14,26): error TS2307: Cannot find module '@/contexts/AdminContext' or its corresponding type declarations.
+src/features/users/hooks/useUserListLogic.ts(11,51): error TS2307: Cannot find module '@/types' or its corresponding type declarations.
+src/features/users/hooks/useUserListState.ts(11,26): error TS2307: Cannot find module '@/contexts/AdminContext' or its corresponding type declarations.
+src/features/users/hooks/useUserListState.ts(12,33): error TS6142: Module '../components/UserList/UserListFilters' was resolved to '/Users/abdelchatar/Desktop/Refactorisation-gestion-usagers/src/features/users/components/UserList/UserListFilters.tsx', but '--jsx' is not set.

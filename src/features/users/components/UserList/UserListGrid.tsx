@@ -43,6 +43,7 @@ interface UserListGridProps {
     showProblematiques?: boolean;
     showActions?: boolean;
     showAdresse?: boolean;
+    showAntenne?: boolean;
 }
 
 export const UserListGrid: React.FC<UserListGridProps> = ({
@@ -54,6 +55,7 @@ export const UserListGrid: React.FC<UserListGridProps> = ({
     showProblematiques = false,
     showActions = false,
     showAdresse = false,
+    showAntenne = true,
 }) => {
 
     if (users.length === 0) {
@@ -119,7 +121,7 @@ export const UserListGrid: React.FC<UserListGridProps> = ({
                                 {user.secteur && (
                                     <p className="text-xs text-slate-500 mt-1">
                                         {user.secteur}
-                                        {user.antenne && <span className="text-slate-400"> • {user.antenne}</span>}
+                                        {showAntenne && user.antenne && <span className="text-slate-400"> • {user.antenne}</span>}
                                     </p>
                                 )}
                             </div>

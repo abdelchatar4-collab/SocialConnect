@@ -13,6 +13,7 @@ declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     id?: string;
     role?: string;
+    serviceId?: string;
     gestionnaire?: any;
   }
 }
@@ -25,6 +26,7 @@ declare module "next-auth" {
     user?: {
       id?: string;
       role?: string;
+      serviceId?: string;
       gestionnaire?: any;
     } & DefaultSession["user"]; // Conserve les champs par défaut comme name, email, image
   }
@@ -34,5 +36,6 @@ declare module "next-auth" {
    */
   interface User extends DefaultUser {
     role?: string;
+    serviceId?: string;
   }
 }

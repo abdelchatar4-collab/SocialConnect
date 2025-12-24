@@ -10,11 +10,12 @@ import { FieldWrapper } from '../shared/FieldWrapper';
 import { TextInput } from '../shared/TextInput';
 import { SelectInput } from '../shared/SelectInput';
 import { LisserButton } from '@/components/ai/LisserButton';
+import { UserFormData } from '@/types/user';
 
 interface HousingEndingSectionProps {
     logementDetails: any;
     optionsDureePreavis: Array<{ value: string; label: string }>;
-    onNestedInputChange: (parentField: string, childField: string, value: any) => void;
+    onNestedInputChange: (parentField: keyof UserFormData, childField: string, value: any) => void;
     isAiAvailable: boolean;
     disabled?: boolean;
 }

@@ -19,7 +19,7 @@ const optionsToSeed = {
         'Travail',
         'AC',
         'RI Famille',
-        'RI (famille)', // Note: User asked to check for duplicates, but listed both. Keeping both for now as requested.
+        'RI (famille)',
         'Isolé'
     ],
     prevExpEtatLogement: [
@@ -48,22 +48,20 @@ async function main() {
         for (const label of labels) {
             const value = label.toLowerCase().replace(/\s+/g, '_').replace(/'/g, '').replace(/[()]/g, '');
 
-            await prisma.dropdownOption.upsert({
-                where: {
-                    type_value: {
-                        type: category,
-                        value: value
-                    }
-                },
-                update: {
-                    label: label
-                },
-                create: {
-                    type: category,
-                    value: value,
-                    label: label
-                }
+            const existing = await prisma.dropdownOption.findFirst({
+                where: { type: category, value: value, serviceId: 'default' }
             });
+
+            if (existing) {
+                await prisma.dropdownOption.update({
+                    where: { id: existing.id },
+                    data: { label: label }
+                });
+            } else {
+                await prisma.dropdownOption.create({
+                    data: { type: category, value: value, label: label, serviceId: 'default' }
+                });
+            }
         }
     }
 

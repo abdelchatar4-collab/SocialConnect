@@ -1,109 +1,54 @@
-/*
-Copyright (C) 2025 ABDEL KADER CHATAR
-SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
-
-Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
-*/
-
-export const dynamic = 'force-dynamic';
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { getServerSession } from 'next-auth/next';
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 
-// --- GET /api/gestionnaires - Récupérer tous les gestionnaires ---
 export async function GET() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const userRole = (session as any).user.role;
+  const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
+
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!isAdmin) {
+      // Return self as a list of 1
+      const gestionnaireId = (session as any).user.gestionnaire?.id;
+      if (!gestionnaireId) return NextResponse.json([], { status: 200 });
+
+      const self = await prisma.gestionnaire.findUnique({
+        where: { id: gestionnaireId },
+        select: {
+          id: true,
+          nom: true,
+          prenom: true,
+          serviceId: true
+        }
+      });
+      return NextResponse.json(self ? [self] : []);
     }
 
     const gestionnaires = await prisma.gestionnaire.findMany({
-      orderBy: { prenom: 'asc' },
+      where: {
+        isActive: true
+      },
       select: {
         id: true,
         nom: true,
         prenom: true,
-        email: true,
-        role: true,
-        couleurMedaillon: true
+        serviceId: true
+      },
+      orderBy: {
+        nom: 'asc'
       }
     });
 
     return NextResponse.json(gestionnaires);
   } catch (error) {
-    console.error('Erreur lors de la récupération des gestionnaires:', error);
-    return NextResponse.json(
-      { error: 'Erreur serveur lors de la récupération des gestionnaires' },
-      { status: 500 }
-    );
+    console.error('Error fetching gestionnaires:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-
-// --- POST /api/gestionnaires - Créer un nouveau gestionnaire ---
-export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const data = await request.json();
-
-    if (!data.prenom) {
-      return NextResponse.json(
-        { error: 'Le prénom est requis' },
-        { status: 400 }
-      );
-    }
-
-    const gestionnaire = await prisma.gestionnaire.create({
-      data: {
-        nom: data.nom || "",
-        prenom: data.prenom,
-        email: data.email || null,
-        couleurMedaillon: data.couleurMedaillon || null,
-      }
-    });
-
-    return NextResponse.json(gestionnaire);
-  } catch (error) {
-    console.error('Erreur lors de la création du gestionnaire:', error);
-    return NextResponse.json(
-      { error: "Erreur lors de la création du gestionnaire" },
-      { status: 500 }
-    );
-  }
-}
-
-// --- DELETE /api/gestionnaires - Supprimer un gestionnaire ---
-export async function DELETE(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const id = request.nextUrl.searchParams.get('id');
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID non fourni' },
-        { status: 400 }
-      );
-    }
-
-    await prisma.gestionnaire.delete({
-      where: { id }
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Erreur lors de la suppression du gestionnaire:', error);
-    return NextResponse.json(
-      { error: "Erreur lors de la suppression du gestionnaire" },
-      { status: 500 }
-    );
-  }
-}
-

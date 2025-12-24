@@ -10,13 +10,14 @@ import { FieldWrapper } from '../shared/FieldWrapper';
 import { TextInput } from '../shared/TextInput';
 import { SelectInput } from '../shared/SelectInput';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
+import { UserFormData } from '@/types/user';
 
 interface HousingBasicInfoSectionProps {
     logementDetails: any;
     optionsTypeLogementDyn: Array<{ value: string; label: string }>;
     optionsBailEnregistre: Array<{ value: string; label: string }>;
     optionsDureeContrat: Array<{ value: string; label: string }>;
-    onNestedInputChange: (parentField: any, childField: string, value: any) => void;
+    onNestedInputChange: (parentField: keyof UserFormData, childField: string, value: any) => void;
     disabled?: boolean;
 }
 

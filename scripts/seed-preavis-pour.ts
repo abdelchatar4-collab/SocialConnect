@@ -23,24 +23,22 @@ async function main() {
     for (const [category, labels] of Object.entries(optionsToSeed)) {
         console.log(`Seeding category: ${category}`);
         for (const label of labels) {
-            const valueToUse = label; // Keeping value = label for backward compatibility
+            const valueToUse = label;
 
-            await prisma.dropdownOption.upsert({
-                where: {
-                    type_value: {
-                        type: category,
-                        value: valueToUse
-                    }
-                },
-                update: {
-                    label: label
-                },
-                create: {
-                    type: category,
-                    value: valueToUse,
-                    label: label
-                }
+            const existing = await prisma.dropdownOption.findFirst({
+                where: { type: category, value: valueToUse, serviceId: 'default' }
             });
+
+            if (existing) {
+                await prisma.dropdownOption.update({
+                    where: { id: existing.id },
+                    data: { label: label }
+                });
+            } else {
+                await prisma.dropdownOption.create({
+                    data: { type: category, value: valueToUse, label: label, serviceId: 'default' }
+                });
+            }
         }
     }
 

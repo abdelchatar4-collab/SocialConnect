@@ -48,7 +48,8 @@ export const DROPDOWN_CATEGORIES = {
   LANGUE: 'langue',
   NATIONALITE: 'nationalite',
   PREMIER_CONTACT: 'premierContact',
-  REVENUS: 'revenus'
+  REVENUS: 'revenus',
+  PRESTATION_MOTIFS: 'prestation_motifs'
 } as const;
 
 export type DropdownCategory = typeof DROPDOWN_CATEGORIES[keyof typeof DROPDOWN_CATEGORIES];

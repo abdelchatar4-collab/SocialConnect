@@ -53,52 +53,34 @@ async function main() {
     for (const [category, labels] of Object.entries(optionsToSeed)) {
         console.log(`Seeding category: ${category}`);
         for (const label of labels) {
-            // Keep the value simple but unique enough.
-            // For 'Oui'/'Non', value will be 'oui'/'non'.
-            // For others, standard slugification.
-            const value = label.toLowerCase()
-                .replace(/\s+/g, '_')
-                .replace(/'/g, '')
-                .replace(/[()]/g, '')
-                .replace(/é/g, 'e')
-                .replace(/è/g, 'e')
-                .replace(/ê/g, 'e')
-                .replace(/à/g, 'a')
-                .replace(/ç/g, 'c')
-                .replace(/î/g, 'i');
+            const valueToUse = label; // KEEPING VALUE = LABEL for backward compatibility
 
-            // Special case handling to match existing data if necessary,
-            // but here we are standardizing. The existing data in DB might be just the label string
-            // if it was a text input or select with value=label.
-            // In HousingStep.tsx, values were often same as labels (e.g. value: 'Versée', label: 'Versée').
-            // So we should probably use the LABEL as the VALUE for backward compatibility
-            // if the current DB stores the label.
-            // However, best practice is to use a code.
-            // BUT, to avoid migration issues with existing records that have "Versée" stored,
-            // we should probably keep value = label for now OR ensure the frontend handles the mapping.
-            // The user asked to "not break existing values".
-            // If the DB stores "Versée", and we change the option value to "versee",
-            // the select input won't show the selected value for existing records unless we migrate the data too.
-            // To be safe and simple: Use the exact string from the hardcoded list as the value.
-
-            const valueToUse = label; // KEEPING VALUE = LABEL for backward compatibility with existing text data
-
-            await prisma.dropdownOption.upsert({
+            // Vérifier si l'option existe déjà
+            const existing = await prisma.dropdownOption.findFirst({
                 where: {
-                    type_value: {
-                        type: category,
-                        value: valueToUse
-                    }
-                },
-                update: {
-                    label: label
-                },
-                create: {
                     type: category,
                     value: valueToUse,
-                    label: label
+                    serviceId: 'default'
                 }
             });
+
+            if (existing) {
+                // Mettre à jour le label si nécessaire
+                await prisma.dropdownOption.update({
+                    where: { id: existing.id },
+                    data: { label: label }
+                });
+            } else {
+                // Créer l'option
+                await prisma.dropdownOption.create({
+                    data: {
+                        type: category,
+                        value: valueToUse,
+                        label: label,
+                        serviceId: 'default'
+                    }
+                });
+            }
         }
     }
 

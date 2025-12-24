@@ -21,6 +21,10 @@ import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import AboutModal from "@/components/AboutModal";
+import ServiceSwitcher from "@/components/layout/ServiceSwitcher";
+import { ClockIcon } from "@heroicons/react/24/outline";
+import { PrestationReminder } from "@/features/prestations/components/PrestationReminder";
+import { usePrestations } from "@/contexts/PrestationContext";
 
 interface SessionUserWithRole {
   id?: string | null;
@@ -159,6 +163,13 @@ export default function Header() {
       {/* Birthday Banner */}
       <BirthdayBanner />
 
+      {/* Prestation Reminder - Shows when user hasn't logged prestations for 3+ days */}
+      <PrestationReminder onOpenPrestations={() => {
+        // Import and use the prestation context to open the form
+        const event = new CustomEvent('openPrestationForm');
+        window.dispatchEvent(event);
+      }} />
+
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 shadow-sm flex flex-col font-sans">
         {/* MAIN HEADER ROW */}
         <div className="px-4 md:px-8 py-6 flex items-center justify-between gap-4">
@@ -202,6 +213,11 @@ export default function Header() {
               </div>
             )}
 
+            {/* Service Switcher (Super Admin) */}
+            <div className="block ml-4">
+              <ServiceSwitcher />
+            </div>
+
             {/* Year Selector */}
             <div className="hidden xl:block ml-4">
               <YearSelector />
@@ -210,6 +226,7 @@ export default function Header() {
 
           {/* RIGHT: User Menu */}
           <div className="flex items-center gap-2">
+
             <button
               onClick={() => setIsAboutOpen(true)}
               className="p-2 text-slate-500 hover:text-blue-600 transition-colors rounded-full hover:bg-blue-50"

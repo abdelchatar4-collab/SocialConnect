@@ -14,6 +14,8 @@ import { ComboBox } from '../shared/ComboBox';
 import { PartenairesManager } from '../shared/PartenairesManager';
 import { FieldWrapper } from '../shared/FieldWrapper';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
+import { useSession } from 'next-auth/react';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 // Ajouter dans les props de ManagementStepProps
 interface ManagementStepProps {
@@ -39,6 +41,18 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
   disabled
 }) => {
   const { isRequired, getRequiredLabel } = useRequiredFields();
+  const { data: session } = useSession();
+  const { isSectionVisible } = useFormSectionVisibility();
+
+  // If management section is disabled, don't render anything
+  if (!isSectionVisible('management')) {
+    return null;
+  }
+
+  // Masquer l'antenne pour les services autres que PASQ (default)
+  // Utiliser le cast as any car serviceId n'est pas typé par défaut dans next-auth session user
+  const currentServiceId = (session?.user as any)?.serviceId || 'default';
+  const showAntenne = currentServiceId === 'default';
 
   return (
     <div className="space-y-6">
@@ -65,19 +79,21 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
             />
           </FieldWrapper>
 
-          <FieldWrapper
-            label="Antenne"
-            error={displayError(errors.antenne)}
-            required={isRequired('antenne')}
-          >
-            <SelectInput
-              value={formData.antenne || ''}
-              onChange={(value) => onInputChange('antenne', value)}
-              options={optionsAntenne}
-              placeholder="Sélectionner une antenne"
-              disabled={disabled}
-            />
-          </FieldWrapper>
+          {showAntenne && (
+            <FieldWrapper
+              label="Antenne"
+              error={displayError(errors.antenne)}
+              required={isRequired('antenne')}
+            >
+              <SelectInput
+                value={formData.antenne || ''}
+                onChange={(value) => onInputChange('antenne', value)}
+                options={optionsAntenne}
+                placeholder="Sélectionner une antenne"
+                disabled={disabled}
+              />
+            </FieldWrapper>
+          )}
 
           <FieldWrapper
             label="État du dossier"
@@ -104,11 +120,10 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
               onChange={(value) => {
                 // Immediate future date warning
                 if (value) {
-                  const selectedDate = new Date(value);
                   const today = new Date();
-                  today.setHours(0, 0, 0, 0);
+                  const todayStr = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
 
-                  if (selectedDate > today) {
+                  if (value > todayStr) {
                     alert(
                       "⚠️ Attention : La date d'ouverture indiquée est dans le futur.\n\n" +
                       "Cela placera ce dossier en tête de la liste 'Derniers ajouts' et pourrait fausser le tri."
@@ -148,5 +163,3 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
     </div>
   );
 };
-
-

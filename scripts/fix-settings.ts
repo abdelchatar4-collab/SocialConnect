@@ -24,9 +24,10 @@ async function main() {
                 primaryColor: "#1e3a8a",
                 headerSubtitle: "PORTAIL DE GESTION",
                 showCommunalLogo: true,
-                requiredFields: [], // Valid JSON array
+                requiredFields: JSON.stringify([]),
                 enableBirthdays: false,
-                colleagueBirthdays: [] // Valid JSON array
+                colleagueBirthdays: JSON.stringify([]),
+                availableYears: JSON.stringify([new Date().getFullYear(), new Date().getFullYear() + 1])
             }
         });
 

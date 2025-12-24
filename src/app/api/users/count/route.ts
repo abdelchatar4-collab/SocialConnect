@@ -6,19 +6,35 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 // filepath: /Users/abdelchatar/Desktop/Projet-Gestion-Usagers/app-gestion-usagers/src/app/api/users/count/route.ts
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // CORRECT: Utilise l'instance partagée
+import { NextRequest, NextResponse } from 'next/server';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
+
   try {
+    // Get year filter from query parameters
+    const { searchParams } = new URL(request.url);
+    const annee = searchParams.get('annee');
+
+    // Build where clause
+    const where: { annee?: number } = {};
+    if (annee) {
+      where.annee = parseInt(annee);
+    }
+
     const userCount = await prisma.user.count({
-      // Optionnel: Ajoutez une clause 'where' si vous voulez compter
-      // seulement certains utilisateurs (ex: actifs)
-      // where: {
-      //   etat: 'En cours',
-      // }
+      where,
     });
 
     // Renvoie le compte dans un objet JSON

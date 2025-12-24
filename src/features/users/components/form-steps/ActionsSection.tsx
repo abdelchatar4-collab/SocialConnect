@@ -12,14 +12,7 @@ import { SelectInput } from '../shared/SelectInput';
 import { TextAreaInput } from '../shared/TextAreaInput';
 import { ComboBox } from '../shared/ComboBox';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-
-interface ActionSuivi {
-    id?: string;
-    date: string;
-    type: string;
-    description: string;
-    partenaire: string;
-}
+import { ActionSuivi } from '@/types/user';
 
 interface ActionsSectionProps {
     actions: ActionSuivi[];
@@ -34,8 +27,10 @@ interface ActionsSectionProps {
     startEditingAction: (index: number) => void;
     cancelEditing: () => void;
     handleCleanData: () => void;
-    displayDate: (date: string) => string;
+    displayDate: (date: string | Date | null | undefined) => string;
     disabled?: boolean;
+    // Label personnalisé pour médiation locale ("Issues" au lieu d'"Actions")
+    actionLabel?: string;
 }
 
 export const ActionsSection: React.FC<ActionsSectionProps> = ({
@@ -52,7 +47,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
     cancelEditing,
     handleCleanData,
     displayDate,
-    disabled
+    disabled,
+    actionLabel = 'Actions' // Par défaut "Actions", peut être "Issues" pour médiation
 }) => {
     return (
         <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
@@ -61,7 +57,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
                     <svg className="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                     </svg>
-                    Actions de suivi
+                    {actionLabel} de suivi
                 </div>
 
                 <button
@@ -164,7 +160,7 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             {/* Liste des actions */}
             {actions && actions.length > 0 && (
                 <div className="space-y-2">
-                    <h5 className="font-medium text-gray-700">Actions enregistrées :</h5>
+                    <h5 className="font-medium text-gray-700">{actionLabel} enregistrées :</h5>
                     {actions.map((item, index) => (
                         <div key={item.id || index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
                             <div className="flex-1">

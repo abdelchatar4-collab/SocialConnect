@@ -5,10 +5,20 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
+
   try {
     // Trouver le dernier utilisateur basé sur la dateOuverture
     const lastAddedUser = await prisma.user.findFirst({

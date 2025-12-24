@@ -111,7 +111,13 @@ const DEFAULT_FORM_DATA: UserFormData = {
   revenus: '',
   // Ajouter les champs manquants
   afficherDonneesConfidentielles: false,
-  donneesConfidentielles: ''
+  donneesConfidentielles: '',
+  // Champs médiation
+  mediationType: '',
+  mediationDemandeur: '',
+  mediationPartieAdverse: '',
+  mediationStatut: '',
+  mediationDescription: ''
 };
 
 /**

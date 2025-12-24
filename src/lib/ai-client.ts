@@ -50,7 +50,7 @@ const AI_SETTINGS_KEY = 'ai_settings';
 
 // Defaults
 export const OLLAMA_DEFAULT_ENDPOINT = 'http://192.168.2.147:11434';
-export const DEFAULT_MODEL = 'qwen2.5:3b';
+export const DEFAULT_MODEL = 'ministral-3:3b';
 export const DEFAULT_TEMPERATURE = 0.7;
 export const GROQ_API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 export const DEFAULT_GROQ_MODEL = 'llama-3.1-8b-instant';
@@ -139,6 +139,17 @@ export class LocalAiClient {
 
         // If endpoint is Docker-internal (like http://ollama:11434), use proxy
         if (this.customEndpoint.includes('://ollama:')) return true;
+
+        // CRITICAL FIX: Mixed Content Detection
+        // If we are on HTTPS and trying to access HTTP, we MUST use proxy
+        // otherwise the browser triggers "Blocked loading mixed active content"
+        const isPageHttps = window.location.protocol === 'https:';
+        const isEndpointHttp = this.customEndpoint.startsWith('http:') && !this.customEndpoint.includes('localhost') && !this.customEndpoint.includes('127.0.0.1');
+
+        if (isPageHttps && isEndpointHttp) {
+            console.log('[AI] Mixed Content detected (HTTPS -> HTTP), enforcing proxy usage.');
+            return true;
+        }
 
         // If endpoint is localhost but we're on a different origin (e.g., pasqweb.org), use proxy
         const isLocalEndpoint = this.customEndpoint.includes('localhost') ||

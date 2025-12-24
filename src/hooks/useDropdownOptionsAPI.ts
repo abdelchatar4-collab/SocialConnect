@@ -36,6 +36,12 @@ export function useDropdownOptionsAPI(
       const fetchedOptions = await optionsClient.getOptions(optionType);
 
       // Vérifier s'il y a de nouvelles données
+      if (fetchedOptions.length === 0) {
+        console.warn(`[useDropdownOptionsAPI] Aucune option trouvée pour le type: ${optionType}`);
+      } else {
+        console.log(`[useDropdownOptionsAPI] ${fetchedOptions.length} options chargées pour: ${optionType}`);
+      }
+
       if (pollingInterval && lastOptionsRef.current.length > 0) {
         const hasChanges = JSON.stringify(fetchedOptions) !== JSON.stringify(lastOptionsRef.current);
         if (hasChanges) {

@@ -9,6 +9,7 @@ import React from 'react';
 import { UserFormData } from '@/types/user';
 import { PrevExpFields } from './PrevExpFields';
 import { useAiAvailable } from '@/components/ai/LisserButton';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 // Sub-components
 import { HousingBasicInfoSection } from './HousingBasicInfoSection';
@@ -65,6 +66,15 @@ export const HousingStep: React.FC<HousingStepProps> = ({
   disabled
 }) => {
   const isAiAvailable = useAiAvailable();
+  const { isSectionVisible } = useFormSectionVisibility();
+
+  const showHousing = isSectionVisible('housing');
+  const showPrevExp = isSectionVisible('prevExp');
+
+  // Si les deux sections sont cachées, ne rien afficher
+  if (!showHousing && !showPrevExp) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
@@ -83,7 +93,7 @@ export const HousingStep: React.FC<HousingStepProps> = ({
         </div>
       </div>
 
-      {formData.logementDetails && (
+      {showHousing && formData.logementDetails && (
         <>
           <HousingBasicInfoSection
             logementDetails={formData.logementDetails}
@@ -117,21 +127,23 @@ export const HousingStep: React.FC<HousingStepProps> = ({
       )}
 
       {/* Section Expulsion préventive */}
-      <PrevExpFields
-        formData={formData}
-        onInputChange={onInputChange}
-        disabled={disabled}
-        optionsPrevExpDecision={optionsPrevExpDecision}
-        optionsPrevExpDemandeCpas={optionsPrevExpDemandeCpas}
-        optionsPrevExpNegociationProprio={optionsPrevExpNegociationProprio}
-        optionsPrevExpSolutionRelogement={optionsPrevExpSolutionRelogement}
-        optionsPrevExpTypeFamille={optionsPrevExpTypeFamille}
-        optionsPrevExpTypeRevenu={optionsPrevExpTypeRevenu}
-        optionsPrevExpEtatLogement={optionsPrevExpEtatLogement}
-        optionsPrevExpNombreChambre={optionsPrevExpNombreChambre}
-        optionsPrevExpAideJuridique={optionsPrevExpAideJuridique}
-        optionsPrevExpMotifRequete={optionsPrevExpMotifRequete}
-      />
+      {showPrevExp && (
+        <PrevExpFields
+          formData={formData}
+          onInputChange={onInputChange}
+          disabled={disabled}
+          optionsPrevExpDecision={optionsPrevExpDecision}
+          optionsPrevExpDemandeCpas={optionsPrevExpDemandeCpas}
+          optionsPrevExpNegociationProprio={optionsPrevExpNegociationProprio}
+          optionsPrevExpSolutionRelogement={optionsPrevExpSolutionRelogement}
+          optionsPrevExpTypeFamille={optionsPrevExpTypeFamille}
+          optionsPrevExpTypeRevenu={optionsPrevExpTypeRevenu}
+          optionsPrevExpEtatLogement={optionsPrevExpEtatLogement}
+          optionsPrevExpNombreChambre={optionsPrevExpNombreChambre}
+          optionsPrevExpAideJuridique={optionsPrevExpAideJuridique}
+          optionsPrevExpMotifRequete={optionsPrevExpMotifRequete}
+        />
+      )}
     </div>
   );
 };

@@ -7,8 +7,6 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 const { PrismaClient } = require('@prisma/client');
 
-// Since defaultOptions is not exported from optionsService.ts,
-// we'll define the options directly here for the migration
 const defaultOptions = {
   'statutSejour': [
     'Belge',
@@ -101,35 +99,36 @@ async function migrateDropdownOptions() {
   console.log('🚀 Début de la migration des options...');
 
   try {
-    // Migration des options de dropdown
     for (const [category, options] of Object.entries(defaultOptions)) {
       console.log(`📝 Migration de la catégorie: ${category}`);
 
       for (let i = 0; i < options.length; i++) {
         const option = options[i];
 
-        await prisma.dropdownOption.upsert({
+        // Vérifier si l'option existe déjà
+        const existing = await prisma.dropdownOption.findFirst({
           where: {
-            category_value: {
-              category: category,
-              value: option
-            }
-          },
-          update: {
-            label: option,
-            order: i,
-            isActive: true,
-            isSystem: true // Marquer comme options système
-          },
-          create: {
-            category: category,
+            type: category,
             value: option,
-            label: option,
-            order: i,
-            isActive: true,
-            isSystem: true
+            serviceId: 'default'
           }
         });
+
+        if (existing) {
+          await prisma.dropdownOption.update({
+            where: { id: existing.id },
+            data: { label: option }
+          });
+        } else {
+          await prisma.dropdownOption.create({
+            data: {
+              type: category,
+              value: option,
+              label: option,
+              serviceId: 'default'
+            }
+          });
+        }
       }
     }
 
@@ -142,7 +141,6 @@ async function migrateDropdownOptions() {
   }
 }
 
-// Exécuter la migration
 migrateDropdownOptions()
   .then(() => {
     console.log('Migration terminée');

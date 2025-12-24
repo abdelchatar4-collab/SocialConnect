@@ -26,6 +26,7 @@ import {
 } from '@heroicons/react/24/outline';
 import SettingsModal from '@/components/SettingsModal';
 import { useSession } from "next-auth/react";
+import { useAdmin } from '@/contexts/AdminContext';
 
 interface SessionUserWithRole {
   id?: string | null;
@@ -39,11 +40,12 @@ export default function HomePage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { data: session, status } = useSession();
   const userRole = (session?.user as SessionUserWithRole)?.role;
+  const { selectedYear } = useAdmin();
 
   useEffect(() => {
     const fetchUsersCount = async () => {
       try {
-        const response = await fetch('/api/users/count');
+        const response = await fetch(`/api/users/count?annee=${selectedYear}`);
         if (response.ok) {
           const data = await response.json();
           setUsersCount(data.count || 0);
@@ -54,10 +56,10 @@ export default function HomePage() {
     };
 
     fetchUsersCount();
-  }, []);
+  }, [selectedYear]);
 
   const handleOpenSettings = () => {
-    if (status === "authenticated" && userRole === "ADMIN") {
+    if (status === "authenticated" && (userRole === "ADMIN" || userRole === "SUPER_ADMIN")) {
       setIsSettingsOpen(true);
     } else if (status === "authenticated" && userRole !== "ADMIN") {
       alert("Accès refusé. Vous devez avoir les droits administrateur pour accéder aux paramètres.");

@@ -25,11 +25,17 @@ export const authOptions: NextAuthOptions = {
         },
         async authorize(credentials) {
           // En mode dev, créer automatiquement un utilisateur admin
+          // Bascule dynamique selon l'email
+          const isMediation = credentials?.email === "mediation@dev.local";
+          const serviceId = isMediation ? "mediation" : "default";
+          const name = isMediation ? "Admin Médiation" : "Admin Développement";
+
           return {
-            id: "dev-admin-1",
-            email: "admin@dev.local",
-            name: "Admin Développement",
-            role: "ADMIN"
+            id: isMediation ? "dev-mediation-1" : "dev-admin-1",
+            email: credentials?.email || "admin@dev.local",
+            name: name,
+            role: "SUPER_ADMIN",
+            serviceId: serviceId
           }
         }
       })
@@ -60,7 +66,8 @@ export const authOptions: NextAuthOptions = {
                 id: gestionnaire.id.toString(),
                 email: gestionnaire.email,
                 name: gestionnaire.nom,
-                role: gestionnaire.role
+                role: gestionnaire.role,
+                serviceId: gestionnaire.serviceId
               }
             }
           }
@@ -102,40 +109,70 @@ export const authOptions: NextAuthOptions = {
       console.log(`❌ Provider non reconnu ou email manquant`);
       return false
     },
-    async jwt({ token, user }) {
-      // En mode développement, utiliser les données de l'utilisateur dev
-      if (process.env.NODE_ENV === 'development' && user?.role) {
-        token.gestionnaire = {
-          id: 1,
-          email: user.email,
-          nom: user.name,
-          role: user.role
-        }
-        token.role = user.role
-        console.log(`🔑 JWT dev enrichi pour: ${user.email} (${user.role})`)
-        return token
+    async jwt({ token, user, trigger, session }) {
+      // Pour les mises à jour manuelles de session (update())
+      if (trigger === "update" && session) {
+        // On pourrait passer des données via session, mais on préfère re-fetcher de la DB pour être sûr
+        console.log("🔄 Trigger Update détecté");
       }
 
-      if (user && user.email) {
+      // 1. Récupérer l'émail (soit du user login, soit du token existant)
+      const email = user?.email || token?.email;
+
+      // 2. Si on a un email, on va chercher les données fraîches en base
+      // Cela permet de mettre à jour le rôle ou le serviceId à chaque rafraichissement du token
+      if (email) {
         const gestionnaire = await prisma.gestionnaire.findUnique({
-          where: { email: user.email }
-        })
+          where: { email: email }
+        });
+
         if (gestionnaire) {
-          token.gestionnaire = gestionnaire
-          token.role = gestionnaire.role
-          console.log(`🔑 JWT enrichi pour: ${gestionnaire.email} (${gestionnaire.role})`)
+          // Mise à jour du token avec les données DB fraîches
+          token.gestionnaire = gestionnaire;
+          token.role = gestionnaire.role;
+          token.email = gestionnaire.email; // S'assurer que l'email est persistant
+
+          // ✨ SUPPORT SERVICE SWITCHING
+          // Priorité : lastActiveServiceId (DB) > serviceId (DB)
+          token.serviceId = gestionnaire.lastActiveServiceId || gestionnaire.serviceId;
+
+          console.log(`🔑 JWT refresh pour: ${email} (Service actif: ${token.serviceId})`);
         }
       }
-      return token
+
+      // Cas spécifique développement (login bypass via Credentials)
+      // On écrase si c'est le tout premier login dev
+      if (process.env.NODE_ENV === 'development' && user && user.role === 'SUPER_ADMIN' && !token.gestionnaire) {
+        // Ce bloc ne sert que si le fetch DB ci-dessus a échoué (ex: user virtuel pas en base)
+        // Mais normalement on a des users en base même en dev maintenant.
+      }
+
+      return token;
     },
     async session({ session, token }) {
       if (token.gestionnaire && session.user) {
         session.user.role = token.role as string
+        (session.user as any).serviceId = token.serviceId as string
         session.user.gestionnaire = token.gestionnaire
-        console.log(`👤 Session créée pour: ${session.user.email} (${session.user.role})`)
+        console.log(`👤 Session créée pour: ${session.user.email} (${session.user.role} - Service: ${(session.user as any).serviceId})`)
       }
       return session
+    },
+    async redirect({ url, baseUrl }) {
+      // Si on vient du subdomain prestations, toujours rediriger vers /prestations
+      if (baseUrl.includes('prestations.')) {
+        return `${baseUrl}/prestations`;
+      }
+
+      // Comportement par défaut : vérifier si l'URL est relative ou du même domaine
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      } else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      return baseUrl;
     }
+
   },
   session: {
     strategy: "jwt"

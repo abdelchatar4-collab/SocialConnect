@@ -10,23 +10,14 @@ import { UserFormData, Problematique, ActionSuivi } from '@/types/user';
 import { aiClient } from '@/lib/ai-client';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';
-
-export interface ProposedItem {
-    type: string;
-    description?: string;
-    date?: string;
-    validated: boolean;
-}
-
-export interface AnalysisResult {
-    actions: ProposedItem[];
-    problematiques: ProposedItem[];
-}
-
-interface UseNotesAIProps {
-    formData: UserFormData;
-    onInputChange: (field: keyof UserFormData, value: any) => void;
-}
+import { ProposedItem, AnalysisResult, UseNotesAIProps } from '@/types/notes-ai';
+import {
+    REFORMULATION_SYSTEM_PROMPT,
+    getAnalysisSystemPrompt,
+    ANALYSIS_USER_PROMPT,
+    findBestMatch,
+    detectCategoriesFromRules
+} from '@/utils/notesAiUtils';
 
 export const useNotesAI = ({ formData, onInputChange }: UseNotesAIProps) => {
     // AI State - Availability
@@ -83,28 +74,18 @@ export const useNotesAI = ({ formData, onInputChange }: UseNotesAIProps) => {
         setReformulatedText(null);
         setReformulationField(field);
 
-        const systemPrompt = `
-Tu es un assistant social professionnel. Reformule cette note de manière claire et professionnelle.
-
-RÈGLES STRICTES :
-1. NE JAMAIS RÉSUMER - Garder ABSOLUMENT TOUTES les informations
-2. Corriger l'orthographe et la grammaire
-3. Utiliser un style formel et neutre
-4. Conserver les dates et noms propres tels quels
-5. Structurer en paragraphes si nécessaire
-6. Ne rien inventer ni ajouter
-7. OBLIGATOIRE: Écrire les dates au format jj/mm/aaaa en début de phrase.
-
-Réponds UNIQUEMENT avec le texte reformulé, sans commentaire ni introduction.
-
+        const systemPrompt = REFORMULATION_SYSTEM_PROMPT + `
 NOTE ORIGINALE :
 ${text}
 
 TEXTE REFORMULÉ :
     `;
 
+        // Temperature 0.4 - enough creativity for good phrasing, not too much to hallucinate
+        const completionOptions = { temperature: 0.4 };
+
         try {
-            const response = await aiClient.complete(text, systemPrompt);
+            const response = await aiClient.complete(text, systemPrompt, completionOptions);
 
             if (response.error) {
                 throw new Error(response.error);
@@ -162,47 +143,7 @@ TEXTE REFORMULÉ :
             return;
         }
 
-        // Fuzzy match helper
-        const findBestMatch = (candidate: string, options: any[]) => {
-            if (!candidate) return null;
-            const norm = candidate.toString().toLowerCase().trim();
-            const exact = options.find(o => o.label.toLowerCase() === norm);
-            if (exact) return exact.label;
-            const partials = options.filter(o => {
-                const l = o.label.toLowerCase();
-                return norm.includes(l) || l.includes(norm);
-            });
-            if (partials.length > 0) {
-                partials.sort((a, b) => b.label.length - a.label.length);
-                return partials[0].label;
-            }
-            return null;
-        };
-
-        // Rule-based detection
-        const detectCategoriesFromRules = (text: string) => {
-            const detected: { type: string, description: string }[] = [];
-            const textLower = text.toLowerCase();
-            const rules = [
-                { key: 'CPAS', labels: ['CPAS', 'RIS', 'revenu d\'intégration', 'aide sociale'] },
-                { key: 'Logement', labels: ['loyer', 'bail', 'propriétaire', 'préavis', 'insalubrité'] },
-                { key: 'Endettement/Surendettement', labels: ['dette', 'huissier', 'facture impayée', 'rappel', 'mise en demeure'] },
-                { key: 'Energie (eau;gaz;électricité)', labels: ['engie', 'sibelga', 'vivaqua', 'totalenergies', 'compteur'] },
-                { key: 'Santé (physique; handicap; autonomie)', labels: ['médecin', 'hôpital', 'mutuelle', 'pharmacie', 'traitement'] },
-            ];
-            rules.forEach(rule => {
-                const realLabel = findBestMatch(rule.key, problematiqueOptions);
-                if (realLabel && rule.labels.some(l => textLower.includes(l.toLowerCase()))) {
-                    detected.push({
-                        type: realLabel,
-                        description: `Détecté via mot-clé ("${rule.labels.find(l => textLower.includes(l.toLowerCase()))}")`,
-                    });
-                }
-            });
-            return detected;
-        };
-
-        const ruleBasedProblematiques = detectCategoriesFromRules(allNotes);
+        const ruleBasedProblematiques = detectCategoriesFromRules(allNotes, problematiqueOptions);
 
         setIsAnalyzing(true);
         setAnalysisError(null);
@@ -237,58 +178,17 @@ TEXTE REFORMULÉ :
                 .replace('${validActions}', validActions)
                 .replace('${validProblematiques}', validProblematiques);
         } else {
-            systemPrompt = `Tu es un assistant social expert en Belgique, spécialisé dans l'accompagnement social en Région de Bruxelles-Capitale... (Lexique Belge Oubligatoire: AER, RIS, SISP, etc.)`;
-            // I'll use the full prompt from the original file to ensure parity
-            systemPrompt = `Tu es un assistant social expert en Belgique, spécialisé dans l'accompagnement social en Région de Bruxelles-Capitale. Ta mission est de structurer les notes de suivi dans un contexte institutionnel belge (communes, CPAS, SPF, sociétés de logement social, médiations locales, etc.).
-
-**CORRESPONDANCE LEXICALE BELGE OBLIGATOIRE** (Ne jamais confondre avec les termes français) :
-- AER = Avertissement-Extrait de Rôle (SPF Finances Belgique)
-- RIF = Relevé d'Identité Fiscale (France uniquement - ignorer en Belgique)
-- RIS = Revenu d'Intégration Sociale (CPAS Belgique)
-- RCD = Recommandation de Crédit (Belgique)
-- AIS = Agence Immobilière Sociale (Belgique)
-- SLRB = Société du Logement de la Région de Bruxelles-Capitale
-- SISP = Société Immobilière de Service Public
-- Vierge Noire = Allocation pour l'aide aux personnes âgées (Belgique)
-- ONEM = Office National de l'Emploi (Belgique)
-- Actiris = Forem bruxellois (Bruxelles)
-- PMS = Psycho-Médico-Social (écoles Belgique)
-- SPF = Service Public Fédéral (Belgique)
-- Pro deo = Aide juridique gratuite (Belgique)
-
-ANALYSE SÉMANTIQUE ET RÈGLES DE CLASSEMENT :
-1. [Endettement/Surendettement]
-2. [Logement]
-3. [Santé (physique; handicap; autonomie)]
-4. [Energie (eau; gaz; électricité)]
-5. [CPAS]
-6. [Juridique]
-7. [Scolarité]
-8. [Fiscalité]
-9. [ISP]
-
-INSTRUCTIONS DE SORTIE :
-- Extrais les ACTIONS et PROBLÉMATIQUES en te basant sur ces règles.
-- Réponds UNIQUEMENT avec un objet JSON valide.
-- Si un terme correspond à une règle ci-dessus, tu DOIS cocher la catégorie correspondante.
-
-VOCABULAIRE AUTORISÉ pour les actions: ${validActions}
-VOCABULAIRE AUTORISÉ pour les problématiques: ${validProblematiques}`;
+            systemPrompt = getAnalysisSystemPrompt(validActions, validProblematiques);
         }
 
-        const userPrompt = `Analyse ce texte et extrais les actions et problématiques.
-Réponds UNIQUEMENT en JSON avec ce format exact:
-{"actions":[{"type":"NomAction","description":"contexte","date":"YYYY-MM-DD"}],"problematiques":[{"type":"NomProbleme","detail":"detail"}]}
-
-TEXTE À ANALYSER:
-${allNotes}`;
+        const userPrompt = ANALYSIS_USER_PROMPT + `\n\nTEXTE À ANALYSER:\n${allNotes}`;
 
         try {
             const response = await aiClient.complete(userPrompt, systemPrompt, { temperature: analysisTemp });
             if (response.error) throw new Error(response.error);
             if (!response.content) throw new Error("Réponse vide");
 
-            let jsonStr = response.content.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+            let jsonStr = response.content.replace(/```json\s * /gi, '').replace(/```\s*/g, '').trim();
             const start = jsonStr.indexOf('{');
             const end = jsonStr.lastIndexOf('}');
             if (start !== -1 && end !== -1) jsonStr = jsonStr.substring(start, end + 1);
@@ -339,7 +239,7 @@ ${allNotes}`;
             }
 
         } catch (e: any) {
-            setAnalysisError(`Erreur : ${e.message}`);
+            setAnalysisError(`Erreur: ${e.message} `);
         } finally {
             setIsAnalyzing(false);
         }
@@ -375,7 +275,7 @@ ${allNotes}`;
         const validatedActions = analysisResult.actions
             .filter(a => a.validated)
             .map(a => ({
-                id: `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                id: `ai - ${Date.now()} -${Math.random().toString(36).substr(2, 9)} `,
                 type: a.type,
                 date: a.date || new Date().toISOString().split('T')[0],
                 description: a.description || '',
@@ -385,7 +285,7 @@ ${allNotes}`;
         const validatedProblems = analysisResult.problematiques
             .filter(p => p.validated)
             .map(p => ({
-                id: `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                id: `ai - ${Date.now()} -${Math.random().toString(36).substr(2, 9)} `,
                 type: p.type,
                 description: p.description || '',
                 dateSignalement: new Date().toISOString().split('T')[0]

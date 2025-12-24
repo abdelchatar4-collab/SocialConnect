@@ -8,12 +8,33 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 "use client";
 
 import React, { useState } from 'react';
-import { MagnifyingGlassIcon, UserPlusIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, UserPlusIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import { User } from '@/types/user';
 import { Button, Badge, Loading } from '@/components/ui';
 
+// Options d'import pour la réinscription
+export interface ImportOptions {
+    contact: boolean;      // telephone, email
+    adresse: boolean;      // adresse complète
+    nationalite: boolean;  // nationalite, langue, statutSejour
+    situationPro: boolean; // situationProfessionnelle, revenus
+    gestion: boolean;      // gestionnaire, antenne
+    logement: boolean;     // logementDetails
+    notes: boolean;        // remarques, notesGenerales, informationImportante
+}
+
+const DEFAULT_IMPORT_OPTIONS: ImportOptions = {
+    contact: true,
+    adresse: true,
+    nationalite: false,
+    situationPro: false,
+    gestion: false,
+    logement: false,
+    notes: false,
+};
+
 interface UserSearchProps {
-    onSelectUser: (user: User) => void;
+    onSelectUser: (user: User, options: ImportOptions) => void;
     onCreateNew: () => void;
     currentYear: number;
 }
@@ -24,32 +45,41 @@ export const UserSearch = ({ onSelectUser, onCreateNew, currentYear }: UserSearc
     const [loading, setLoading] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
 
+    // Modal state
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [showImportModal, setShowImportModal] = useState(false);
+    const [importOptions, setImportOptions] = useState<ImportOptions>(DEFAULT_IMPORT_OPTIONS);
+
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!searchTerm.trim()) return;
 
         setLoading(true);
         try {
-            // Rechercher dans l'année précédente (ou toutes les années sauf la courante)
-            // Pour l'instant, on récupère tout et on filtre côté client pour la démo
-            // Idéalement, l'API devrait supporter une recherche textuelle + filtre année
-            const response = await fetch('/api/users?take=5000'); // Get all for search
+            const response = await fetch('/api/users?take=5000');
             if (!response.ok) throw new Error('Erreur lors de la recherche');
 
             const result = await response.json();
-            // Handle both old (array) and new ({ users, metadata }) response formats
             const allUsers: User[] = Array.isArray(result) ? result : (result.users || []);
 
-            // Filtrer :
-            // 1. Correspondance nom/prénom
-            // 2. Année != currentYear (on cherche dans les archives)
             const filtered = allUsers.filter(user => {
                 const fullName = `${user.nom} ${user.prenom}`.toLowerCase();
                 const search = searchTerm.toLowerCase();
-                // @ts-ignore - annee n'est pas encore dans le type User frontend mais est dans la DB
-                const userYear = user.annee || 2025;
+                const userYear = (user as any).annee || (new Date().getFullYear() - 1);
 
-                return fullName.includes(search) && userYear < currentYear;
+                // Si c'est un dossier d'une année passée et que ça correspond au nom
+                if (fullName.includes(search) && userYear < currentYear) {
+                    // Vérifier si cet usager n'a pas DÉJÀ un dossier pour l'année en cours
+                    const hasCurrentDossier = allUsers.some(u =>
+                        u.nom === user.nom &&
+                        u.prenom === user.prenom &&
+                        u.dateNaissance === user.dateNaissance &&
+                        (u as any).annee === currentYear
+                    );
+
+                    return !hasCurrentDossier;
+                }
+                return false;
             });
 
             setResults(filtered);
@@ -59,6 +89,24 @@ export const UserSearch = ({ onSelectUser, onCreateNew, currentYear }: UserSearc
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSelectForImport = (user: User) => {
+        setSelectedUser(user);
+        setImportOptions(DEFAULT_IMPORT_OPTIONS);
+        setShowImportModal(true);
+    };
+
+    const handleConfirmImport = () => {
+        if (selectedUser) {
+            onSelectUser(selectedUser, importOptions);
+            setShowImportModal(false);
+            setSelectedUser(null);
+        }
+    };
+
+    const toggleOption = (key: keyof ImportOptions) => {
+        setImportOptions(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
     return (
@@ -120,7 +168,7 @@ export const UserSearch = ({ onSelectUser, onCreateNew, currentYear }: UserSearc
                                         </div>
                                     </div>
                                     <Button
-                                        onClick={() => onSelectUser(user)}
+                                        onClick={() => handleSelectForImport(user)}
                                         className="bg-green-600 hover:bg-green-700 text-white"
                                     >
                                         <UserPlusIcon className="h-4 w-4 mr-2" />
@@ -141,6 +189,168 @@ export const UserSearch = ({ onSelectUser, onCreateNew, currentYear }: UserSearc
                     >
                         Usager inconnu ? Créer un nouveau dossier directement
                     </button>
+                </div>
+            )}
+
+            {/* Modal de sélection des données à importer */}
+            {showImportModal && selectedUser && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-4 text-white">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                    <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center font-bold">
+                                        {selectedUser.prenom?.[0]}{selectedUser.nom?.[0]}
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{selectedUser.prenom} {selectedUser.nom}</h3>
+                                        <p className="text-white/80 text-sm">Réinscription en {currentYear}</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowImportModal(false)}
+                                    className="p-1 hover:bg-white/20 rounded-lg transition-colors"
+                                >
+                                    <XMarkIcon className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-6">
+                            <p className="text-slate-600 mb-4">
+                                Sélectionnez les données à reprendre du dossier précédent :
+                            </p>
+
+                            <div className="space-y-3">
+                                {/* Identité - toujours coché, non modifiable */}
+                                <label className="flex items-center p-3 bg-slate-50 rounded-lg cursor-not-allowed opacity-75">
+                                    <CheckIcon className="h-5 w-5 text-green-600 mr-3" />
+                                    <div>
+                                        <span className="font-medium text-slate-700">Identité</span>
+                                        <span className="text-slate-500 text-sm ml-2">(nom, prénom, date de naissance, genre)</span>
+                                    </div>
+                                    <span className="ml-auto text-xs text-slate-400">Toujours inclus</span>
+                                </label>
+
+                                {/* Contact */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.contact}
+                                        onChange={() => toggleOption('contact')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Contact</span>
+                                        <span className="text-slate-500 text-sm ml-2">(téléphone, email)</span>
+                                    </div>
+                                </label>
+
+                                {/* Adresse */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.adresse}
+                                        onChange={() => toggleOption('adresse')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Adresse</span>
+                                        <span className="text-slate-500 text-sm ml-2">(rue, code postal, ville)</span>
+                                    </div>
+                                </label>
+
+                                {/* Nationalité & Langues */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.nationalite}
+                                        onChange={() => toggleOption('nationalite')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Nationalité & Langues</span>
+                                        <span className="text-slate-500 text-sm ml-2">(nationalité, langue, statut séjour)</span>
+                                    </div>
+                                </label>
+
+                                {/* Situation Pro */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.situationPro}
+                                        onChange={() => toggleOption('situationPro')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Situation professionnelle</span>
+                                        <span className="text-slate-500 text-sm ml-2">(emploi, revenus)</span>
+                                    </div>
+                                </label>
+
+                                {/* Gestion */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.gestion}
+                                        onChange={() => toggleOption('gestion')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Gestion</span>
+                                        <span className="text-slate-500 text-sm ml-2">(gestionnaire, antenne)</span>
+                                    </div>
+                                </label>
+
+                                {/* Logement */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.logement}
+                                        onChange={() => toggleOption('logement')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Logement</span>
+                                        <span className="text-slate-500 text-sm ml-2">(type, statut, bailleur...)</span>
+                                    </div>
+                                </label>
+
+                                {/* Notes */}
+                                <label className="flex items-center p-3 bg-white border border-slate-200 rounded-lg cursor-pointer hover:border-green-300 hover:bg-green-50/50 transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={importOptions.notes}
+                                        onChange={() => toggleOption('notes')}
+                                        className="h-5 w-5 text-green-600 rounded border-slate-300 focus:ring-green-500"
+                                    />
+                                    <div className="ml-3">
+                                        <span className="font-medium text-slate-700">Notes & Remarques</span>
+                                        <span className="text-slate-500 text-sm ml-2">(remarques, notes générales, info importante)</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex justify-end space-x-3">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowImportModal(false)}
+                            >
+                                Annuler
+                            </Button>
+                            <Button
+                                onClick={handleConfirmImport}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                <CheckIcon className="h-4 w-4 mr-2" />
+                                Confirmer la réinscription
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

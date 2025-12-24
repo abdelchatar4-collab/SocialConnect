@@ -7,7 +7,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import React from 'react';
 import { SparklesIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { AnalysisResult } from '../../hooks/useNotesAI';
+import { AnalysisResult, ProposedItem } from '@/types/notes-ai';
 
 interface NotesAIAnalysisProps {
     isAnalyzing: boolean;
@@ -37,8 +37,8 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
     disabled
 }) => {
     const validatedCount = analysisResult
-        ? analysisResult.actions.filter(a => a.validated).length +
-        analysisResult.problematiques.filter(p => p.validated).length
+        ? analysisResult.actions.filter((a: ProposedItem) => a.validated).length +
+        analysisResult.problematiques.filter((p: ProposedItem) => p.validated).length
         : 0;
 
     return (
@@ -109,16 +109,16 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const allSelected = analysisResult.problematiques.every(p => p.validated);
+                                        const allSelected = analysisResult.problematiques.every((p: ProposedItem) => p.validated);
                                         allSelected ? deselectAllItems('problematiques') : selectAllItems('problematiques');
                                     }}
                                     className="text-xs px-2 py-1 rounded-md bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
                                 >
-                                    {analysisResult.problematiques.every(p => p.validated) ? '✕ Tout désélectionner' : '✓ Tout sélectionner'}
+                                    {analysisResult.problematiques.every((p: ProposedItem) => p.validated) ? '✕ Tout désélectionner' : '✓ Tout sélectionner'}
                                 </button>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                {analysisResult.problematiques.map((item, index) => (
+                                {analysisResult.problematiques.map((item: ProposedItem, index: number) => (
                                     <button
                                         key={index}
                                         type="button"
@@ -151,16 +151,16 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const allSelected = analysisResult.actions.every(a => a.validated);
+                                        const allSelected = analysisResult.actions.every((a: ProposedItem) => a.validated);
                                         allSelected ? deselectAllItems('actions') : selectAllItems('actions');
                                     }}
                                     className="text-xs px-2 py-1 rounded-md bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
                                 >
-                                    {analysisResult.actions.every(a => a.validated) ? '✕ Tout désélectionner' : '✓ Tout sélectionner'}
+                                    {analysisResult.actions.every((a: ProposedItem) => a.validated) ? '✕ Tout désélectionner' : '✓ Tout sélectionner'}
                                 </button>
                             </div>
                             <div className="flex flex-wrap gap-2">
-                                {analysisResult.actions.map((item, index) => (
+                                {analysisResult.actions.map((item: ProposedItem, index: number) => (
                                     <button
                                         key={index}
                                         type="button"

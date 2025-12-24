@@ -31,8 +31,8 @@ export async function GET(
   const { id } = context.params;
 
   // AJOUTÉ : Vérification des droits
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN requis." }, { status: 403 });
+  if (!session || !session.user || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {
+    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN ou SUPER_ADMIN requis." }, { status: 403 });
   }
 
   try {
@@ -64,21 +64,22 @@ export async function PUT(
   const session = await getServerSession(authOptions) as ExtendedSession | null;
   const gestionnaireId = context.params.id;
 
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN requis." }, { status: 403 });
+  if (!session || !session.user || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {
+    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN ou SUPER_ADMIN requis." }, { status: 403 });
   }
 
   try {
     const body = await request.json();
     // On ne récupère que les champs modifiables, y compris le rôle et la couleur
-    const { email, prenom, nom, role, couleurMedaillon } = body;
+    const { email, prenom, nom, role, couleurMedaillon, isActive } = body;
 
-    const updateData: { email?: string; prenom?: string; nom?: string | null; role?: string; couleurMedaillon?: string | null } = {};
+    const updateData: { email?: string; prenom?: string; nom?: string | null; role?: string; couleurMedaillon?: string | null; isActive?: boolean } = {};
 
-    if (email !== undefined) updateData.email = email;
+    if (email !== undefined) updateData.email = (email && email.trim() !== "") ? email : null;
     if (prenom !== undefined) updateData.prenom = prenom;
     if (nom !== undefined) updateData.nom = nom; // Permet de mettre à null si nom est explicitement envoyé comme null
     if (couleurMedaillon !== undefined) updateData.couleurMedaillon = couleurMedaillon;
+    if (isActive !== undefined) updateData.isActive = isActive;
 
     // Gérer la mise à jour du rôle
     if (role !== undefined) {
@@ -130,8 +131,8 @@ export async function DELETE(
   const { id } = context.params;
 
   // AJOUTÉ : Vérification des droits
-  if (!session || !session.user || session.user.role !== "ADMIN") {
-    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN requis." }, { status: 403 });
+  if (!session || !session.user || (session.user.role !== "ADMIN" && session.user.role !== "SUPER_ADMIN")) {
+    return NextResponse.json({ message: "Accès non autorisé. Rôle ADMIN ou SUPER_ADMIN requis." }, { status: 403 });
   }
 
   // AJOUTÉ : Empêcher un admin de supprimer son propre compte

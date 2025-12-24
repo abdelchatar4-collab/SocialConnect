@@ -273,6 +273,8 @@ export async function POST(request: Request) {
           const finalUserCreateData: Prisma.UserCreateInput = {
             // ID généré basé sur l'antenne
             id: generateUserIdByAntenne(mappedData.antenne !== 'Non spécifié' ? mappedData.antenne : null),
+            // Année d'exercice - utilise l'année en cours par défaut
+            annee: new Date().getFullYear(),
             // Champs scalaires
             nom: mappedData.nom,
             prenom: mappedData.prenom,

@@ -11,6 +11,7 @@ export interface DuplicateInfo {
     id: string;
     nom: string;
     prenom: string;
+    dateNaissance?: string | Date | null;
     antenne?: string;
     gestionnaire?: string;
 }
@@ -19,11 +20,13 @@ interface UseDuplicateCheckProps {
     mode: 'create' | 'edit';
     nom?: string;
     prenom?: string;
+    dateNaissance?: string | Date | null;
 }
 
-export const useDuplicateCheck = ({ mode, nom, prenom }: UseDuplicateCheckProps) => {
+export const useDuplicateCheck = ({ mode, nom, prenom, dateNaissance }: UseDuplicateCheckProps) => {
     const [duplicates, setDuplicates] = useState<DuplicateInfo[]>([]);
     const [isCheckingDuplicates, setIsCheckingDuplicates] = useState(false);
+    const [includeDateOfBirth, setIncludeDateOfBirth] = useState(false);
 
     const checkDuplicates = useCallback(async () => {
         // Only check in create mode
@@ -40,10 +43,28 @@ export const useDuplicateCheck = ({ mode, nom, prenom }: UseDuplicateCheckProps)
 
         setIsCheckingDuplicates(true);
         try {
+            const payload: { nom: string; prenom: string; dateNaissance?: string | null; includeDateOfBirth?: boolean } = {
+                nom: trimmedNom,
+                prenom: trimmedPrenom,
+                includeDateOfBirth
+            };
+
+            // Add date only if includeDateOfBirth is true and date is available
+            if (includeDateOfBirth && dateNaissance) {
+                try {
+                    const d = new Date(dateNaissance);
+                    if (!isNaN(d.getTime())) {
+                        payload.dateNaissance = d.toISOString().split('T')[0];
+                    }
+                } catch (e) {
+                    console.warn('Invalid date in duplicate check:', dateNaissance);
+                }
+            }
+
             const response = await fetch('/api/users/check-duplicate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nom: trimmedNom, prenom: trimmedPrenom }),
+                body: JSON.stringify(payload),
             });
 
             if (response.ok) {
@@ -58,7 +79,7 @@ export const useDuplicateCheck = ({ mode, nom, prenom }: UseDuplicateCheckProps)
         } finally {
             setIsCheckingDuplicates(false);
         }
-    }, [nom, prenom, mode]);
+    }, [nom, prenom, dateNaissance, mode, includeDateOfBirth]);
 
     const clearDuplicates = useCallback(() => {
         setDuplicates([]);
@@ -68,6 +89,8 @@ export const useDuplicateCheck = ({ mode, nom, prenom }: UseDuplicateCheckProps)
         duplicates,
         isCheckingDuplicates,
         checkDuplicates,
-        clearDuplicates
+        clearDuplicates,
+        includeDateOfBirth,
+        setIncludeDateOfBirth
     };
 };

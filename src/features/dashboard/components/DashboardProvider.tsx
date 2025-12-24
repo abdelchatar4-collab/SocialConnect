@@ -13,6 +13,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useAdmin } from '@/contexts/AdminContext';
 import { User } from '@/types';
 import {
     DashboardContextValue,
@@ -89,6 +90,8 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
     const [countdown, setCountdown] = useState(state.autoRefreshInterval);
+
+    const { selectedYear } = useAdmin();
 
     // Calculate statistics from users
     const calculateStats = useCallback((userList: User[]): DashboardStats => {
@@ -227,7 +230,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
             actionTimelineData,
             kpis,
         };
-    }, []);
+    }, [selectedYear]);
 
     // Helper: Calculate age distribution
     const calculateAgeDistribution = (userList: User[]) => {
@@ -270,7 +273,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
             if (u.dateOuverture) {
                 const date = new Date(u.dateOuverture);
                 const year = date.getFullYear();
-                if (year === 2025) {
+                if (year === selectedYear) {
                     const monthKey = monthNames[date.getMonth()];
                     months[monthKey] = (months[monthKey] || 0) + 1;
                 }

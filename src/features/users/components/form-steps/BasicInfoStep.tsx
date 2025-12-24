@@ -13,6 +13,7 @@ import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { AddressSection } from './AddressSection';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { useDuplicateCheck } from '../../hooks/useDuplicateCheck';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 // Sub-components
 import { IdentitySection } from './IdentitySection';
@@ -34,16 +35,20 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
   mode = 'create'
 }) => {
   const { isRequired } = useRequiredFields();
+  const { isSectionVisible } = useFormSectionVisibility();
 
   // Logic: Duplicate check
   const {
     duplicates,
     isCheckingDuplicates,
-    checkDuplicates
+    checkDuplicates,
+    includeDateOfBirth,
+    setIncludeDateOfBirth
   } = useDuplicateCheck({
     mode,
     nom: formData.nom,
-    prenom: formData.prenom
+    prenom: formData.prenom,
+    dateNaissance: formData.dateNaissance
   });
 
   // Logic: Dropdown options
@@ -65,6 +70,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
         <IdentitySection
           nom={formData.nom || ''}
           prenom={formData.prenom || ''}
+          dateNaissance={formData.dateNaissance}
           onInputChange={(field, value) => onInputChange(field, value)}
           onBlur={checkDuplicates}
           errors={errors}
@@ -72,52 +78,58 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           disabled={disabled}
           duplicates={duplicates}
           isCheckingDuplicates={isCheckingDuplicates}
+          includeDateOfBirth={includeDateOfBirth}
+          setIncludeDateOfBirth={setIncludeDateOfBirth}
         />
 
         {/* Section Contact */}
-        <ContactSection
-          telephone={formData.telephone}
-          email={formData.email}
-          premierContact={formData.premierContact}
-          onInputChange={onInputChange}
-          errors={errors}
-          isRequired={isRequired}
-          disabled={disabled}
-          premierContactOptions={premierContactOptionsAPI}
-        />
+        {isSectionVisible('contact') && (
+          <ContactSection
+            telephone={formData.telephone}
+            email={formData.email}
+            premierContact={formData.premierContact}
+            onInputChange={onInputChange}
+            errors={errors}
+            isRequired={isRequired}
+            disabled={disabled}
+            premierContactOptions={premierContactOptionsAPI}
+          />
+        )}
 
         {/* Section Adresse */}
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
-          <h4 className="text-md font-semibold text-green-900 mb-3 flex items-center">
-            <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            Adresse et secteur
-          </h4>
-          <AddressSection
-            address={formData.adresse}
-            onChange={(address) => onInputChange('adresse', address)}
-            onSecteurChange={(secteur) => onInputChange('secteur', secteur)}
-            errors={errors}
-            disabled={disabled}
-            secteur={formData.secteur}
-          />
+        {isSectionVisible('address') && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border border-green-200">
+            <h4 className="text-md font-semibold text-green-900 mb-3 flex items-center">
+              <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Adresse et secteur
+            </h4>
+            <AddressSection
+              address={formData.adresse}
+              onChange={(address) => onInputChange('adresse', address)}
+              onSecteurChange={(secteur) => onInputChange('secteur', secteur)}
+              errors={errors}
+              disabled={disabled}
+              secteur={formData.secteur}
+            />
 
-          {/* Affichage du secteur calculé */}
-          {formData.secteur && (
-            <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="text-sm text-green-700">Secteur d&apos;Anderlecht: </span>
-                <span className="font-bold text-green-800 text-lg">{formData.secteur}</span>
+            {/* Affichage du secteur calculé */}
+            {formData.secteur && (
+              <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded-lg">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span className="text-sm text-green-700">Secteur d&apos;Anderlecht: </span>
+                  <span className="font-bold text-green-800 text-lg">{formData.secteur}</span>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

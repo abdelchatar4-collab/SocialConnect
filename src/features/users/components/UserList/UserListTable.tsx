@@ -30,6 +30,8 @@ interface UserListTableProps {
         showDossier: boolean;
         showPhone: boolean;
         showAdresse: boolean;
+        showAntenne: boolean;
+        showDateNaissance: boolean;
     };
     sortField: string | null;
     sortDirection: 'asc' | 'desc';
@@ -113,12 +115,12 @@ export const UserListTable: React.FC<UserListTableProps> = ({
                         {showColumns.showDossier && <SortableHeader field="id">N° Dossier</SortableHeader>}
                         <SortableHeader field="nom">Nom</SortableHeader>
                         <SortableHeader field="prenom">Prénom</SortableHeader>
-                        <SortableHeader field="dateNaissance">Date Naissance</SortableHeader>
+                        {showColumns.showDateNaissance && <SortableHeader field="dateNaissance">Date Naissance</SortableHeader>}
                         {showColumns.showPhone && <StandardTableHead>Téléphone</StandardTableHead>}
                         {showColumns.showAdresse && <StandardTableHead>Adresse</StandardTableHead>}
                         <SortableHeader field="gestionnaire">Gestionnaire</SortableHeader>
                         <SortableHeader field="secteur">Secteur</SortableHeader>
-                        <SortableHeader field="antenne">Antenne</SortableHeader>
+                        {showColumns.showAntenne && <SortableHeader field="antenne">Antenne</SortableHeader>}
                         <SortableHeader field="etat">État</SortableHeader>
                         <SortableHeader field="dateOuverture">Date Ouverture</SortableHeader>
                         {showColumns.showProblematiques && <StandardTableHead>Problématiques</StandardTableHead>}

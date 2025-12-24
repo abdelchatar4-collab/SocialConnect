@@ -1,8 +1,3 @@
-// Copyright (C) 2025 ABDEL KADER CHATAR
-// SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
-//
-// Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,79 +8,84 @@ datasource db {
 }
 
 model User {
-  id                         String              @id
-  nom                        String
-  prenom                     String
-  dateNaissance              DateTime?
-  genre                      String?
-  telephone                  String?
-  email                      String?
-  adresseId                  String?
-  dateOuverture              DateTime            @default(now())
-  dateCloture                DateTime?
-  etat                       String              @default("Actif")
-  antenne                    String?
-  statutSejour               String?
-  nationalite                String?
-  trancheAge                 String?
-  remarques                  String?             @db.Text
-  hasPrevExp                 Boolean?
-  langue                     String?
-  situationProfessionnelle   String?
-  revenus                    String?
-  premierContact             String?
-  prevExpCommentaire         String?             @db.Text
-  prevExpDateReception       DateTime?
-  prevExpDateRequete         DateTime?
-  prevExpDateVad             DateTime?
-  prevExpDateAudience        DateTime?
-  prevExpDateSignification   DateTime?
-  prevExpDateJugement        DateTime?
-  prevExpDateExpulsion       DateTime?
-  prevExpDossierOuvert       String?             // Nouveau champ: "OUI" ou "NON"
-  prevExpDecision            String?
-  prevExpDemandeCpas         String?
-  prevExpNegociationProprio  String?
-  prevExpSolutionRelogement  String?
-  prevExpMaintienLogement    String?
-  prevExpTypeFamille         String?
-  prevExpTypeRevenu          String?
-  prevExpEtatLogement        String?
-  prevExpNombreChambre       String?
-  prevExpAideJuridique       String?
-  prevExpMotifRequete        String?
-  secteur                    String?
-  logementDetails            String?             @db.Text
-  notesGenerales             String?             @db.Text
-  rgpdAttestationGeneratedAt DateTime?
-  gestionnaireId             String?
-  geographicalSectorId       Int?
-  streetId                   Int?
-  problematiquesDetails      String?             @db.Text
-  informationImportante      String?             @db.Text
-  afficherDonneesConfidentielles Boolean?        @default(false)
-  donneesConfidentielles     String?             @db.Text
-  partenaire                 String?
-  documents                  Document[]
-  adresse                    Adresse?            @relation(fields: [adresseId], references: [id], onDelete: Cascade)
-  geographicalSector         GeographicalSector? @relation(fields: [geographicalSectorId], references: [id])
-  gestionnaire               Gestionnaire?       @relation(fields: [gestionnaireId], references: [id])
-  street                     Street?             @relation(fields: [streetId], references: [id])
-  actions                    ActionSuivi[]       @relation("ActionSuiviToUser")
-  problematiques             Problematique[]
+  id                             String              @id
+  nom                            String
+  prenom                         String
+  dateNaissance                  DateTime?
+  genre                          String?
+  telephone                      String?
+  email                          String?
+  adresseId                      String?
+  dateOuverture                  DateTime            @default(now())
+  dateCloture                    DateTime?
+  etat                           String              @default("Actif")
+  antenne                        String?
+  statutSejour                   String?
+  nationalite                    String?
+  trancheAge                     String?
+  remarques                      String?             @db.Text
+  hasPrevExp                     Boolean?
+  langue                         String?
+  premierContact                 String?
+  prevExpCommentaire             String?             @db.Text
+  prevExpDateReception           DateTime?
+  prevExpDateRequete             DateTime?
+  prevExpDateVad                 DateTime?
+  prevExpDecision                String?
+  secteur                        String?
+  logementDetails                String?             @db.Text
+  notesGenerales                 String?             @db.Text
+  rgpdAttestationGeneratedAt     DateTime?
+  gestionnaireId                 String?
+  geographicalSectorId           Int?
+  streetId                       Int?
+  problematiquesDetails          String?             @db.Text
+  informationImportante          String?             @db.Text
+  partenaire                     String?
+  afficherDonneesConfidentielles Boolean?            @default(false)
+  donneesConfidentielles         String?             @db.Text
+  annee                          Int
+  dossierPrecedentId             String?
+  prevExpAideJuridique           String?
+  prevExpDateAudience            DateTime?
+  serviceId                      String              @default("default")
+  service                        Service             @relation(fields: [serviceId], references: [id])
+  prevExpDateExpulsion           DateTime?
+  prevExpDateJugement            DateTime?
+  prevExpDateSignification       DateTime?
+  prevExpDemandeCpas             String?
+  prevExpEtatLogement            String?
+  prevExpMaintienLogement        String?
+  prevExpMotifRequete            String?
+  prevExpNegociationProprio      String?
+  prevExpNombreChambre           String?
+  prevExpSolutionRelogement      String?
+  prevExpTypeFamille             String?
+  prevExpTypeRevenu              String?
+  revenus                        String?
+  situationProfessionnelle       String?
+  prevExpDossierOuvert           String?
+  mediationType                  String?
+  mediationDemandeur             String?
+  mediationPartieAdverse         String?
+  mediationStatut                String?
+  mediationDescription           String?             @db.Text
+  createdAt                      DateTime            @default(now())
+  createdBy                      String?
+  updatedAt                      DateTime?           @updatedAt
+  updatedBy                      String?
+  documents                      Document[]
+  adresse                        Adresse?            @relation(fields: [adresseId], references: [id], onDelete: Cascade)
+  dossierPrecedent               User?               @relation("HistoriqueDossier", fields: [dossierPrecedentId], references: [id], onUpdate: SetNull)
+  dossierSuivant                 User[]              @relation("HistoriqueDossier")
+  geographicalSector             GeographicalSector? @relation(fields: [geographicalSectorId], references: [id])
+  gestionnaire                   Gestionnaire?       @relation(fields: [gestionnaireId], references: [id])
+  street                         Street?             @relation(fields: [streetId], references: [id])
+  actions                        ActionSuivi[]       @relation("ActionSuiviToUser")
+  problematiques                 Problematique[]
 
-  // Champs pour la transition annuelle
-  annee                      Int                 @default(2025)
-  dossierPrecedentId         String?
-  dossierPrecedent           User?               @relation("HistoriqueDossier", fields: [dossierPrecedentId], references: [id], onDelete: SetNull, onUpdate: SetNull)
-  dossierSuivant             User[]              @relation("HistoriqueDossier")
-
-  // Champs d'audit (traçabilité)
-  createdBy                  String?             // Email de l'utilisateur qui a créé le dossier
-  createdAt                  DateTime            @default(now())
-  updatedBy                  String?             // Email de l'utilisateur qui a modifié le dossier
-  updatedAt                  DateTime?           @updatedAt
-
+  @@index([serviceId])
+  @@index([nom, prenom])
   @@index([gestionnaireId], map: "User_gestionnaireId_fkey")
   @@index([adresseId], map: "User_adresseId_fkey")
   @@index([geographicalSectorId], map: "User_geographicalSectorId_fkey")
@@ -152,21 +152,32 @@ model Gestionnaire {
   id               String  @id @default(uuid())
   nom              String?
   prenom           String
-  email            String  @unique
+  email            String? @unique
   role             String  @default("USER")
+  serviceId        String  @default("default")
+  service          Service @relation(fields: [serviceId], references: [id])
   couleurMedaillon String? @db.LongText
+  isActive         Boolean @default(true)
+  lastActiveServiceId String? // Pour les Super Admins : dernier service visité
+  horaireHabituel   Json?    // { name: string, start: string, end: string, pause: number, standardDuration: number }
+  prestations      Prestation[]
   users            User[]
 
+  soldeConges      SoldeConge[]
+  @@index([serviceId])
   @@map("gestionnaires")
 }
 
 model DropdownOption {
-  id    String @id @default(cuid())
-  value String
-  label String
-  type  String @default("unknown")
+  id        String  @id @default(cuid())
+  value     String
+  label     String
+  type      String  @default("unknown")
+  serviceId String  @default("default")
+  service   Service @relation(fields: [serviceId], references: [id])
 
-  @@unique([type, value])
+  @@unique([type, value, serviceId])
+  @@index([serviceId])
   @@map("dropdown_options")
 }
 
@@ -196,28 +207,53 @@ model Street {
 }
 
 model Settings {
-  id                  String   @id @default(uuid())
-  serviceName         String   @default("LE PÔLE ACCUEIL SOCIAL DES QUARTIERS")
-  logoUrl             String?
-  primaryColor        String   @default("#1e3a8a")
-  headerSubtitle      String   @default("PORTAIL DE GESTION")
-  showCommunalLogo    Boolean  @default(true)
-  requiredFields      Json     @default("[]")
-  enableBirthdays     Boolean  @default(false)
-  colleagueBirthdays  Json     @default("[]")
-  activeHolidayTheme  String   @default("NONE") // Options: "NONE", "CHRISTMAS", "NEW_YEAR"
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                 String   @id @default(uuid())
+  serviceId          String?
+  // service            Service? @relation(fields: [serviceId], references: [id])
+  serviceName        String   @default("LE PÔLE ACCUEIL SOCIAL DES QUARTIERS")
+  logoUrl            String?
+  primaryColor       String   @default("#1e3a8a")
+  headerSubtitle     String   @default("PORTAIL DE GESTION")
+  showCommunalLogo   Boolean  @default(true)
+  requiredFields     String   @db.LongText
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  colleagueBirthdays String   @db.LongText
+  enableBirthdays    Boolean  @default(false)
+  activeHolidayTheme String   @default("NONE")
+  availableYears     String   @db.LongText
 
+  // AI Settings
+  aiEnabled              Boolean @default(true)
+  aiProvider             String  @default("ollama")
+  aiEndpoint             String  @default("http://192.168.2.147:11434")
+  aiModel                String  @default("qwen2.5:3b")
+  aiTemperature          Float   @default(0.7)
+  aiGroqApiKey           String? @db.VarChar(255)
+  aiGroqModel            String  @default("llama-3.1-8b-instant")
+  aiUseKeyPool           Boolean @default(false)
+  aiEnableAnalysis       Boolean @default(true)
+  aiAnalysisTemperature  Float   @default(0)
+  aiCustomAnalysisPrompt String? @db.Text
+
+  // Feature Toggles (Modules à la carte)
+  enabledModules         Json?    // Stucture: { "housing": true, "stats": true, ... }
+
+  // Column Visibility Settings (per service)
+  visibleColumns         Json?    // Structure: { "nom": true, "telephone": true, ... }
+
+  // Form Section Visibility Settings (per service)
+  visibleFormSections    Json?    // Structure: { "identity": true, "housing": false, ... }
+
+  @@index([serviceId])
   @@map("settings")
 }
 
-// API Keys for AI providers (Groq, OpenAI, etc.)
 model ApiKey {
   id               String    @id @default(cuid())
-  provider         String    @default("groq") // "groq", "openai", etc.
+  provider         String    @default("groq")
   key              String    @db.VarChar(255)
-  label            String    // e.g., "Pauline", "Ahmed"
+  label            String
   isActive         Boolean   @default(true)
   lastUsedAt       DateTime?
   requestsToday    Int       @default(0)
@@ -227,4 +263,82 @@ model ApiKey {
   updatedAt        DateTime  @updatedAt
 
   @@map("api_keys")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique // ex: "vie-precaire", "logement"
+  name        String // ex: "Vie Précaire"
+  cluster     String? // ex: "Pôle Inclusion" (Groupement)
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users           User[]
+  gestionnaires   Gestionnaire[]
+  dropdownOptions DropdownOption[]
+  prestations     Prestation[]
+  holidays        Holiday[]
+  // settings      Settings[]
+}
+
+model Prestation {
+  id               String       @id @default(cuid())
+  date             DateTime
+  heureDebut       String       // "HH:mm"
+  heureFin         String       // "HH:mm"
+  pause            Int          @default(0) // Minutes
+  dureeNet         Int          @default(0) // Minutes
+  isOvertime       Boolean      @default(false) // If after 19:00
+  bonis            Int          @default(0) // Minutes exceeding standard
+  motif            String
+  commentaire      String?      @db.Text
+  gestionnaireId   String
+  serviceId        String       @default("default")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  gestionnaire     Gestionnaire @relation(fields: [gestionnaireId], references: [id])
+  service          Service      @relation(fields: [serviceId], references: [id])
+
+  @@index([gestionnaireId])
+  @@index([serviceId])
+  @@index([date])
+  @@map("prestations")
+}
+
+model Holiday {
+  id        String   @id @default(cuid())
+  date      DateTime
+  label     String
+  year      Int
+  serviceId String   @default("default")
+  service   Service  @relation(fields: [serviceId], references: [id])
+
+  @@unique([date, serviceId])
+  @@index([serviceId])
+  @@index([year])
+  @@map("holidays")
+}
+
+model SoldeConge {
+  id              String       @id @default(cuid())
+  gestionnaireId  String
+  gestionnaire    Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
+
+  annee                Int      @default(2026)
+
+  // Quotas en minutes (ex: 217h30 = 13050 minutes)
+  vacancesAnnuelles    Int      @default(0) // VA
+  consultationMedicale Int      @default(0) // CM
+  forceMajeure         Int      @default(0) // FM
+  congesReglementaires Int      @default(0) // CR
+  creditHeures         Int      @default(0) // CH
+  heuresSupplementaires Int     @default(0) // HS
+
+  updatedAt            DateTime @updatedAt
+
+  @@unique([gestionnaireId, annee])
+  @@map("solde_conges")
 }

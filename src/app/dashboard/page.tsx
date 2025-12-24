@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { DashboardLayout } from '@/features/dashboard';
 import { User } from '@/types/user';
 import { Card, CardContent, Loading, Badge } from '@/components/ui';
+import { useAdmin } from '@/contexts/AdminContext';
 import {
   UserGroupIcon,
   DocumentTextIcon,
@@ -27,14 +28,16 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const { selectedYear } = useAdmin();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Fetch the list of all users
-        const usersResponse = await fetch('/api/users?take=5000'); // Request a large batch for dashboard stats
+        // Fetch users filtered by selected year
+        const usersResponse = await fetch(`/api/users?take=5000&annee=${selectedYear}`);
         if (!usersResponse.ok) {
           throw new Error(`Error fetching all users: ${usersResponse.statusText}`);
         }
@@ -43,8 +46,8 @@ export default function DashboardPage() {
         const usersData: User[] = Array.isArray(usersResult) ? usersResult : (usersResult.users || []);
         setUsers(usersData);
 
-        // Fetch the list of recent users (top 10)
-        const recentUsersResponse = await fetch('/api/users/recent?limit=10');
+        // Fetch the list of recent users (top 10) - also filter by year
+        const recentUsersResponse = await fetch(`/api/users/recent?limit=10&annee=${selectedYear}`);
         if (!recentUsersResponse.ok) {
           throw new Error(`Error fetching recent users: ${recentUsersResponse.statusText}`);
         }
@@ -60,7 +63,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedYear]);
 
   if (loading) {
     return (

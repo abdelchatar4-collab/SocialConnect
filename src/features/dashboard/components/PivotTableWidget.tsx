@@ -16,7 +16,7 @@ import { Edit3, Trash2, Table2, Download } from 'lucide-react';
 import { PivotTableConfig, PivotTableData } from '../types/pivotTable';
 import { getFieldById } from '../types/customWidget';
 import { User } from '@/types';
-import { calculatePivotData } from './PivotTableBuilder';
+import { calculatePivotData } from '../utils/pivotCalculations';
 import { exportPivotToExcel } from '../utils/excelExport';
 
 interface PivotTableWidgetProps {

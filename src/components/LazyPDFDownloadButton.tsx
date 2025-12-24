@@ -14,6 +14,7 @@ interface LazyPDFDownloadButtonProps {
     user: User;
     gestionnaires: Gestionnaire[];
     className?: string;
+    showAntenne?: boolean;
 }
 
 const PdfIcon = ({ className = "h-5 w-5 mr-2" }: { className?: string }) => (
@@ -27,7 +28,7 @@ const PdfIcon = ({ className = "h-5 w-5 mr-2" }: { className?: string }) => (
     </svg>
 );
 
-const LazyPDFDownloadButton: React.FC<LazyPDFDownloadButtonProps> = ({ user, gestionnaires, className }) => {
+const LazyPDFDownloadButton: React.FC<LazyPDFDownloadButtonProps> = ({ user, gestionnaires, className, showAntenne = true }) => {
     const [isClient, setIsClient] = useState(false);
     const [shouldGenerate, setShouldGenerate] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -81,7 +82,7 @@ const LazyPDFDownloadButton: React.FC<LazyPDFDownloadButtonProps> = ({ user, ges
     // Une fois cliqué, on monte le PDFDownloadLink qui va générer le document
     return (
         <PDFDownloadLink
-            document={<UserPDFDocument user={user} gestionnairesList={gestionnaires} />}
+            document={<UserPDFDocument user={user} gestionnairesList={gestionnaires} showAntenne={showAntenne} />}
             fileName={`fiche-${user.nom?.toLowerCase() || "usager"}-${user.prenom?.toLowerCase() || ""}.pdf`}
             className={className}
             onError={(err) => {

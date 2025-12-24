@@ -113,30 +113,73 @@ export default function NewUserPage() {
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialiser l'affichage de la recherche si on est dans une année future (ex: 2026)
+  // Initialiser l'affichage de la recherche si on est dans une année FUTURE
+  // (pour permettre la réinscription d'usagers existants d'années précédentes)
   useEffect(() => {
-    if (selectedYear > 2025) {
+    const currentYear = new Date().getFullYear();
+    // Afficher la recherche UNIQUEMENT si l'année sélectionnée est dans le futur
+    if (selectedYear > currentYear) {
       setShowSearch(true);
     } else {
       setShowSearch(false);
     }
   }, [selectedYear]);
 
-  const handleSelectUser = (user: User) => {
+  const handleSelectUser = (user: User, options: { contact: boolean; adresse: boolean; nationalite: boolean; situationPro: boolean; gestion: boolean; logement: boolean; notes: boolean }) => {
     // Préparer les données pour la réinscription
-    // On garde les infos stables, on vide les infos dossier
+    // On garde les infos stables (identité), et on importe selon les options sélectionnées
     const newData: Partial<User> = {
       ...initialNewUserData, // Repartir d'une base propre
+
+      // Identité - toujours importée
       nom: user.nom || '',
       prenom: user.prenom || '',
       dateNaissance: user.dateNaissance,
       genre: user.genre,
-      nationalite: user.nationalite,
-      telephone: user.telephone,
-      email: user.email,
-      langue: user.langue,
-      adresse: user.adresse, // On reprend l'adresse existante
-      // On NE reprend PAS : dateOuverture, statut, problematiques, etc.
+
+      // Contact - selon option
+      ...(options.contact && {
+        telephone: user.telephone,
+        email: user.email,
+      }),
+
+      // Adresse - selon option
+      ...(options.adresse && {
+        adresse: user.adresse,
+      }),
+
+      // Nationalité & Langues - selon option
+      ...(options.nationalite && {
+        nationalite: user.nationalite,
+        langue: user.langue,
+        statutSejour: user.statutSejour,
+      }),
+
+      // Situation professionnelle - selon option
+      ...(options.situationPro && {
+        situationProfessionnelle: user.situationProfessionnelle,
+        revenus: user.revenus,
+      }),
+
+      // Gestion - selon option
+      ...(options.gestion && {
+        gestionnaire: user.gestionnaire,
+        antenne: user.antenne,
+      }),
+
+      // Logement - selon option
+      ...(options.logement && {
+        logementDetails: user.logementDetails,
+      }),
+
+      // Notes & Remarques - selon option (TOUTES les notes)
+      ...(options.notes && {
+        remarques: user.remarques,
+        notesGenerales: user.notesGenerales,
+        informationImportante: user.informationImportante,
+        problematiquesDetails: user.problematiquesDetails,
+        donneesConfidentielles: user.donneesConfidentielles,
+      }),
     };
 
     setPrefilledData(newData);
@@ -230,15 +273,8 @@ export default function NewUserPage() {
         }
       }
 
-      // Déterminer l'année en fonction de la date d'ouverture
-      let anneeDossier = selectedYear;
-
-      if (userData.dateOuverture) {
-        const dateOuverture = new Date(userData.dateOuverture);
-        if (!isNaN(dateOuverture.getTime())) {
-          anneeDossier = dateOuverture.getFullYear();
-        }
-      }
+      // L'année du dossier est strictement celle de l'exercice sélectionné
+      const anneeDossier = selectedYear;
 
       // Ajouter l'année et le lien historique
       const payload = {

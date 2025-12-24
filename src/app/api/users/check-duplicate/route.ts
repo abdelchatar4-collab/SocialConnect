@@ -11,14 +11,24 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 export async function POST(request: NextRequest) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const serviceId = (session.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
+
     try {
         const body = await request.json();
-        const { nom, prenom } = body;
+        const { nom, prenom, dateNaissance, includeDateOfBirth } = body;
 
-        console.log('[check-duplicate] Checking for:', { nom, prenom });
+        console.log('[check-duplicate] Checking for:', { nom, prenom, dateNaissance, includeDateOfBirth });
 
         if (!nom || !prenom) {
             return NextResponse.json(
@@ -59,10 +69,21 @@ export async function POST(request: NextRequest) {
         console.log('[check-duplicate] Found users:', allUsers.length);
 
         // Filter for exact matches (case-insensitive)
-        const duplicates = allUsers.filter(u =>
+        let duplicates = allUsers.filter(u =>
             u.nom?.toLowerCase() === nomLower &&
             u.prenom?.toLowerCase() === prenomLower
         );
+
+        // If includeDateOfBirth is true, also filter by date of birth
+        if (includeDateOfBirth && dateNaissance) {
+            const targetDate = new Date(dateNaissance).toISOString().split('T')[0];
+            duplicates = duplicates.filter(u => {
+                if (!u.dateNaissance) return false;
+                const userDate = new Date(u.dateNaissance).toISOString().split('T')[0];
+                return userDate === targetDate;
+            });
+            console.log('[check-duplicate] After date filter:', duplicates.length);
+        }
 
         console.log('[check-duplicate] Exact matches:', duplicates.length);
 

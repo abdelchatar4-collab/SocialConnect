@@ -8,6 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from 'react';
 import { UserFormData } from '@/types/user';
 import { useNotesAI } from '../../hooks/useNotesAI';
+import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
 // Sub-components
 import { NotesEditorSection } from './NotesEditorSection';
@@ -25,6 +26,13 @@ export const NotesStep: React.FC<NotesStepProps> = ({
   onInputChange,
   disabled
 }) => {
+  const { isSectionVisible } = useFormSectionVisibility();
+
+  // If notes section is disabled, don't render anything
+  if (!isSectionVisible('notes')) {
+    return null;
+  }
+
   // Logic: AI and Data Cleaning
   const {
     isAiAvailable,

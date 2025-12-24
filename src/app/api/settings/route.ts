@@ -6,33 +6,45 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients'; // ✅ Middleware import
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 
 // GET - Retrieve settings
 export async function GET(request: NextRequest) {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || !session.user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // 🔒 Multi-Tenant - Get Settings for THIS Service
+    const serviceId = (session.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
+
     try {
-        // Get the first (and only) settings record
+        // Get the first (and only) settings record FOR THIS SERVICE
         let settings = await prisma.settings.findFirst();
 
-        // If no settings exist, create default settings
+        // If no settings exist for this service, create default settings
         if (!settings) {
+            // Note: Middleware will automatically inject serviceId: serviceId
             settings = await prisma.settings.create({
                 data: {
-                    serviceName: "LE PÔLE ACCUEIL SOCIAL DES QUARTIERS",
+                    serviceName: "Mon Nouveau Service (À Configurer)", // Generic default
                     primaryColor: "#1e3a8a",
                     headerSubtitle: "PORTAIL DE GESTION",
                     showCommunalLogo: true,
-                    requiredFields: [],
+                    requiredFields: JSON.stringify([]),
                     enableBirthdays: false,
-                    colleagueBirthdays: [],
-                    activeHolidayTheme: "NONE"
+                    colleagueBirthdays: JSON.stringify([]),
+                    activeHolidayTheme: "NONE",
+                    availableYears: JSON.stringify([new Date().getFullYear(), new Date().getFullYear() + 1]),
+                    enabledModules: JSON.stringify({
+                        housingAnalysis: true,
+                        statsDashboard: true,
+                        exportData: true,
+                        documents: true
+                    })
                 }
             });
         }
@@ -53,23 +65,39 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
-    if (!session) {
+    if (!session || !session.user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userRole = (session.user as { role?: string })?.role;
-    if (userRole !== 'ADMIN') {
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
         return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 });
     }
 
+    // 🔒 Multi-Tenant - Update Settings for THIS Service
+    const serviceId = (session.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
+
     try {
         const body = await request.json();
-        const { serviceName, logoUrl, primaryColor, headerSubtitle, showCommunalLogo, requiredFields, enableBirthdays, colleagueBirthdays, activeHolidayTheme } = body;
+        const {
+            serviceName, logoUrl, primaryColor, headerSubtitle, showCommunalLogo,
+            requiredFields, enableBirthdays, colleagueBirthdays, activeHolidayTheme, availableYears,
+            // AI Settings
+            aiEnabled, aiProvider, aiEndpoint, aiModel, aiTemperature,
+            aiGroqApiKey, aiGroqModel, aiUseKeyPool, aiEnableAnalysis, aiAnalysisTemperature, aiCustomAnalysisPrompt,
+            // Feature Toggles (Modules)
+            enabledModules,
+            // Column Visibility Settings
+            visibleColumns,
+            // Form Section Visibility Settings
+            visibleFormSections
+        } = body;
 
         // Get existing settings
         let settings = await prisma.settings.findFirst();
 
-        console.log('[API PUT /api/settings] Received body:', JSON.stringify(body, null, 2));
+        console.log(`[API PUT /api/settings] Received body for Service ${serviceId}`);
 
         if (!settings) {
             console.log('[API PUT /api/settings] Creating new settings');
@@ -84,7 +112,28 @@ export async function PUT(request: NextRequest) {
                     requiredFields: requiredFields || [],
                     enableBirthdays: enableBirthdays !== undefined ? enableBirthdays : false,
                     colleagueBirthdays: colleagueBirthdays || [],
-                    activeHolidayTheme: activeHolidayTheme || "NONE"
+                    activeHolidayTheme: activeHolidayTheme || "NONE",
+                    availableYears: availableYears || JSON.stringify([new Date().getFullYear(), new Date().getFullYear() + 1]),
+                    enabledModules: enabledModules || JSON.stringify({
+                        housingAnalysis: true,
+                        statsDashboard: true,
+                        exportData: true,
+                        documents: true
+                    }),
+                    // AI Settings with defaults
+                    aiEnabled: aiEnabled ?? true,
+                    aiProvider: aiProvider || "ollama",
+                    aiEndpoint: aiEndpoint || "http://192.168.2.147:11434",
+                    aiModel: aiModel || "qwen2.5:3b",
+                    aiTemperature: aiTemperature ?? 0.7,
+                    aiGroqApiKey: aiGroqApiKey || null,
+                    aiGroqModel: aiGroqModel || "llama-3.1-8b-instant",
+                    aiUseKeyPool: aiUseKeyPool ?? false,
+                    aiEnableAnalysis: aiEnableAnalysis ?? true,
+                    aiAnalysisTemperature: aiAnalysisTemperature ?? 0,
+                    aiCustomAnalysisPrompt: aiCustomAnalysisPrompt || null,
+                    visibleColumns: visibleColumns || null,
+                    visibleFormSections: visibleFormSections || null
                 }
             });
         } else {
@@ -102,7 +151,23 @@ export async function PUT(request: NextRequest) {
                         ...(requiredFields !== undefined && { requiredFields }),
                         ...(enableBirthdays !== undefined && { enableBirthdays }),
                         ...(colleagueBirthdays !== undefined && { colleagueBirthdays }),
-                        ...(activeHolidayTheme !== undefined && { activeHolidayTheme })
+                        ...(activeHolidayTheme !== undefined && { activeHolidayTheme }),
+                        ...(availableYears !== undefined && { availableYears }),
+                        ...(enabledModules !== undefined && { enabledModules }),
+                        // AI Settings
+                        ...(aiEnabled !== undefined && { aiEnabled }),
+                        ...(aiProvider !== undefined && { aiProvider }),
+                        ...(aiEndpoint !== undefined && { aiEndpoint }),
+                        ...(aiModel !== undefined && { aiModel }),
+                        ...(aiTemperature !== undefined && { aiTemperature }),
+                        ...(aiGroqApiKey !== undefined && { aiGroqApiKey }),
+                        ...(aiGroqModel !== undefined && { aiGroqModel }),
+                        ...(aiUseKeyPool !== undefined && { aiUseKeyPool }),
+                        ...(aiEnableAnalysis !== undefined && { aiEnableAnalysis }),
+                        ...(aiAnalysisTemperature !== undefined && { aiAnalysisTemperature }),
+                        ...(aiCustomAnalysisPrompt !== undefined && { aiCustomAnalysisPrompt }),
+                        ...(visibleColumns !== undefined && { visibleColumns }),
+                        ...(visibleFormSections !== undefined && { visibleFormSections })
                     }
                 });
                 console.log('[API PUT /api/settings] Update successful');

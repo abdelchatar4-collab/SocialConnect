@@ -11,6 +11,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { useState, useEffect, useCallback } from 'react';
 import { User, Gestionnaire } from '@/types';
+import { useAdmin } from '@/contexts/AdminContext';
 
 export const useUserList = () => {
     const [users, setUsers] = useState<User[]>([]);
@@ -18,11 +19,15 @@ export const useUserList = () => {
     const [loading, setLoading] = useState(true);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+    const { selectedYear } = useAdmin();
+
     // Fetch users and gestionnaires
     useEffect(() => {
         setLoading(true);
+        const yearParam = selectedYear ? `?annee=${selectedYear}` : '';
+
         Promise.all([
-            fetch('/api/users')
+            fetch(`/api/users${yearParam}`)
                 .then(res => {
                     if (!res.ok) {
                         throw new Error(`Erreur HTTP (users): ${res.status}`);
@@ -48,7 +53,7 @@ export const useUserList = () => {
                 console.error("Erreur lors du fetch des données (users ou gestionnaires):", error);
                 setLoading(false);
             });
-    }, [refreshTrigger]);
+    }, [refreshTrigger, selectedYear]);
 
     const refresh = useCallback(() => {
         setRefreshTrigger(prev => prev + 1);

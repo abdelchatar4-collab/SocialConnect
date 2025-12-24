@@ -174,15 +174,17 @@ export default function DropdownOptionsSettings() {
   const prevExpOptions = optionSets.filter(s => s.id.startsWith('prevExp'));
   const housingIds = ['typeLogement', 'statutOccupation', 'statutGarantie', 'bailEnregistre', 'dureeContrat', 'typeLitige', 'dureePreavis', 'preavisPour'];
   const housingOptions = optionSets.filter(s => !s.id.startsWith('prevExp') && housingIds.includes(s.id));
-  const otherOptions = optionSets.filter(s => !s.id.startsWith('prevExp') && !housingIds.includes(s.id));
+  const prestationIds = ['prestation_motifs'];
+  const prestationOptions = optionSets.filter(s => prestationIds.includes(s.id));
+  const otherOptions = optionSets.filter(s => !s.id.startsWith('prevExp') && !housingIds.includes(s.id) && !prestationIds.includes(s.id));
 
   // Render Category Item
   const CategoryItem = ({ set }: { set: DropdownOptionSetAPI }) => (
     <button
       onClick={() => handleSelectOptionSet(set.id)}
       className={`w-full flex items-center justify-between p-2.5 rounded-lg text-sm transition-all ${selectedSet?.id === set.id
-          ? 'bg-blue-50 text-blue-700 font-medium'
-          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        ? 'bg-blue-50 text-blue-700 font-medium'
+        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
         }`}
     >
       <span className="truncate">{set.name}</span>
@@ -223,6 +225,19 @@ export default function DropdownOptionsSettings() {
               {housingOptions.map(set => <CategoryItem key={set.id} set={set} />)}
             </div>
           </div>
+
+          {/* Groupe Prestations */}
+          {prestationOptions.length > 0 && (
+            <div>
+              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5 px-2">
+                <List className="w-3 h-3" />
+                Prestations
+              </div>
+              <div className="space-y-0.5">
+                {prestationOptions.map(set => <CategoryItem key={set.id} set={set} />)}
+              </div>
+            </div>
+          )}
 
           {/* Autres */}
           <div>

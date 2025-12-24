@@ -342,6 +342,7 @@ async function main() {
             const user = await prisma.user.create({
                 data: {
                     id: randomUUID(), // Generate unique ID
+                    annee: new Date().getFullYear(), // Add required year
                     ...userDataWithoutLogement,
                     logementDetails: JSON.stringify(logementDetails) // Serialize as JSON
                 }

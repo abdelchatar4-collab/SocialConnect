@@ -16,4 +16,4 @@ export { UserListRow } from './UserListRow';
 export { UserListPagination } from './UserListPagination';
 export { UserListColumnToggle } from './UserListColumnToggle';
 export { UserListGrid } from './UserListGrid';
-export * from './UserListFloatingActions';
+export { UserListFloatingActions } from './UserListFloatingActions';

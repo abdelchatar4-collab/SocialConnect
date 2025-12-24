@@ -6,7 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
@@ -20,12 +20,26 @@ const execAsync = promisify(exec);
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 1. Fetch user data from the database
-    const usersFromDb = await prisma.user.findMany({ // Renommé pour clarté
+    const serviceId = (session.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
+
+    // Get year filter from query parameters
+    const { searchParams } = new URL(request.url);
+    const annee = searchParams.get('annee');
+
+    // Build where clause
+    const where: { annee?: number } = {};
+    if (annee) {
+      where.annee = parseInt(annee);
+    }
+
+    // 1. Fetch user data from the database (filtered by year if specified)
+    const usersFromDb = await prisma.user.findMany({
+      where,
       include: {
         adresse: true,
         problematiques: true,

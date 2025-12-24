@@ -207,6 +207,11 @@ export interface User {
   prevExpNombreChambre?: string | null;
   prevExpAideJuridique?: string | null;
   logementDetails?: LogementDetails | string | null;
+  mediationType?: string | null;
+  mediationDemandeur?: string | null;
+  mediationPartieAdverse?: string | null;
+  mediationStatut?: string | null;
+  mediationDescription?: string | null;
   adresse?: Adresse | null;
   documents?: DocumentType[] | null;
   meta?: MetaData | null;
@@ -282,6 +287,11 @@ export interface UserFormData {
   problematiquesDetails: string;
   actions: ActionSuivi[];
   informationImportante: string;
+  mediationType: string;
+  mediationDemandeur: string;
+  mediationPartieAdverse: string;
+  mediationStatut: string;
+  mediationDescription: string;
   mutuelle?: Mutuelle | null;
   rgpdAttestationGeneratedAt?: Date | string | null;
   // Nouveaux champs pour les données confidentielles
@@ -397,6 +407,11 @@ const exampleUserFormData: UserFormData = {
   problematiquesDetails: '',
   actions: [],
   informationImportante: '', // Ajouter cette ligne
+  mediationType: '',
+  mediationDemandeur: '',
+  mediationPartieAdverse: '',
+  mediationStatut: '',
+  mediationDescription: '',
   afficherDonneesConfidentielles: false, // Ajouter ce champ
   donneesConfidentielles: '', // Ajouter ce champ
   rgpdAttestationGeneratedAt: '2023-01-01',

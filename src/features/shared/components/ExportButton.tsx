@@ -12,12 +12,17 @@ interface ExportButtonProps {
   users: User[];
   className?: string;
   children?: React.ReactNode;
+  selectedYear?: number; // Add optional year prop
 }
 
-const ExportButton: React.FC<ExportButtonProps> = ({ users, className = '', children }) => {
+const ExportButton: React.FC<ExportButtonProps> = ({ users, className = '', children, selectedYear }) => {
   const handleExport = async () => {
     try {
-      const response = await fetch('/api/users/export/excel');
+      // Build URL with year parameter if provided
+      const apiUrl = selectedYear
+        ? `/api/users/export/excel?annee=${selectedYear}`
+        : '/api/users/export/excel';
+      const response = await fetch(apiUrl);
 
       if (!response.ok) {
         let errorMessage = 'Erreur lors de l\'exportation Excel';

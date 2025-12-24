@@ -21,7 +21,8 @@ import {
     Home,
     LayoutDashboard,
     Users,
-    ChevronDown
+    ChevronDown,
+    Clock
 } from 'lucide-react';
 
 interface UserMenuProps {
@@ -45,6 +46,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onOpenSettings }) => {
     const menuItems = [
         { href: '/', label: 'Accueil', icon: Home },
         { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+        { href: '/prestations', label: 'Mes Prestations', icon: Clock },
         { href: '/users', label: 'Liste des usagers', icon: Users },
     ];
 
@@ -57,7 +59,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onOpenSettings }) => {
                             {displayName}
                         </span>
                         <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-                            {isAdmin ? 'Admin' : 'Utilisateur'}
+                            {userRole === 'SUPER_ADMIN' ? 'Super Admin' : (userRole === 'ADMIN' ? 'Administrateur' : 'Utilisateur')}
                         </span>
                     </div>
 
@@ -117,24 +119,27 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onOpenSettings }) => {
                         })}
                     </div>
 
-                    {/* Admin & Settings */}
-                    {userRole === 'ADMIN' && (
-                        <div className="p-1">
-                            <Menu.Item>
-                                {({ active }) => (
-                                    <button
-                                        onClick={onOpenSettings}
-                                        className={`
-                      group flex items-center gap-3 w-full px-3 py-2 text-sm rounded-lg transition-colors
-                      ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}
-                    `}
-                                    >
-                                        <Settings className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-600'}`} />
-                                        Paramètres
-                                    </button>
-                                )}
-                            </Menu.Item>
+                    {/* Personal Settings (Accessible to all) */}
+                    <div className="p-1">
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={onOpenSettings}
+                                    className={`
+                  group flex items-center gap-3 w-full px-3 py-2 text-sm rounded-lg transition-colors
+                  ${active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'}
+                `}
+                                >
+                                    <Settings className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-600'}`} />
+                                    Paramètres
+                                </button>
+                            )}
+                        </Menu.Item>
+                    </div>
 
+                    {/* Admin Specific */}
+                    {(userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') && (
+                        <div className="p-1">
                             <Menu.Item>
                                 {({ active }) => (
                                     <button
