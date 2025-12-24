@@ -9,9 +9,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { usePrestations } from '@/contexts/PrestationContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/Button';
-import { ClockIcon, XMarkIcon, CalendarDaysIcon, BoltIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, XMarkIcon, CalendarDaysIcon, BoltIcon, AdjustmentsHorizontalIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { calculatePrestationBreakdown, formatDurationHuman } from '@/utils/prestationUtils';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
+import { PrestationHelpModal } from './PrestationHelpModal';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';
 
 // Preset templates for quick registration
@@ -44,6 +45,7 @@ export const PrestationForm: React.FC = () => {
     const [motif, setMotif] = useState("Présence");
     const [isSaving, setIsSaving] = useState(false);
     const [progressCount, setProgressCount] = useState(0);
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
 
     // Get selected preset details
     const currentPreset = QUICK_PRESETS.find(p => p.id === selectedPreset) || QUICK_PRESETS[0];
@@ -187,10 +189,23 @@ export const PrestationForm: React.FC = () => {
                         </div>
                         <h3 className="font-bold text-gray-900">Nouvelle Prestation</h3>
                     </div>
-                    <button onClick={() => setIsPrestationOpening(false)} className="p-2 hover:bg-gray-100 rounded-full transition-all">
-                        <XMarkIcon className="w-5 h-5 text-gray-400" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsHelpOpen(true)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-xs font-semibold shadow-md hover:shadow-lg hover:scale-105 transition-all"
+                            title="Mode d'emploi"
+                        >
+                            <SparklesIcon className="w-4 h-4" />
+                            Aide
+                        </button>
+                        <button onClick={() => setIsPrestationOpening(false)} className="p-2 hover:bg-gray-100 rounded-full transition-all">
+                            <XMarkIcon className="w-5 h-5 text-gray-400" />
+                        </button>
+                    </div>
                 </div>
+
+                {/* Help Modal */}
+                <PrestationHelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} primaryColor={primaryColor} />
 
                 {/* Mode Toggle - More Prominent */}
                 <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex gap-2">
