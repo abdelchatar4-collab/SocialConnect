@@ -2,40 +2,64 @@
 description: Règles de code à respecter AVANT toute modification
 ---
 
-# Règles de Refactorisation - OBLIGATOIRES
+# ⛔ RÈGLES DE REFACTORISATION - STRICTEMENT OBLIGATOIRES
 
-## Règle Principale: Limite de 500 lignes
+## 🚨 RÈGLE N°1 : LIMITE ABSOLUE DE 300 LIGNES
 
-**AVANT de modifier ou créer un fichier .ts ou .tsx :**
+**AVANT de modifier OU créer un fichier .ts ou .tsx :**
 
-1. Vérifier que le fichier ne dépasse PAS 500 lignes
-2. Si la modification risque de dépasser 500 lignes → REFACTORISER d'abord
+1. **VÉRIFIER** que le fichier ne dépasse PAS 300 lignes
+2. **SI la modification risque de dépasser 300 lignes → REFACTORISER D'ABORD**
+3. **NE JAMAIS** proposer d'augmenter la limite, même temporairement
 
-## Comment vérifier
+> ⚠️ **AUCUNE EXCEPTION.** Si l'utilisateur demande une fonctionnalité et que le fichier est proche de 300 lignes, EXTRAIRE d'abord.
+
+## Comment vérifier AVANT modification
+
+```bash
+// turbo
+wc -l src/path/to/file.tsx
+```
+
+Si le fichier dépasse **250 lignes** → **EXTRAIRE** avant d'ajouter du code.
+
+## Options de refactorisation OBLIGATOIRES
+
+| Situation | Action |
+|-----------|--------|
+| Composant > 200 lignes | Extraire en sous-composants |
+| Hook > 150 lignes | Diviser en hooks spécialisés |
+| API Route > 150 lignes | Extraire helpers/types |
+| Utilitaires > 100 lignes | Diviser par domaine |
+
+## Structure d'extraction recommandée
+
+```
+feature/
+├── components/
+│   ├── MainComponent.tsx (< 300 lignes)
+│   ├── SubComponent1.tsx
+│   └── SubComponent2.tsx
+├── hooks/
+│   ├── useMainLogic.ts (< 300 lignes)
+│   └── useHelperLogic.ts
+└── types.ts
+```
+
+## 🔴 INTERDICTIONS
+
+1. **NE JAMAIS** modifier un fichier > 300 lignes sans le refactoriser d'abord
+2. **NE JAMAIS** créer un nouveau fichier > 300 lignes
+3. **NE JAMAIS** proposer "on refactorisera plus tard"
+4. **NE JAMAIS** contourner cette règle pour "gagner du temps"
+
+## Script de vérification
 
 ```bash
 // turbo
 ./scripts/pre-commit-check.sh
 ```
 
-## Si un fichier dépasse 400 lignes
-
-**Options de refactorisation :**
-
-1. **Composants** → Extraire en sous-composants dans le même dossier
-2. **Hooks** → Extraire la logique en hooks personnalisés
-3. **Utils** → Extraire les fonctions pures en fichiers utils
-4. **Types** → Séparer les interfaces/types dans un fichier `.types.ts`
-
-## Fichiers actuellement en violation (à refactoriser)
-
-- `api/users/[id]/route.ts` (673 lignes)
-- `PrestationAdmin.tsx` (650 lignes)
-- `UserPDFView.tsx` (603 lignes)
-- `PivotTableBuilder.tsx` (602 lignes)
-- `apiClient.ts` (582 lignes)
-- Et 24 autres...
-
 ## Rappel
 
-> ⚠️ NE JAMAIS créer ou modifier un fichier qui dépasse 400 lignes sans le refactoriser.
+> La dette technique coûte 10x plus cher à corriger que de bien faire dès le départ.

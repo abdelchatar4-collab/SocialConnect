@@ -153,14 +153,35 @@ export default function DropdownOptionsSettings() {
     }
   };
 
-  // Réinitialisation
+  // Réinitialisation avec remise des valeurs par défaut
   const handleResetOptions = async () => {
     if (selectedSet && confirm(`Réinitialiser TOUTES les options de "${selectedSet.name}" ?`)) {
       try {
         setLoading(true);
+        // Supprimer toutes les options existantes
         for (const option of detailedOptions) {
           await deleteOptionAPI(selectedSet.id, option.id);
         }
+
+        // Recréer les options par défaut pour prestation_motifs
+        if (selectedSet.id === 'prestation_motifs') {
+          const defaultMotifs = [
+            { label: 'Présence', value: 'presence' },
+            { label: 'Télétravail', value: 'teletravail' },
+            { label: 'Congé VA', value: 'conge_va' },
+            { label: 'Congé CH', value: 'conge_ch' },
+            { label: 'Maladie', value: 'maladie' },
+            { label: '1 jour sans certificat', value: 'jour_sans_certificat' },
+            { label: 'Jour férié', value: 'jour_ferie' },
+            { label: 'Formation', value: 'formation' },
+            { label: 'Réunion externe', value: 'reunion_externe' },
+            { label: 'Heures supp', value: 'heures_supp' }
+          ];
+          for (const motif of defaultMotifs) {
+            await addOptionAPI(selectedSet.id, motif.label);
+          }
+        }
+
         await reloadCurrentOptions();
       } catch (err) {
         alert('Erreur lors de la réinitialisation.');
