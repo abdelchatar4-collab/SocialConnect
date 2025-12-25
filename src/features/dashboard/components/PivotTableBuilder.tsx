@@ -10,7 +10,7 @@ import { X, Plus, Trash2, Percent, Grid3X3, Filter } from 'lucide-react';
 import { PivotTableConfig, DynamicFilter, createEmptyPivotTable } from '../types/pivotTable';
 import { FIELD_SECTIONS, FieldSection, getFieldsBySection, CustomWidgetFilters } from '../types/customWidget';
 import { User } from '@/types';
-import { calculateWidgetData } from './WidgetBuilder';
+import { calculateWidgetData } from '../utils/widgetCalculations';
 import { PivotTablePreview } from './PivotTablePreview';
 import { calculatePivotData } from '../utils/pivotCalculations';
 

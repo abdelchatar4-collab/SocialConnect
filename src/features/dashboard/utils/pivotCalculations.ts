@@ -6,7 +6,7 @@ SocialConnect - Calculs pour les tableaux croisés dynamiques
 import { User } from '@/types';
 import { PivotTableData, DynamicFilter } from '../types/pivotTable';
 import { ANALYZABLE_FIELDS, CustomWidgetFilters } from '../types/customWidget';
-import { calculateWidgetData } from '../components/WidgetBuilder';
+import { calculateWidgetData } from './widgetCalculations';
 
 /**
  * Calculate pivot table data from users

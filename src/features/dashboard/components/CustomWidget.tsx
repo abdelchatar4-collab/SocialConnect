@@ -15,7 +15,7 @@ import React, { useMemo } from 'react';
 import { Edit3, Trash2, Download } from 'lucide-react';
 import { CustomWidgetConfig, getFieldById } from '../types/customWidget';
 import { User } from '@/types';
-import { calculateWidgetData } from './WidgetBuilder';
+import { calculateWidgetData } from '../utils/widgetCalculations';
 import { PieChartWidget, BarChartWidget } from '../widgets';
 import { exportWidgetToExcel } from '../utils/excelExport';
 
