@@ -174,6 +174,9 @@ export const SoldeCongeDisplay: React.FC = () => {
                         Icon={HeartIcon}
                         bgClass="bg-purple-50/50 hover:bg-purple-50"
                     />
+                </div>
+
+                <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
                     <Gauge
                         label="Congés Réglementaires"
                         total={data.quotas.congesReglementaires}
