@@ -12,10 +12,17 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
  * Manage team birthdays and holiday themes
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui';
 import { Cake, PartyPopper, Save, Plus, Trash2, Moon, Sun, Ghost, Candy, Star, Calendar } from 'lucide-react';
+
+interface Gestionnaire {
+    id: string;
+    prenom: string;
+    nom: string;
+    couleurMedaillon?: string | null;
+}
 
 export const BirthdaySettings: React.FC = () => {
     const {
@@ -32,6 +39,32 @@ export const BirthdaySettings: React.FC = () => {
     const [newDate, setNewDate] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [gestionnaires, setGestionnaires] = useState<Gestionnaire[]>([]);
+
+    // Fetch gestionnaires to get their colors
+    useEffect(() => {
+        fetch('/api/gestionnaires')
+            .then(res => res.ok ? res.json() : [])
+            .then(data => setGestionnaires(data))
+            .catch(() => setGestionnaires([]));
+    }, []);
+
+    // Helper to get gestionnaire color by name
+    const getGestionnaireColor = (name: string) => {
+        const g = gestionnaires.find(gest =>
+            gest.prenom?.toLowerCase() === name.toLowerCase() ||
+            `${gest.prenom} ${gest.nom}`.toLowerCase() === name.toLowerCase()
+        );
+        if (g?.couleurMedaillon) {
+            try {
+                const c = typeof g.couleurMedaillon === 'string'
+                    ? JSON.parse(g.couleurMedaillon)
+                    : g.couleurMedaillon;
+                return `linear-gradient(135deg, ${c.from}, ${c.to})`;
+            } catch { return null; }
+        }
+        return null;
+    };
 
     const handleAddBirthday = () => {
         if (!newName.trim() || !newDate) {
@@ -112,8 +145,8 @@ export const BirthdaySettings: React.FC = () => {
                             <button
                                 onClick={() => setActiveHolidayTheme('NONE')}
                                 className={`p-3 rounded-lg border text-center transition-all flex flex-col items-center gap-2 ${activeHolidayTheme === 'NONE'
-                                        ? 'border-gray-500 bg-gray-50 text-gray-900 ring-1 ring-gray-300'
-                                        : 'border-gray-200 hover:border-gray-300 text-gray-500 hover:bg-gray-50'
+                                    ? 'border-gray-500 bg-gray-50 text-gray-900 ring-1 ring-gray-300'
+                                    : 'border-gray-200 hover:border-gray-300 text-gray-500 hover:bg-gray-50'
                                     }`}
                             >
                                 <span className="text-xl">🚫</span>
@@ -122,8 +155,8 @@ export const BirthdaySettings: React.FC = () => {
                             <button
                                 onClick={() => setActiveHolidayTheme('CHRISTMAS')}
                                 className={`p-3 rounded-lg border text-center transition-all flex flex-col items-center gap-2 ${activeHolidayTheme === 'CHRISTMAS'
-                                        ? 'border-red-500 bg-red-50 text-red-700 ring-1 ring-red-300'
-                                        : 'border-gray-200 hover:border-red-200 text-gray-500 hover:bg-red-50'
+                                    ? 'border-red-500 bg-red-50 text-red-700 ring-1 ring-red-300'
+                                    : 'border-gray-200 hover:border-red-200 text-gray-500 hover:bg-red-50'
                                     }`}
                             >
                                 <span className="text-xl">🎄</span>
@@ -132,8 +165,8 @@ export const BirthdaySettings: React.FC = () => {
                             <button
                                 onClick={() => setActiveHolidayTheme('NEW_YEAR')}
                                 className={`p-3 rounded-lg border text-center transition-all flex flex-col items-center gap-2 ${activeHolidayTheme === 'NEW_YEAR'
-                                        ? 'border-yellow-500 bg-yellow-50 text-yellow-700 ring-1 ring-yellow-300'
-                                        : 'border-gray-200 hover:border-yellow-200 text-gray-500 hover:bg-yellow-50'
+                                    ? 'border-yellow-500 bg-yellow-50 text-yellow-700 ring-1 ring-yellow-300'
+                                    : 'border-gray-200 hover:border-yellow-200 text-gray-500 hover:bg-yellow-50'
                                     }`}
                             >
                                 <span className="text-xl">🎆</span>
@@ -142,8 +175,8 @@ export const BirthdaySettings: React.FC = () => {
                             <button
                                 onClick={() => setActiveHolidayTheme('HALLOWEEN')}
                                 className={`p-3 rounded-lg border text-center transition-all flex flex-col items-center gap-2 ${activeHolidayTheme === 'HALLOWEEN'
-                                        ? 'border-orange-500 bg-orange-50 text-orange-700 ring-1 ring-orange-300'
-                                        : 'border-gray-200 hover:border-orange-200 text-gray-500 hover:bg-orange-50'
+                                    ? 'border-orange-500 bg-orange-50 text-orange-700 ring-1 ring-orange-300'
+                                    : 'border-gray-200 hover:border-orange-200 text-gray-500 hover:bg-orange-50'
                                     }`}
                             >
                                 <span className="text-xl">🎃</span>
@@ -152,8 +185,8 @@ export const BirthdaySettings: React.FC = () => {
                             <button
                                 onClick={() => setActiveHolidayTheme('RAMADAN')}
                                 className={`p-3 rounded-lg border text-center transition-all flex flex-col items-center gap-2 ${activeHolidayTheme === 'RAMADAN'
-                                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300'
-                                        : 'border-gray-200 hover:border-emerald-200 text-gray-500 hover:bg-emerald-50'
+                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300'
+                                    : 'border-gray-200 hover:border-emerald-200 text-gray-500 hover:bg-emerald-50'
                                     }`}
                             >
                                 <span className="text-xl">🌙</span>
@@ -211,8 +244,13 @@ export const BirthdaySettings: React.FC = () => {
                                         className="p-3 flex items-center justify-between hover:bg-pink-50 transition-colors group"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 bg-pink-100 text-pink-500 rounded-full flex items-center justify-center">
-                                                <Cake className="w-4 h-4" />
+                                            <div
+                                                className="w-8 h-8 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-sm"
+                                                style={{
+                                                    background: getGestionnaireColor(birthday.name) || 'linear-gradient(135deg, #ec4899, #db2777)'
+                                                }}
+                                            >
+                                                {birthday.name.charAt(0).toUpperCase()}
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">{birthday.name}</p>

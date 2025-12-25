@@ -97,6 +97,52 @@ export async function POST(request: Request) {
         const data = await request.json();
         const { date, heureDebut, heureFin, pause, motif, commentaire } = data;
 
+        // ========== Validation for "1 jour sans certificat" ==========
+        if (motif === '1 jour sans certificat' || motif === 'jour_sans_certificat') {
+            const targetDate = new Date(date);
+            const year = targetDate.getFullYear();
+            const startOfYear = new Date(year, 0, 1);
+            const endOfYear = new Date(year, 11, 31);
+
+            // Count existing "jour sans certificat" prestations for this year
+            const existingCount = await prisma.prestation.count({
+                where: {
+                    gestionnaireId: currentUser.id,
+                    motif: { in: ['1 jour sans certificat', 'jour_sans_certificat'] },
+                    date: { gte: startOfYear, lte: endOfYear }
+                }
+            });
+
+            if (existingCount >= 3) {
+                return NextResponse.json({
+                    error: `Limite atteinte : vous avez déjà utilisé vos 3 jours sans certificat pour ${year}.`
+                }, { status: 400 });
+            }
+
+            // Check for consecutive days
+            const prevDay = new Date(targetDate);
+            prevDay.setDate(prevDay.getDate() - 1);
+            const nextDay = new Date(targetDate);
+            nextDay.setDate(nextDay.getDate() + 1);
+
+            const adjacentPrestations = await prisma.prestation.findFirst({
+                where: {
+                    gestionnaireId: currentUser.id,
+                    motif: { in: ['1 jour sans certificat', 'jour_sans_certificat'] },
+                    date: {
+                        in: [prevDay, nextDay]
+                    }
+                }
+            });
+
+            if (adjacentPrestations) {
+                return NextResponse.json({
+                    error: 'Les jours sans certificat ne peuvent pas être pris consécutivement.'
+                }, { status: 400 });
+            }
+        }
+        // ===============================================================
+
         // Calculate breakdown on server side for safety
         const breakdown = calculatePrestationBreakdown(heureDebut, heureFin, pause);
 

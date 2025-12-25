@@ -65,7 +65,8 @@ export async function GET() {
       { id: 'dureeContrat', name: 'Durée du Contrat', options: [], description: 'Durée du contrat de bail' },
       { id: 'typeLitige', name: 'Type de Litige Logement', options: [], description: 'Type de litige lié au logement' },
       { id: 'dureePreavis', name: 'Durée du Préavis', options: [], description: 'Durée du préavis de sortie' },
-      { id: 'preavisPour', name: 'Préavis Pour', options: [], description: 'Motif du préavis de sortie' }
+      { id: 'preavisPour', name: 'Préavis Pour', options: [], description: 'Motif du préavis de sortie' },
+      { id: 'prestation_motifs', name: 'Motifs de Prestation', options: [], description: 'Types de prestations (Présence, Congé, Maladie, etc.)' }
     ];
 
     return NextResponse.json(predefinedCategories);

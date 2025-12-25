@@ -53,6 +53,7 @@ export const GestionnaireForm: React.FC<GestionnaireFormProps> = ({
                     />
                 </div>
 
+
                 {/* Rôle */}
                 <div className="md:col-span-2">
                     <label htmlFor="role" className="settings-label">Rôle</label>
@@ -60,14 +61,20 @@ export const GestionnaireForm: React.FC<GestionnaireFormProps> = ({
                         name="role"
                         value={currentGestionnaire.role || 'USER'}
                         onChange={(e) => setCurrentGestionnaire({ ...currentGestionnaire, role: e.target.value })}
-                        className={`settings-input ${isAdminEditingSelf ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                        disabled={isAdminEditingSelf}
+                        className={`settings-input ${(isAdminEditingSelf || currentGestionnaire.role === 'SUPER_ADMIN') ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                        disabled={isAdminEditingSelf || currentGestionnaire.role === 'SUPER_ADMIN'}
                     >
                         <option value="USER">Utilisateur (USER)</option>
                         <option value="ADMIN">Administrateur (ADMIN)</option>
+                        {currentGestionnaire.role === 'SUPER_ADMIN' && (
+                            <option value="SUPER_ADMIN">Super Administrateur (SUPER_ADMIN)</option>
+                        )}
                     </select>
                     {isAdminEditingSelf && (
-                        <p className="settings-hint">Vous ne pouvez pas modifier votre propre rôle d'administrateur.</p>
+                        <p className="settings-hint">Vous ne pouvez pas modifier votre propre rôle.</p>
+                    )}
+                    {currentGestionnaire.role === 'SUPER_ADMIN' && !isAdminEditingSelf && (
+                        <p className="settings-hint">Le rôle SUPER_ADMIN ne peut être modifié que via la console.</p>
                     )}
                 </div>
 
@@ -85,8 +92,28 @@ export const GestionnaireForm: React.FC<GestionnaireFormProps> = ({
                             <span className="block font-medium text-gray-800">Compte actif</span>
                             <span className="block text-xs text-gray-500">
                                 {currentGestionnaire.isActive !== false
-                                    ? "Le gestionnaire peut se connecter et être assigné à des dossiers."
+                                    ? "Le gestionnaire peut se connecter au système."
                                     : "Le gestionnaire est actuellement désactivé (ex: congé, départ)."}
+                            </span>
+                        </div>
+                    </label>
+                </div>
+
+                {/* Gestionnaire de dossiers */}
+                <div className="md:col-span-2">
+                    <label className="flex items-center space-x-3 p-3 bg-white border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                        <input
+                            type="checkbox"
+                            checked={currentGestionnaire.isGestionnaireDossier !== false}
+                            onChange={(e) => setCurrentGestionnaire({ ...currentGestionnaire, isGestionnaireDossier: e.target.checked })}
+                            className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+                        />
+                        <div>
+                            <span className="block font-medium text-gray-800">Gestionnaire de dossiers</span>
+                            <span className="block text-xs text-gray-500">
+                                {currentGestionnaire.isGestionnaireDossier !== false
+                                    ? "Apparaît dans les listes d'assignation de dossiers usagers."
+                                    : "N'apparaît pas dans les listes (coordinateur, évaluateur, admin)."}
                             </span>
                         </div>
                     </label>

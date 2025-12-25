@@ -160,6 +160,7 @@ model Gestionnaire {
   isActive         Boolean @default(true)
   lastActiveServiceId String? // Pour les Super Admins : dernier service visité
   horaireHabituel   Json?    // { name: string, start: string, end: string, pause: number, standardDuration: number }
+  isGestionnaireDossier Boolean @default(true) // Si true, apparaît dans les dropdowns d'assignation de dossiers
   prestations      Prestation[]
   users            User[]
 

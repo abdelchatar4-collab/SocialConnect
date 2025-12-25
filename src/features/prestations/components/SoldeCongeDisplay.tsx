@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { formatDurationHuman } from '@/utils/prestationUtils';
 import { usePrestations } from '@/contexts/PrestationContext';
 
-import { SunIcon, ClockIcon, HeartIcon, PlusCircleIcon, BoltIcon, DocumentTextIcon, ChartBarIcon } from '@heroicons/react/24/outline'; // Add ChartBarIcon
+import { SunIcon, ClockIcon, HeartIcon, PlusCircleIcon, BoltIcon, DocumentTextIcon, ChartBarIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline'; // Add ChartBarIcon
 interface SoldeData {
     quotas: {
         vacancesAnnuelles: number;
@@ -47,6 +47,16 @@ export const SoldeCongeDisplay: React.FC = () => {
                 .finally(() => setLoading(false));
         }
     }, [session, prestations]); // Re-fetch when prestations change
+
+    // Calculate "jours sans certificat" consumed this year
+    const joursSansCertificatUsed = React.useMemo(() => {
+        const currentYear = new Date().getFullYear();
+        return prestations.filter(p => {
+            const pYear = new Date(p.date).getFullYear();
+            return pYear === currentYear &&
+                (p.motif === '1 jour sans certificat' || p.motif === 'jour_sans_certificat');
+        }).length;
+    }, [prestations]);
 
     if (loading) return <div className="animate-pulse h-40 bg-gray-100 rounded-xl"></div>;
     if (!data) return null;
@@ -173,6 +183,38 @@ export const SoldeCongeDisplay: React.FC = () => {
                         Icon={DocumentTextIcon}
                         bgClass="bg-cyan-50/50 hover:bg-cyan-50"
                     />
+
+                    {/* Jours sans certificat - special gauge in DAYS not minutes */}
+                    <div className="mb-6 last:mb-0 rounded-xl p-3 border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 hover:border-orange-300 transition-all shadow-sm hover:shadow-md group">
+                        <div className="flex justify-between items-end mb-2">
+                            <span className="font-bold text-gray-800 flex items-center gap-2">
+                                <span className="p-1.5 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors text-orange-600">
+                                    <ExclamationTriangleIcon className="w-5 h-5" />
+                                </span>
+                                Jours sans certificat
+                            </span>
+                            <div className="text-right text-xs text-gray-500">
+                                <span className="block mb-0.5">Quota : <strong>3 jours/an</strong></span>
+                                <span className={`block px-2 py-0.5 rounded-md ${3 - joursSansCertificatUsed <= 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-orange-100 text-orange-700'}`}>
+                                    Restant : <strong>{3 - joursSansCertificatUsed} jour(s)</strong>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner relative ring-1 ring-black/5">
+                            <div
+                                className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 shadow-lg relative overflow-hidden transition-all duration-1000 ease-out"
+                                style={{ width: `${Math.min(100, (joursSansCertificatUsed / 3) * 100)}%` }}
+                            >
+                                <div className="absolute inset-0 bg-white/20 animate-[pulse_3s_infinite]" />
+                            </div>
+                        </div>
+                        <div className="flex justify-between items-center mt-1.5">
+                            <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Consommation (non consécutifs)</span>
+                            <span className={`text-xs font-bold ${joursSansCertificatUsed >= 3 ? 'text-red-500' : 'text-orange-600'}`}>
+                                {joursSansCertificatUsed}/3 jours ({Math.round((joursSansCertificatUsed / 3) * 100)}%)
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Card>

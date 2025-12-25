@@ -29,6 +29,7 @@ export async function GET() {
           role: true,
           couleurMedaillon: true,
           isActive: true,
+          isGestionnaireDossier: true,
           serviceId: true
         }
       });
@@ -47,6 +48,7 @@ export async function GET() {
         role: true,
         couleurMedaillon: true,
         isActive: true,
+        isGestionnaireDossier: true,
         serviceId: true
       },
       orderBy: {

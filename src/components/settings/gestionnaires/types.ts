@@ -6,6 +6,7 @@ export interface Gestionnaire {
     role?: string | null;
     couleurMedaillon?: string | null;
     isActive?: boolean;
+    isGestionnaireDossier?: boolean;
 }
 
 export interface SessionUserWithRole {

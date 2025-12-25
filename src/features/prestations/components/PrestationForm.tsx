@@ -25,7 +25,11 @@ const QUICK_PRESETS = [
     { id: 'conge_ch', name: 'Congé CH', start: '09:00', end: '17:00', pause: 30, motif: 'Congé CH' },
     { id: 'maladie', name: 'Maladie', start: '09:00', end: '17:00', pause: 30, motif: 'Maladie' },
     { id: 'formation', name: 'Formation', start: '09:00', end: '17:00', pause: 30, motif: 'Formation' },
+    { id: 'jour_sans_certificat', name: '1 jour sans certificat', start: '09:00', end: '17:00', pause: 30, motif: '1 jour sans certificat' },
 ];
+
+// Motifs that represent full days (no time/pause input needed)
+const FULL_DAY_MOTIFS = ['Maladie', 'Congé VA', 'Congé CH', 'Jour férié', '1 jour sans certificat', 'jour_sans_certificat'];
 
 export const PrestationForm: React.FC = () => {
     const { isPrestationOpening, setIsPrestationOpening, addPrestation, horaireHabituel, prestations } = usePrestations();
@@ -328,29 +332,7 @@ export const PrestationForm: React.FC = () => {
                         {/* CLASSIC MODE */}
                         {mode === 'classic' && (
                             <form onSubmit={handleClassicSubmit} className="space-y-4">
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Début</label>
-                                        <input type="time" value={heureDebut} onChange={(e) => setHeureDebut(e.target.value)}
-                                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Fin</label>
-                                        <input type="time" value={heureFin} onChange={(e) => setHeureFin(e.target.value)}
-                                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Pause</label>
-                                        <input type="number" value={pause} min={30} step={5} onChange={(e) => setPause(Number(e.target.value))}
-                                            className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between p-3 rounded-xl bg-blue-50 border-2 border-blue-200">
-                                    <span className="text-sm font-bold text-blue-700">Durée nette</span>
-                                    <span className="text-xl font-black text-blue-700">{formatDurationHuman(breakdown.totalMinutes)}</span>
-                                </div>
-
+                                {/* Motif first for full-day detection */}
                                 <div>
                                     <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Motif</label>
                                     <select value={motif} onChange={(e) => setMotif(e.target.value)}
@@ -363,6 +345,7 @@ export const PrestationForm: React.FC = () => {
                                             <option value="Congé VA">Congé VA (vacances annuelles)</option>
                                             <option value="Congé CH">Congé CH</option>
                                             <option value="Maladie">Maladie</option>
+                                            <option value="1 jour sans certificat">1 jour sans certificat (max 3/an)</option>
                                             <option value="Jour férié">Jour férié</option>
                                         </optgroup>
                                         <optgroup label="Autres">
@@ -379,6 +362,32 @@ export const PrestationForm: React.FC = () => {
                                         )}
                                     </select>
                                 </div>
+
+                                {/* Show time fields only for non-full-day motifs */}
+                                {!FULL_DAY_MOTIFS.includes(motif) ? (
+                                    <div className="grid grid-cols-3 gap-3">
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Début</label>
+                                            <input type="time" value={heureDebut} onChange={(e) => setHeureDebut(e.target.value)}
+                                                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Fin</label>
+                                            <input type="time" value={heureFin} onChange={(e) => setHeureFin(e.target.value)}
+                                                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase mb-1 block">Pause</label>
+                                            <input type="number" value={pause} min={30} step={5} onChange={(e) => setPause(Number(e.target.value))}
+                                                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center focus:ring-2 focus:ring-primary-500/20 outline-none" required />
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                                        <p className="text-sm font-bold text-amber-700">📅 Jour complet</p>
+                                        <p className="text-xs text-amber-600 mt-1">Durée standard : 7h30 (450 min)</p>
+                                    </div>
+                                )}
 
                                 <Button type="submit" loading={isSaving}
                                     className="w-full h-12 rounded-xl font-bold text-white shadow-lg bg-blue-600 hover:bg-blue-700">
@@ -414,6 +423,6 @@ export const PrestationForm: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

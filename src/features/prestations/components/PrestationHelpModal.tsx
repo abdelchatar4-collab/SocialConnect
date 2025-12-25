@@ -28,31 +28,58 @@ interface PrestationHelpModalProps {
 const steps = [
     {
         icon: PlusCircleIcon,
-        title: "Ajouter une prestation",
-        description: "Cliquez sur le bouton « Nouvelle prestation » pour enregistrer votre temps de travail.",
+        title: "Deux modes d'encodage",
+        description: "Choisissez entre le Mode Rapide (préréglages) ou le Mode Classique (personnalisé).",
         color: "bg-blue-500",
-        tips: ["Renseignez l'heure de début et de fin", "Indiquez votre pause déjeuner", "Le temps net est calculé automatiquement"]
+        tips: [
+            "⚡ Mode Rapide : 8 préréglages prêts à l'emploi",
+            "🔧 Mode Classique : définissez vos propres horaires",
+            "Basculez entre les modes avec les boutons en haut"
+        ]
     },
     {
         icon: CalendarDaysIcon,
-        title: "Choisir la date",
-        description: "Sélectionnez la date de votre prestation. Par défaut, c'est aujourd'hui.",
+        title: "Dates et périodes",
+        description: "Encodez un jour unique ou une période entière en un seul clic.",
         color: "bg-purple-500",
-        tips: ["Vous pouvez encoder des jours passés", "Les week-ends et jours fériés sont gérés automatiquement ✓"]
+        tips: [
+            "📅 Activez 'Mode période' pour encoder plusieurs jours",
+            "Les week-ends sont automatiquement exclus ✓",
+            "Les 16 jours fériés 2026 sont gérés automatiquement ✓"
+        ]
     },
     {
         icon: ClockIcon,
-        title: "Heures & Pause",
-        description: "Entrez vos horaires et la durée de votre pause (en minutes).",
+        title: "Horaire habituel",
+        description: "Vos horaires par défaut sont mémorisés et réutilisés automatiquement.",
         color: "bg-teal-500",
-        tips: ["Pause minimum : 30 min", "Le bonis se calcule après 7h30 net", "Les heures après 19h = heures supplémentaires"]
+        tips: [
+            "Définissez votre horaire habituel dans les paramètres",
+            "Le formulaire s'ouvre avec vos valeurs par défaut",
+            "Pause minimum : 30 min pour calcul correct"
+        ]
     },
     {
         icon: ChartBarIcon,
-        title: "Suivi des soldes",
-        description: "Visualisez vos congés, récupérations et autres soldes en temps réel.",
+        title: "Calculs automatiques",
+        description: "Bonis, heures supplémentaires et soldes sont calculés en temps réel.",
         color: "bg-amber-500",
-        tips: ["Jauges visuelles pour chaque type", "Export possible vers Excel", "Historique complet disponible"]
+        tips: [
+            "Base journalière : 7h30 (450 min)",
+            "Bonis = toute minute au-delà de 7h30 net",
+            "Heures après 19h = heures supplémentaires"
+        ]
+    },
+    {
+        icon: DevicePhoneMobileIcon,
+        title: "Suivi des soldes",
+        description: "Visualisez vos congés VA, CH, récupérations et bonis accumulés.",
+        color: "bg-rose-500",
+        tips: [
+            "Jauges visuelles pour chaque type de solde",
+            "Export Excel disponible (gestionnaires)",
+            "Historique complet accessible sur la page"
+        ]
     }
 ];
 

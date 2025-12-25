@@ -137,7 +137,7 @@ export const UserForm = forwardRef<UserFormRef, UserFormProps>((
               formData={formData}
               errors={errors}
               onInputChange={handleFieldChange}
-              gestionnaires={gestionnaires.map(g => ({ value: g.id, label: `${g.prenom} ${g.nom}`.trim() }))}
+              gestionnaires={gestionnaires.filter(g => (g as any).isGestionnaireDossier !== false).map(g => ({ value: g.id, label: `${g.prenom} ${g.nom}`.trim() }))}
               optionsAntenne={optionsAntenne}
               optionsEtat={optionsEtat}
             />
@@ -171,7 +171,7 @@ export const UserForm = forwardRef<UserFormRef, UserFormProps>((
             formData={formData}
             errors={errors}
             onInputChange={handleFieldChange}
-            gestionnaires={gestionnaires.map(g => ({ value: g.id, label: `${g.prenom} ${g.nom}`.trim() }))}
+            gestionnaires={gestionnaires.filter(g => (g as any).isGestionnaireDossier !== false).map(g => ({ value: g.id, label: `${g.prenom} ${g.nom}`.trim() }))}
             optionsAntenne={optionsAntenne}
             optionsEtat={optionsEtat}
             optionsPartenaire={optionsPartenaire}

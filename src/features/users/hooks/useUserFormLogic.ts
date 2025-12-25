@@ -34,11 +34,16 @@ export const useUserFormLogic = ({ initialData, onSubmit, mode, totalSteps }: Us
                     const data = await response.json();
                     const rawGestionnaires = Array.isArray(data) ? data : data.gestionnaires || [];
 
-                    // On filtre pour ne garder que les actifs,
-                    // SAUF si le gestionnaire actuel est inactif (pour qu'il reste visible dans la liste d'édition)
+                    // On filtre pour ne garder que les actifs ET gestionnaires de dossiers,
+                    // SAUF si le gestionnaire actuel est inactif ou non-gestionnaire (pour qu'il reste visible dans la liste d'édition)
                     const filtered = rawGestionnaires.filter((g: any) => {
-                        if (g.isActive !== false) return true;
-                        // Si on est en mode édition et que c'est le gestionnaire actuel, on le garde
+                        const isActive = g.isActive !== false;
+                        const isGestionnaireDossier = g.isGestionnaireDossier !== false;
+
+                        // Si actif ET gestionnaire de dossiers, on le garde
+                        if (isActive && isGestionnaireDossier) return true;
+
+                        // Si on est en mode édition et que c'est le gestionnaire actuel, on le garde quand même
                         if (mode === 'edit' && initialData && (
                             String(g.id) === String(initialData.gestionnaire) ||
                             String(g.prenom) === String(initialData.gestionnaire)

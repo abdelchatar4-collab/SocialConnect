@@ -71,15 +71,16 @@ export async function PUT(
   try {
     const body = await request.json();
     // On ne récupère que les champs modifiables, y compris le rôle et la couleur
-    const { email, prenom, nom, role, couleurMedaillon, isActive } = body;
+    const { email, prenom, nom, role, couleurMedaillon, isActive, isGestionnaireDossier } = body;
 
-    const updateData: { email?: string; prenom?: string; nom?: string | null; role?: string; couleurMedaillon?: string | null; isActive?: boolean } = {};
+    const updateData: { email?: string; prenom?: string; nom?: string | null; role?: string; couleurMedaillon?: string | null; isActive?: boolean; isGestionnaireDossier?: boolean } = {};
 
     if (email !== undefined) updateData.email = (email && email.trim() !== "") ? email : null;
     if (prenom !== undefined) updateData.prenom = prenom;
     if (nom !== undefined) updateData.nom = nom; // Permet de mettre à null si nom est explicitement envoyé comme null
     if (couleurMedaillon !== undefined) updateData.couleurMedaillon = couleurMedaillon;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (isGestionnaireDossier !== undefined) updateData.isGestionnaireDossier = isGestionnaireDossier;
 
     // Gérer la mise à jour du rôle
     if (role !== undefined) {
