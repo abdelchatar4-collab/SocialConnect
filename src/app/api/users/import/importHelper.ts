@@ -1,24 +1,28 @@
-/*
-Copyright (C) 2025 ABDEL KADER CHATAR
-SocialConnect - API Users Import Helpers
-*/
+import { normalizeToISODate } from '@/utils/dateUtils';
 
 export function parseExcelDate(val: any): Date | null {
     if (!val) return null;
-    if (val instanceof Date && !isNaN(val.getTime())) return new Date(Date.UTC(val.getFullYear(), val.getMonth(), val.getDate()));
+
+    // Si c'est déjà un objet Date
+    if (val instanceof Date && !isNaN(val.getTime())) {
+        return new Date(Date.UTC(val.getUTCFullYear(), val.getUTCMonth(), val.getUTCDate()));
+    }
+
+    // Cas spécifique Excel : nombre de jours depuis 30/12/1899
     if (typeof val === 'number') {
         const d = new Date(new Date(1899, 11, 30).getTime() + val * 24 * 60 * 60 * 1000);
         return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     }
-    if (typeof val === 'string') {
-        const d = new Date(val); if (!isNaN(d.getTime())) return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-        const parts = val.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/);
-        if (parts) {
-            const dd = parseInt(parts[1], 10), mm = parseInt(parts[2], 10) - 1; let yy = parseInt(parts[3], 10);
-            if (yy < 100) yy += (yy < 50 ? 2000 : 1900);
-            const dt = new Date(Date.UTC(yy, mm, dd)); if (!isNaN(dt.getTime())) return dt;
+
+    // Pour les chaînes, utiliser notre normalisation robuste
+    if (typeof val === 'string' && val.trim() !== '') {
+        const normalized = normalizeToISODate(val);
+        if (normalized && normalized.includes('-')) {
+            const [y, m, d] = normalized.split('-').map(Number);
+            return new Date(Date.UTC(y, m - 1, d));
         }
     }
+
     return null;
 }
 

@@ -8,11 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from 'react';
 import { UserFormData } from '@/types/user';
 import { FormErrors, displayError } from '@/types';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { ComboBox } from '../shared/ComboBox';
-import { PartenairesManager } from '../shared/PartenairesManager';
-import { FieldWrapper } from '../shared/FieldWrapper';
+import { TextInput, SelectInput, ComboBox, PartenairesManager, FieldWrapper, DateInput } from '../shared';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { useSession } from 'next-auth/react';
 import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
@@ -114,12 +110,12 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
             error={displayError(errors.dateOuverture)}
             required={isRequired('dateOuverture')}
           >
-            <TextInput
-              type="date"
-              value={formData.dateOuverture || ''}
+            <DateInput
+              id="dateOuverture"
+              value={formData.dateOuverture}
               onChange={(value) => {
                 // Immediate future date warning
-                if (value) {
+                if (value && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
                   const today = new Date();
                   const todayStr = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
 
@@ -141,9 +137,9 @@ export const ManagementStep: React.FC<ManagementStepProps> = ({
             error={displayError(errors.dateCloture)}
             required={isRequired('dateCloture')}
           >
-            <TextInput
-              type="date"
-              value={formData.dateCloture || ''}
+            <DateInput
+              id="dateCloture"
+              value={formData.dateCloture}
               onChange={(value) => onInputChange('dateCloture', value)}
               disabled={disabled}
             />

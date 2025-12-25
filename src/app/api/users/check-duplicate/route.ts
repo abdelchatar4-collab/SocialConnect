@@ -14,6 +14,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { normalizeToISODate } from '@/utils/dateUtils';
 
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
@@ -76,11 +77,11 @@ export async function POST(request: NextRequest) {
 
         // If includeDateOfBirth is true, also filter by date of birth
         if (includeDateOfBirth && dateNaissance) {
-            const targetDate = new Date(dateNaissance).toISOString().split('T')[0];
+            const targetDate = normalizeToISODate(dateNaissance);
             duplicates = duplicates.filter(u => {
                 if (!u.dateNaissance) return false;
-                const userDate = new Date(u.dateNaissance).toISOString().split('T')[0];
-                return userDate === targetDate;
+                const userDate = normalizeToISODate(u.dateNaissance);
+                return userDate === targetDate && targetDate !== '';
             });
             console.log('[check-duplicate] After date filter:', duplicates.length);
         }

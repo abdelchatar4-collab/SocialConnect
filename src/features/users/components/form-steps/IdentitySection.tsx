@@ -5,12 +5,11 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
+import { DateInput, FieldWrapper, TextInput } from '../shared';
 import { displayError } from '@/types/errors';
 import { FormErrors } from '@/types';
 import { DuplicateInfo } from '../../hooks/useDuplicateCheck';
+import { formatToFrenchDate } from '@/utils/dateUtils';
 
 interface IdentitySectionProps {
     nom: string;
@@ -41,25 +40,6 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
     includeDateOfBirth,
     setIncludeDateOfBirth
 }) => {
-    // Format date for display
-    const formatDateForDisplay = (date: string | Date | null | undefined): string => {
-        if (!date) return 'N/A';
-        const d = new Date(date);
-        return isNaN(d.getTime()) ? 'N/A' : d.toLocaleDateString('fr-BE');
-    };
-
-    // Safe date value for input[type="date"]
-    const safeDateValue = (date: string | Date | null | undefined): string => {
-        if (!date) return '';
-        try {
-            const d = new Date(date);
-            if (isNaN(d.getTime())) return '';
-            return d.toISOString().split('T')[0];
-        } catch (e) {
-            return '';
-        }
-    };
-
     return (
         <div className="bg-gradient-to-r from-purple-50 to-violet-50 p-4 rounded-lg border border-purple-200 mb-6">
             <h4 className="text-md font-semibold text-purple-900 mb-3 flex items-center">
@@ -110,20 +90,13 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
                     error={displayError(errors.dateNaissance)}
                     required={isRequired('dateNaissance')}
                 >
-                    <TextInput
+                    <DateInput
                         id="dateNaissance"
-                        type="date"
-                        value={(() => {
-                            try {
-                                return safeDateValue(dateNaissance);
-                            } catch (e) {
-                                console.error('SafeDate crash prevented:', e);
-                                return '';
-                            }
-                        })()}
+                        value={dateNaissance}
                         onChange={(value) => onInputChange('dateNaissance', value)}
                         onBlur={onBlur}
                         disabled={disabled}
+                        error={displayError(errors.dateNaissance)}
                     />
                 </FieldWrapper>
             </div>
@@ -140,7 +113,7 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
                     <span>Filtrer les doublons par date de naissance</span>
                     {includeDateOfBirth && dateNaissance && (
                         <span className="ml-2 text-xs text-purple-500">
-                            ({formatDateForDisplay(dateNaissance)})
+                            ({formatToFrenchDate(dateNaissance)})
                         </span>
                     )}
                     {includeDateOfBirth && !dateNaissance && (
@@ -169,7 +142,7 @@ export const IdentitySection: React.FC<IdentitySectionProps> = ({
                                         <strong>{d.prenom} {d.nom}</strong>
                                         {d.dateNaissance && (
                                             <span className="text-amber-700 ml-2">
-                                                (né(e) le {formatDateForDisplay(d.dateNaissance)})
+                                                (né(e) le {formatToFrenchDate(d.dateNaissance)})
                                             </span>
                                         )}
                                         <span className="text-amber-600 ml-2">

@@ -8,6 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 // Composants de base pour les formulaires
 export { FieldWrapper } from './FieldWrapper';
 export { TextInput } from './TextInput';
+export { DateInput } from './DateInput';
 export { SelectInput } from './SelectInput';
 export { TextAreaInput } from './TextAreaInput';
 export { ComboBox } from './ComboBox';

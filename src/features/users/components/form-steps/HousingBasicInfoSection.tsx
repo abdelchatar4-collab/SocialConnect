@@ -6,9 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
+import { FieldWrapper, TextInput, SelectInput, DateInput } from '../shared';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { UserFormData } from '@/types/user';
 
@@ -103,24 +101,22 @@ export const HousingBasicInfoSection: React.FC<HousingBasicInfoSectionProps> = (
                         label="Date du contrat"
                         required={isRequired('logementDetails.dateContrat')}
                     >
-                        <input
-                            type="date"
+                        <DateInput
                             id="dateContrat"
-                            value={logementDetails.dateContrat || ''}
-                            onChange={e => onNestedInputChange('logementDetails', 'dateContrat', e.target.value)}
+                            value={logementDetails.dateContrat}
+                            onChange={(value) => onNestedInputChange('logementDetails', 'dateContrat', value)}
                             disabled={disabled}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="focus:ring-emerald-500 focus:border-emerald-500"
                         />
                     </FieldWrapper>
 
                     <FieldWrapper htmlFor="dateEntree" label="Date d'entrée">
-                        <input
-                            type="date"
+                        <DateInput
                             id="dateEntree"
-                            value={logementDetails.dateEntree || ''}
-                            onChange={e => onNestedInputChange('logementDetails', 'dateEntree', e.target.value)}
+                            value={logementDetails.dateEntree}
+                            onChange={(value) => onNestedInputChange('logementDetails', 'dateEntree', value)}
                             disabled={disabled}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+                            className="focus:ring-emerald-500 focus:border-emerald-500"
                         />
                     </FieldWrapper>
 

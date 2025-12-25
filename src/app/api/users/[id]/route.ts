@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
 import { detectProblematiquesFromNotes, handleApiError } from './user-api.helpers';
 import { handleProblematiques, handleActions } from './userUpdateStorage';
 import { buildUserUpdateData } from './userUpdateMapper';
@@ -42,13 +43,51 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const s = await getServerSession(authOptions);
-  if (!s) return NextResponse.json({ error: '401' }, { status: 401 });
-  const role = (s.user as any)?.role, id = params.id;
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
+
+  const userRole = (session.user as any)?.role;
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
+  const id = params.id;
+
   try {
-    const u = await prisma.user.findUnique({ where: { id } });
-    if (!u) return NextResponse.json({ error: '404' }, { status: 404 });
-    if (role !== 'ADMIN' && (!u.nom || !u.prenom || !u.dateNaissance || !(await prisma.user.findFirst({ where: { nom: u.nom, prenom: u.prenom, dateNaissance: u.dateNaissance, id: { not: id } } })))) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const userToDelete = await prisma.user.findUnique({ where: { id } });
+    if (!userToDelete) return NextResponse.json({ error: '404' }, { status: 404 });
+
+    // For non-admin roles, check if it's a duplicate
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+      if (!userToDelete.nom || !userToDelete.prenom) {
+        return NextResponse.json({ error: 'Forbidden: Missing name data' }, { status: 403 });
+      }
+
+      const targetNom = userToDelete.nom.toLowerCase();
+      const targetPrenom = userToDelete.prenom.toLowerCase();
+      const targetDate = userToDelete.dateNaissance ? new Date(userToDelete.dateNaissance).toISOString().split('T')[0] : null;
+
+      const duplicates = await prisma.user.findMany({
+        where: {
+          AND: [
+            { nom: { contains: userToDelete.nom } },
+            { prenom: { contains: userToDelete.prenom } }
+          ],
+          id: { not: id }
+        }
+      });
+
+      const isDuplicateFound = duplicates.some((u: any) => {
+        const uNom = u.nom?.toLowerCase() || '';
+        const uPrenom = u.prenom?.toLowerCase() || '';
+        const uDate = u.dateNaissance ? new Date(u.dateNaissance).toISOString().split('T')[0] : null;
+
+        const namesMatch = uNom === targetNom && uPrenom === targetPrenom;
+        if (targetDate && uDate) return namesMatch && uDate === targetDate;
+        return namesMatch;
+      });
+
+      if (!isDuplicateFound) return NextResponse.json({ error: 'Forbidden: Not a duplicate' }, { status: 403 });
+    }
+
     await prisma.user.delete({ where: { id } });
     return NextResponse.json({ message: 'OK' });
   } catch (e) { return handleApiError(e); }

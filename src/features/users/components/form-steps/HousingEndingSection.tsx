@@ -6,9 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
+import { FieldWrapper, TextInput, SelectInput, DateInput } from '../shared';
 import { LisserButton } from '@/components/ai/LisserButton';
 import { UserFormData } from '@/types/user';
 
@@ -39,13 +37,12 @@ export const HousingEndingSection: React.FC<HousingEndingSectionProps> = ({
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FieldWrapper htmlFor="datePreavis" label="Date du préavis">
-                        <input
-                            type="date"
+                        <DateInput
                             id="datePreavis"
-                            value={logementDetails.datePreavis || ''}
-                            onChange={e => onNestedInputChange('logementDetails', 'datePreavis', e.target.value)}
+                            value={logementDetails.datePreavis}
+                            onChange={(value) => onNestedInputChange('logementDetails', 'datePreavis', value)}
                             disabled={disabled}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                            className="focus:ring-amber-500 focus:border-amber-500"
                         />
                     </FieldWrapper>
 
@@ -63,13 +60,12 @@ export const HousingEndingSection: React.FC<HousingEndingSectionProps> = ({
                     </FieldWrapper>
 
                     <FieldWrapper htmlFor="dateSortie" label="Date de sortie">
-                        <input
-                            type="date"
+                        <DateInput
                             id="dateSortie"
-                            value={logementDetails.dateSortie || ''}
-                            onChange={e => onNestedInputChange('logementDetails', 'dateSortie', e.target.value)}
+                            value={logementDetails.dateSortie}
+                            onChange={(value) => onNestedInputChange('logementDetails', 'dateSortie', value)}
                             disabled={disabled}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors"
+                            className="focus:ring-amber-500 focus:border-amber-500"
                         />
                     </FieldWrapper>
 

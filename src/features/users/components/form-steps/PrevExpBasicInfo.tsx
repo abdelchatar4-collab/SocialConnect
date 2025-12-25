@@ -6,9 +6,7 @@ Extracted from PrevExpFields.tsx
 
 import React from 'react';
 import { UserFormData } from '@/types';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { MultiSelectInput } from '../shared/MultiSelectInput';
-import { SelectInput } from '../shared/SelectInput';
+import { FieldWrapper, MultiSelectInput, SelectInput, DateInput } from '../shared';
 
 interface PrevExpBasicInfoProps {
     formData: UserFormData;
@@ -26,35 +24,32 @@ export const PrevExpBasicInfo: React.FC<PrevExpBasicInfoProps> = ({
     return (
         <>
             <FieldWrapper htmlFor="prevExpDateReception" label="Date de réception">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateReception"
-                    value={formData.prevExpDateReception || ''}
-                    onChange={e => onInputChange('prevExpDateReception', e.target.value)}
+                    value={formData.prevExpDateReception}
+                    onChange={(value) => onInputChange('prevExpDateReception', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 
             <FieldWrapper htmlFor="prevExpDateRequete" label="Date de requête">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateRequete"
-                    value={formData.prevExpDateRequete || ''}
-                    onChange={e => onInputChange('prevExpDateRequete', e.target.value)}
+                    value={formData.prevExpDateRequete}
+                    onChange={(value) => onInputChange('prevExpDateRequete', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 
             <FieldWrapper htmlFor="prevExpDateVad" label="Date VAD">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateVad"
-                    value={formData.prevExpDateVad || ''}
-                    onChange={e => onInputChange('prevExpDateVad', e.target.value)}
+                    value={formData.prevExpDateVad}
+                    onChange={(value) => onInputChange('prevExpDateVad', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 

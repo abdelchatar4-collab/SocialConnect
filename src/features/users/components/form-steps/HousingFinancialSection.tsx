@@ -6,10 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { MultiSelectInput } from '../shared/MultiSelectInput';
+import { FieldWrapper, TextInput, SelectInput, MultiSelectInput, DateInput } from '../shared';
 import { LisserButton } from '@/components/ai/LisserButton';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { UserFormData } from '@/types/user';
@@ -40,13 +37,6 @@ export const HousingFinancialSection: React.FC<HousingFinancialSectionProps> = (
     const { isRequired } = useRequiredFields();
     const { logementDetails } = formData;
 
-    const formatDateForInput = (dateStr: string | Date | null): string => {
-        if (!dateStr) return '';
-        if (typeof dateStr === 'string') {
-            return dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
-        }
-        return new Date(dateStr).toISOString().split('T')[0];
-    };
 
     return (
         <div className="bg-gradient-to-r from-violet-50 to-purple-50 p-4 rounded-lg border border-violet-200 mb-6">
@@ -181,13 +171,12 @@ export const HousingFinancialSection: React.FC<HousingFinancialSectionProps> = (
                         </FieldWrapper>
 
                         <FieldWrapper htmlFor="dateLitige" label="Date du début du litige">
-                            <input
-                                type="date"
+                            <DateInput
                                 id="dateLitige"
-                                value={logementDetails.dateLitige ? formatDateForInput(logementDetails.dateLitige) : ''}
-                                onChange={e => onNestedInputChange('logementDetails', 'dateLitige', e.target.value)}
+                                value={logementDetails.dateLitige}
+                                onChange={(value) => onNestedInputChange('logementDetails', 'dateLitige', value)}
                                 disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                                className="focus:ring-red-500 focus:border-red-500"
                             />
                         </FieldWrapper>
 

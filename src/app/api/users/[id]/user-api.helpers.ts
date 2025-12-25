@@ -5,10 +5,18 @@
 import { NextResponse } from 'next/server';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
+import { normalizeToISODate } from '@/utils/dateUtils';
+
 // Parse une date string en Date ou null
+// Utilise la normalisation robuste pour supporter le format français DD/MM/YYYY et autres
 export function parseDateString(dateString: string | null | undefined): Date | null {
     if (!dateString) return null;
-    const date = new Date(dateString);
+
+    // Normaliser d'abord (supporte DD/MM/YYYY, DDMMYYYY, ISO, etc.)
+    const normalized = normalizeToISODate(dateString);
+    if (!normalized) return null;
+
+    const date = new Date(normalized);
     return isNaN(date.getTime()) ? null : date;
 }
 

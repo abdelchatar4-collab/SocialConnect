@@ -6,10 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { TextAreaInput } from '../shared/TextAreaInput';
+import { FieldWrapper, TextInput, SelectInput, TextAreaInput, DateInput } from '../shared';
 
 interface Problematique {
     id?: string;
@@ -68,8 +65,8 @@ export const ProblematiquesSection: React.FC<ProblematiquesSectionProps> = ({
                 </FieldWrapper>
 
                 <FieldWrapper label="Date de signalement" required>
-                    <TextInput
-                        type="date"
+                    <DateInput
+                        id="dateSignalement"
                         value={currentProblematique.dateSignalement}
                         onChange={(value) => setCurrentProblematique((prev: any) => ({ ...prev, dateSignalement: value }))}
                         disabled={disabled}

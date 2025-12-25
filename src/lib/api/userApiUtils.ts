@@ -7,12 +7,19 @@ import { CreateUserRequestBody } from '@/types/api/userApi';
 import { generateUserIdByAntenne } from '@/lib/idGenerator';
 import { Prisma } from '@prisma/client';
 
+import { normalizeToISODate } from '@/utils/dateUtils';
+
 /**
  * Utility function to parse date strings
+ * Supports various formats including French DD/MM/YYYY
  */
 export function parseDateString(dateString: string | null | undefined): Date | null {
     if (!dateString || dateString.trim() === "") return null;
-    const date = new Date(dateString);
+
+    const normalized = normalizeToISODate(dateString);
+    if (!normalized) return null;
+
+    const date = new Date(normalized);
     return isNaN(date.getTime()) ? null : date;
 }
 

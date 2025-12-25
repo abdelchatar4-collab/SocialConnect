@@ -6,7 +6,7 @@ Extracted from PrevExpFields.tsx
 
 import React from 'react';
 import { UserFormData } from '@/types';
-import { FieldWrapper } from '../shared/FieldWrapper';
+import { FieldWrapper, DateInput } from '../shared';
 
 interface PrevExpLegalTimelineProps {
     formData: UserFormData;
@@ -22,46 +22,42 @@ export const PrevExpLegalTimeline: React.FC<PrevExpLegalTimelineProps> = ({
     return (
         <>
             <FieldWrapper htmlFor="prevExpDateAudience" label="Date d'audience">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateAudience"
-                    value={formData.prevExpDateAudience || ''}
-                    onChange={e => onInputChange('prevExpDateAudience', e.target.value)}
+                    value={formData.prevExpDateAudience}
+                    onChange={(value) => onInputChange('prevExpDateAudience', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 
             <FieldWrapper htmlFor="prevExpDateSignification" label="Date de signification">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateSignification"
-                    value={formData.prevExpDateSignification || ''}
-                    onChange={e => onInputChange('prevExpDateSignification', e.target.value)}
+                    value={formData.prevExpDateSignification}
+                    onChange={(value) => onInputChange('prevExpDateSignification', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 
             <FieldWrapper htmlFor="prevExpDateJugement" label="Date du jugement">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateJugement"
-                    value={formData.prevExpDateJugement || ''}
-                    onChange={e => onInputChange('prevExpDateJugement', e.target.value)}
+                    value={formData.prevExpDateJugement}
+                    onChange={(value) => onInputChange('prevExpDateJugement', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
 
             <FieldWrapper htmlFor="prevExpDateExpulsion" label="Date d'expulsion">
-                <input
-                    type="date"
+                <DateInput
                     id="prevExpDateExpulsion"
-                    value={formData.prevExpDateExpulsion || ''}
-                    onChange={e => onInputChange('prevExpDateExpulsion', e.target.value)}
+                    value={formData.prevExpDateExpulsion}
+                    onChange={(value) => onInputChange('prevExpDateExpulsion', value)}
                     disabled={disabled}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
+                    className="focus:ring-red-500 focus:border-red-500"
                 />
             </FieldWrapper>
         </>

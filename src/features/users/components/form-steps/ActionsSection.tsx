@@ -6,11 +6,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 */
 
 import React from 'react';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { TextAreaInput } from '../shared/TextAreaInput';
-import { ComboBox } from '../shared/ComboBox';
+import { FieldWrapper, TextInput, SelectInput, TextAreaInput, ComboBox, DateInput } from '../shared';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { ActionSuivi } from '@/types/user';
 
@@ -73,8 +69,8 @@ export const ActionsSection: React.FC<ActionsSectionProps> = ({
             {/* Formulaire d'ajout/édition d'action */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
                 <FieldWrapper label="Date" required>
-                    <TextInput
-                        type="date"
+                    <DateInput
+                        id="actionDate"
                         value={currentAction.date}
                         onChange={(value) => setCurrentAction((prev: any) => ({ ...prev, date: value }))}
                         disabled={disabled}

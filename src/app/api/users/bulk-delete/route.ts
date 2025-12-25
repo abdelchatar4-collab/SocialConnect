@@ -8,7 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
 
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -18,6 +18,8 @@ export async function DELETE(req: NextRequest) {
   }
 
   const userRole = (session.user as { role?: string } | undefined)?.role;
+  const serviceId = (session.user as any).serviceId || 'default';
+  const prisma = getServiceClient(serviceId);
 
   try {
     const { ids } = await req.json();
@@ -36,45 +38,46 @@ export async function DELETE(req: NextRequest) {
           return NextResponse.json({ error: `Utilisateur avec ID ${userId} non trouvé.` }, { status: 404 });
         }
 
-        if (!userToDelete.nom || !userToDelete.prenom || !userToDelete.dateNaissance) {
-          return NextResponse.json({ error: `Impossible de vérifier si l'utilisateur ${userToDelete.id} est un doublon (données manquantes).` }, { status: 400 });
+        if (!userToDelete.nom || !userToDelete.prenom) {
+          return NextResponse.json({
+            error: `Impossible de vérifier si l'utilisateur ${userToDelete.prenom || ''} ${userToDelete.nom || ''} est un doublon (données manquantes).`
+          }, { status: 400 });
         }
 
-        // Fetch potential duplicates based on NOM only (case insensitive via finding many)
-        // Then filter in JS for precise match (ignoring case) on prenom and date
+        const targetNom = userToDelete.nom.toLowerCase();
+        const targetPrenom = userToDelete.prenom.toLowerCase();
+        const targetDate = userToDelete.dateNaissance ? new Date(userToDelete.dateNaissance).toISOString().split('T')[0] : null;
+
+        // Fetch potential duplicates based on NOM and PRENOM
         const potentialDuplicates = await prisma.user.findMany({
           where: {
-            nom: userToDelete.nom, // Prisma might be case sensitive depending on DB collation
+            AND: [
+              { nom: { contains: userToDelete.nom } },
+              { prenom: { contains: userToDelete.prenom } },
+            ],
             id: { not: userId },
           },
         });
 
-        const targetNom = userToDelete.nom.toLowerCase();
-        const targetPrenom = userToDelete.prenom.toLowerCase();
-        const targetDate = new Date(userToDelete.dateNaissance).toDateString(); // Compare date part only
-
-        const duplicateCount = potentialDuplicates.filter(u => {
+        const isActualDuplicate = potentialDuplicates.some((u: any) => {
           const uNom = u.nom?.toLowerCase() || '';
           const uPrenom = u.prenom?.toLowerCase() || '';
-          const uDate = u.dateNaissance ? new Date(u.dateNaissance).toDateString() : '';
+          const uDate = u.dateNaissance ? new Date(u.dateNaissance).toISOString().split('T')[0] : null;
 
-          return uNom === targetNom && uPrenom === targetPrenom && uDate === targetDate;
-        }).length;
+          const namesMatch = uNom === targetNom && uPrenom === targetPrenom;
 
-        if (duplicateCount === 0) {
-          // Fallback: Check if strict match works (in case DB had strict collation but JS normalization differs? unlikely but safe)
-          const strictCount = await prisma.user.count({
-            where: {
-              nom: userToDelete.nom,
-              prenom: userToDelete.prenom,
-              dateNaissance: userToDelete.dateNaissance,
-              id: { not: userId },
-            }
-          });
-
-          if (strictCount === 0) {
-            return NextResponse.json({ error: `Accès non autorisé. L'utilisateur ${userToDelete.prenom} ${userToDelete.nom} n'est pas identifié comme un doublon.` }, { status: 403 });
+          // If both have dates, they must match. If one is missing, we consider name match sufficient for duplication check
+          if (targetDate && uDate) {
+            return namesMatch && uDate === targetDate;
           }
+
+          return namesMatch;
+        });
+
+        if (!isActualDuplicate) {
+          return NextResponse.json({
+            error: `Accès non autorisé. L'utilisateur ${userToDelete.prenom} ${userToDelete.nom} n'est pas identifié comme un doublon par le système.`
+          }, { status: 403 });
         }
       }
     }

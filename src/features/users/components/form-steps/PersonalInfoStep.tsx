@@ -8,11 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from 'react';
 import { UserFormData } from '@/types/user';
 import { FormErrors } from '@/types';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { MultiSelectInput } from '../shared/MultiSelectInput';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextAreaInput } from '../shared/TextAreaInput';
+import { TextInput, SelectInput, MultiSelectInput, FieldWrapper, TextAreaInput, DateInput } from '../shared';
 import { useRequiredFields } from '@/hooks/useRequiredFields';
 import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
 
@@ -85,16 +81,13 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
             label="Date de naissance"
             required={isRequired('dateNaissance')}
             error={displayError(errors.dateNaissance)}
-            hint="Format: JJ/MM/AAAA"
           >
-            <input
-              type="date"
+            <DateInput
               id="dateNaissance"
-              value={formData.dateNaissance || ''}
-              onChange={(e) => onInputChange('dateNaissance', e.target.value)}
+              value={formData.dateNaissance}
+              onChange={(value) => onInputChange('dateNaissance', value)}
               disabled={disabled}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-              style={{ color: '#111827', backgroundColor: '#ffffff' }}
+              className="focus:ring-blue-500 focus:border-blue-500"
             />
           </FieldWrapper>
 

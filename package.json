@@ -9,6 +9,7 @@
     "lint": "next lint",
     "test": "vitest",
     "fix-ts": "tsx scripts/fix-typescript-errors.ts",
+    "db:audit-dates": "tsx scripts/check-dates-integrity.ts",
     "build-safe": "npm run fix-ts && npm run build"
   },
   "devDependencies": {
