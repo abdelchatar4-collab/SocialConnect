@@ -7,11 +7,13 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import React from 'react';
 import { UserFormData } from '@/types';
-import { FieldWrapper } from '../shared/FieldWrapper';
-import { TextInput } from '../shared/TextInput';
-import { SelectInput } from '../shared/SelectInput';
-import { MultiSelectInput } from '../shared/MultiSelectInput';
 import { LisserButton, useAiAvailable } from '@/components/ai/LisserButton';
+
+// Sub-components
+import { PrevExpBasicInfo } from './PrevExpBasicInfo';
+import { PrevExpSituation } from './PrevExpSituation';
+import { PrevExpLegalTimeline } from './PrevExpLegalTimeline';
+import { PrevExpOutcomes } from './PrevExpOutcomes';
 
 interface PrevExpFieldsProps {
     formData: UserFormData;
@@ -29,21 +31,8 @@ interface PrevExpFieldsProps {
     optionsPrevExpMotifRequete: Array<{ value: string; label: string }>;
 }
 
-export const PrevExpFields: React.FC<PrevExpFieldsProps> = ({
-    formData,
-    onInputChange,
-    disabled,
-    optionsPrevExpDecision,
-    optionsPrevExpDemandeCpas,
-    optionsPrevExpNegociationProprio,
-    optionsPrevExpSolutionRelogement,
-    optionsPrevExpTypeFamille,
-    optionsPrevExpTypeRevenu,
-    optionsPrevExpEtatLogement,
-    optionsPrevExpNombreChambre,
-    optionsPrevExpAideJuridique,
-    optionsPrevExpMotifRequete
-}) => {
+export const PrevExpFields: React.FC<PrevExpFieldsProps> = (props) => {
+    const { formData, onInputChange, disabled } = props;
     const isAiAvailable = useAiAvailable();
 
     return (
@@ -74,282 +63,10 @@ export const PrevExpFields: React.FC<PrevExpFieldsProps> = ({
                         Détails de la procédure
                     </h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <FieldWrapper htmlFor="prevExpDateReception" label="Date de réception">
-                            <input
-                                type="date"
-                                id="prevExpDateReception"
-                                value={formData.prevExpDateReception || ''}
-                                onChange={e => onInputChange('prevExpDateReception', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateRequete" label="Date de requête">
-                            <input
-                                type="date"
-                                id="prevExpDateRequete"
-                                value={formData.prevExpDateRequete || ''}
-                                onChange={e => onInputChange('prevExpDateRequete', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateVad" label="Date VAD">
-                            <input
-                                type="date"
-                                id="prevExpDateVad"
-                                value={formData.prevExpDateVad || ''}
-                                onChange={e => onInputChange('prevExpDateVad', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpMotifRequete" label="Motif de la requête">
-                            <MultiSelectInput
-                                id="prevExpMotifRequete"
-                                value={(() => {
-                                    const val = formData.prevExpMotifRequete;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpMotifRequete', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpMotifRequete}
-                                placeholder="Sélectionner un ou plusieurs motifs..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDossierOuvert" label="Dossier ouvert ?">
-                            <SelectInput
-                                id="prevExpDossierOuvert"
-                                value={formData.prevExpDossierOuvert || ''}
-                                onChange={(value) => onInputChange('prevExpDossierOuvert', value)}
-                                disabled={disabled}
-                                options={[
-                                    { value: '', label: '' },
-                                    { value: 'OUI', label: 'OUI' },
-                                    { value: 'NON', label: 'NON' }
-                                ]}
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpTypeFamille" label="Type de famille">
-                            <SelectInput
-                                id="prevExpTypeFamille"
-                                value={formData.prevExpTypeFamille || ''}
-                                onChange={(value) => onInputChange('prevExpTypeFamille', value)}
-                                disabled={disabled}
-                                options={[
-                                    { value: '', label: '' },
-                                    ...optionsPrevExpTypeFamille
-                                ]}
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpTypeRevenu" label="Type de revenu">
-                            <MultiSelectInput
-                                id="prevExpTypeRevenu"
-                                value={(() => {
-                                    const val = formData.prevExpTypeRevenu;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpTypeRevenu', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpTypeRevenu}
-                                placeholder="Sélectionner un ou plusieurs revenus..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpEtatLogement" label="État du logement">
-                            <MultiSelectInput
-                                id="prevExpEtatLogement"
-                                value={(() => {
-                                    const val = formData.prevExpEtatLogement;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpEtatLogement', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpEtatLogement}
-                                placeholder="Sélectionner un ou plusieurs états..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpNombreChambre" label="Nombre de chambres">
-                            <SelectInput
-                                id="prevExpNombreChambre"
-                                value={formData.prevExpNombreChambre || ''}
-                                onChange={(value) => onInputChange('prevExpNombreChambre', value)}
-                                disabled={disabled}
-                                options={[
-                                    { value: '', label: '' },
-                                    ...optionsPrevExpNombreChambre
-                                ]}
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateAudience" label="Date d'audience">
-                            <input
-                                type="date"
-                                id="prevExpDateAudience"
-                                value={formData.prevExpDateAudience || ''}
-                                onChange={e => onInputChange('prevExpDateAudience', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateSignification" label="Date de signification">
-                            <input
-                                type="date"
-                                id="prevExpDateSignification"
-                                value={formData.prevExpDateSignification || ''}
-                                onChange={e => onInputChange('prevExpDateSignification', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateJugement" label="Date du jugement">
-                            <input
-                                type="date"
-                                id="prevExpDateJugement"
-                                value={formData.prevExpDateJugement || ''}
-                                onChange={e => onInputChange('prevExpDateJugement', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDateExpulsion" label="Date d'expulsion">
-                            <input
-                                type="date"
-                                id="prevExpDateExpulsion"
-                                value={formData.prevExpDateExpulsion || ''}
-                                onChange={e => onInputChange('prevExpDateExpulsion', e.target.value)}
-                                disabled={disabled}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-gray-900 bg-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpAideJuridique" label="Aide juridique">
-                            <MultiSelectInput
-                                id="prevExpAideJuridique"
-                                value={(() => {
-                                    const val = formData.prevExpAideJuridique;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpAideJuridique', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpAideJuridique}
-                                placeholder="Sélectionner une ou plusieurs options..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDecision" label="Issue de l'accompagnement">
-                            <MultiSelectInput
-                                id="prevExpDecision"
-                                value={(() => {
-                                    const val = formData.prevExpDecision;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpDecision', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpDecision}
-                                placeholder="Sélectionner une ou plusieurs issues..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpDemandeCpas" label="Demande de prise en charge CPAS">
-                            <MultiSelectInput
-                                id="prevExpDemandeCpas"
-                                value={(() => {
-                                    const val = formData.prevExpDemandeCpas;
-                                    if (!val || val === '') return [];
-                                    // Si la valeur contient une virgule, c'est un multi-select
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    // Sinon, c'est une valeur unique (ancien format)
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpDemandeCpas', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpDemandeCpas}
-                                placeholder="Sélectionner une ou plusieurs options..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpNegociationProprio" label="Négociation avec propriétaire">
-                            <MultiSelectInput
-                                id="prevExpNegociationProprio"
-                                value={(() => {
-                                    const val = formData.prevExpNegociationProprio;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpNegociationProprio', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpNegociationProprio}
-                                placeholder="Sélectionner une ou plusieurs options..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpSolutionRelogement" label="Solution de relogement">
-                            <MultiSelectInput
-                                id="prevExpSolutionRelogement"
-                                value={(() => {
-                                    const val = formData.prevExpSolutionRelogement;
-                                    if (!val || val === '') return [];
-                                    if (val.includes(',')) {
-                                        return val.split(',').filter(Boolean);
-                                    }
-                                    return [val];
-                                })()}
-                                onChange={(values) => onInputChange('prevExpSolutionRelogement', values.join(','))}
-                                disabled={disabled}
-                                options={optionsPrevExpSolutionRelogement}
-                                placeholder="Sélectionner une ou plusieurs options..."
-                            />
-                        </FieldWrapper>
-
-                        <FieldWrapper htmlFor="prevExpMaintienLogement" label="Maintien dans le logement ?">
-                            <SelectInput
-                                id="prevExpMaintienLogement"
-                                value={formData.prevExpMaintienLogement || ''}
-                                onChange={(value) => onInputChange('prevExpMaintienLogement', value)}
-                                disabled={disabled}
-                                options={[
-                                    { value: '', label: '' },
-                                    { value: 'Oui', label: 'OUI' },
-                                    { value: 'Non', label: 'NON' }
-                                ]}
-                            />
-                        </FieldWrapper>
+                        <PrevExpBasicInfo {...props} />
+                        <PrevExpSituation {...props} />
+                        <PrevExpLegalTimeline {...props} />
+                        <PrevExpOutcomes {...props} />
 
                         <div className="col-span-2">
                             <div className="flex items-center justify-between mb-1">
