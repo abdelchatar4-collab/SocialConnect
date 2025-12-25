@@ -21,7 +21,6 @@ export { default as UserList } from './components/UserList';
 // UserList principal reste aussi dans /src/components/UserList.tsx
 // export { default as UserForm } from './components/UserForm'; // Moved to /src/components/UserForm.tsx
 export { default as UserDetails } from './components/UserDetails';
-export { default as UserPDFView } from './components/UserPDFView';
 export { default as ImportUsers } from './components/ImportUsers';
 
 // ==========================================
@@ -61,7 +60,7 @@ export { userService } from './services/userService';
 
 // Service d'analytics et statistiques
 export { userAnalyticsService } from './services/userAnalyticsService';
-export type { UserStats, AdvancedFilters } from './services/userAnalyticsService';
+export type { UserStats, AdvancedFilters } from './services/analytics/analyticsTypes';
 
 // ==========================================
 // TYPES

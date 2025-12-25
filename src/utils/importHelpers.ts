@@ -20,7 +20,7 @@ import {
 } from './import/mappingFunctions';
 
 export { ID_PREFIX_MAP, AGE_GROUP_MAP, NATIONALITY_TO_COUNTRY_MAP, PROBLEMATIQUES_MAP, ACTIONS_MAP, COMMON_FIELDS_MAP } from './import/importConstants';
-export { findValue, transformDateExcel } from './import/excelUtils';
+export { findValue, transformDateExcel, parseCellValue } from './import/excelUtils';
 export { mapperAntenne, mapperTrancheAge, mapperGenre, extraireProblematiques, extraireActions } from './import/mappingFunctions';
 
 /**

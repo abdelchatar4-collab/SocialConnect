@@ -8,7 +8,6 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import React from "react";
 import Link from "next/link";
 import { User, Gestionnaire } from "@/types";
-import LazyPDFDownloadButton from "@/components/LazyPDFDownloadButton";
 import { useSession } from "next-auth/react";
 
 // Icons
@@ -88,13 +87,13 @@ export const UserDetailsActions: React.FC<UserDetailsActionsProps> = ({
                     <EditIcon /> Modifier
                 </Link>
 
-                {/* PDF */}
-                <LazyPDFDownloadButton
-                    user={user}
-                    gestionnaires={gestionnaires}
-                    showAntenne={showAntenne}
+                {/* Imprimer / PDF - ouvre la page d'aperçu */}
+                <button
+                    onClick={() => window.open(`/documents/user-profile/${user.id}`, '_blank')}
                     className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm text-white bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 transition-colors"
-                />
+                >
+                    <PrintIcon /> Imprimer / PDF
+                </button>
 
                 {/* Excel */}
                 <button
@@ -102,14 +101,6 @@ export const UserDetailsActions: React.FC<UserDetailsActionsProps> = ({
                     className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm text-white bg-gradient-to-br from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 transition-colors"
                 >
                     <ExcelIcon /> Exporter Excel
-                </button>
-
-                {/* Imprimer */}
-                <button
-                    onClick={() => window.print()}
-                    className="flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm text-white bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 transition-colors"
-                >
-                    <PrintIcon /> Imprimer
                 </button>
 
                 {/* Supprimer */}

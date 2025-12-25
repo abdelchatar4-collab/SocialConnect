@@ -1,20 +1,12 @@
-/*
-Copyright (C) 2025 ABDEL KADER CHATAR
-SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les termes de la Licence Publique Générale GNU telle que publiée par la Free Software Foundation, soit la version 3 de la licence, soit (à votre convenance) toute version ultérieure.
-
-Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
-*/
-
+/* Copyright (C) 2025 ABDEL KADER CHATAR - Licence GPLv3+ */
 "use client";
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { User, Adresse } from '@/types';
 import UserForm from '@/features/users/components/UserForm';
-import { useAdmin } from '@/contexts/AdminContext'; // Ajouter Adresse
+import { useAdmin } from '@/contexts/AdminContext';
 import { ArrowLeftIcon, CheckCircleIcon, DocumentIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-// Importer la fonction centralisée
 import { initiateRgpdAttestationGeneration } from '@/utils/rgpdUtils';
 
 interface GestionnaireForForm {
@@ -34,6 +26,11 @@ export default function EditUserPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [gestionnairesList, setGestionnairesList] = useState<GestionnaireForForm[]>([]);
+
+  // Delete state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Utiliser useCallback pour fetchUserDataAndGestionnaires pour la stabilité de la ref dans useEffect
   const fetchUserDataAndGestionnaires = useCallback(async (showLoadingIndicator = true) => {
@@ -135,50 +132,43 @@ export default function EditUserPage() {
     router.push(userId ? `/users/${userId}` : '/users');
   };
 
-  const handleGenerateRgpdRequest = async () => {
+  const attemptDelete = () => {
+    setShowDeleteConfirm(true);
+    setDeleteError(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!userId) return;
+    try {
+      setIsDeleting(true);
+      setDeleteError(null);
+      const res = await fetch(`/api/users/${userId}`, { method: "DELETE" });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || `Erreur ${res.status}: La suppression a échoué.`);
+      }
+      setShowDeleteConfirm(false);
+      // Redirect to list
+      router.push('/users');
+    } catch (err: any) {
+      console.error("Erreur lors de la suppression:", err);
+      setDeleteError(err.message);
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeleteError(null);
+  };
+
+  const handleGenerateRgpdRequest = () => {
     if (!userFormData || !userFormData.id) {
       alert("Les données de l'usager ne sont pas disponibles.");
       return;
     }
-
-    setIsProcessing(true);
-    setPageError(null);
-    setShowSuccessBanner(false);
-
-    try {
-      let dataForRgpdGeneration = { ...userFormData };
-
-      const userFullName = `${dataForRgpdGeneration.prenom || ''} ${dataForRgpdGeneration.nom || ''} `.trim();
-
-      // CORRECTION : Extraire correctement l'adresse de l'objet Adresse
-      const addr = dataForRgpdGeneration.adresse || {} as Adresse;
-      const userFullAddress = `${addr.numero || ''} ${addr.rue || ''}${addr.boite ? ' bte ' + addr.boite : ''} `.trim();
-      const userPostalCode = addr.codePostal || '';
-      const userCity = addr.ville || '';
-
-      if (!dataForRgpdGeneration.id) {
-        alert("ID utilisateur manquant pour la génération RGPD.");
-        setIsProcessing(false);
-        return;
-      }
-
-      await initiateRgpdAttestationGeneration(
-        dataForRgpdGeneration.id,
-        userFullName,
-        userFullAddress,
-        userPostalCode,
-        userCity,
-        async () => {
-          await fetchUserDataAndGestionnaires(false);
-        }
-      );
-
-    } catch (error: any) {
-      console.error("Erreur handleGenerateRgpdRequest:", error);
-      setPageError(error.message || "Une erreur est survenue.");
-    } finally {
-      setIsProcessing(false);
-    }
+    // Ouvrir la page d'aperçu RGPD dans un nouvel onglet
+    window.open(`/documents/rgpd/${userFormData.id}`, '_blank');
   };
 
   if (isLoading) return <div className="flex justify-center items-center h-screen"><p className="text-lg text-gray-600">Chargement...</p></div>;
@@ -269,10 +259,42 @@ export default function EditUserPage() {
             initialData={userFormData}
             onSubmit={handleSaveUser}
             onCancel={handleCancel}
+            onDelete={attemptDelete}
             mode="edit"
           />
         )}
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+          <div className="flex items-end sm:items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75" aria-hidden="true" onClick={cancelDelete}></div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">Confirmer la suppression</h3>
+                    <div className="mt-2 text-sm text-gray-500">
+                      Voulez-vous supprimer le dossier de <strong>{userFormData?.prenom} {userFormData?.nom}</strong> ? Cette action est irréversible.
+                      {deleteError && <p className="mt-3 text-red-700 bg-red-100 p-3 rounded border border-red-300">{deleteError}</p>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3">
+                <button type="button" onClick={confirmDelete} disabled={isDeleting} className={`flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm text-white ${isDeleting ? "bg-red-400" : "bg-red-600 hover:bg-red-700"}`}>
+                  {isDeleting ? "Suppression..." : "Oui, supprimer"}
+                </button>
+                <button type="button" onClick={cancelDelete} className="rounded-md px-4 py-2 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-100">Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

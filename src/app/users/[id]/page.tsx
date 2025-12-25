@@ -141,26 +141,10 @@ export default function UserDetailsPage() {
     }
   };
 
-  const handleGenerateRgpdOnDetailsPage = async () => {
+  const handleGenerateRgpdOnDetailsPage = () => {
     if (!user || !user.id) return;
-
-    setIsProcessingRgpd(true);
-    try {
-      const userFullName = `${user.prenom || ''} ${user.nom || ''}`.trim();
-      const addr = user.adresse || {} as Adresse;
-      const userFullAddress = `${addr.numero || ''} ${addr.rue || ''}${addr.boite ? ' bte ' + addr.boite : ''}`.trim();
-      const userPostalCode = addr.codePostal || '';
-      const userCity = addr.ville || '';
-
-      await initiateRgpdAttestationGeneration(
-        user.id, userFullName, userFullAddress, userPostalCode, userCity, fetchData
-      );
-    } catch (error) {
-      console.error("Erreur lors de la génération de l'attestation RGPD:", error);
-      alert("Une erreur est survenue lors de la génération de l'attestation RGPD.");
-    } finally {
-      setIsProcessingRgpd(false);
-    }
+    // Ouvrir la page d'aperçu RGPD dans un nouvel onglet
+    window.open(`/documents/rgpd/${user.id}`, '_blank');
   };
 
   return (

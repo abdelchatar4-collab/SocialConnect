@@ -91,7 +91,10 @@ export async function PUT(request: NextRequest) {
             // Column Visibility Settings
             visibleColumns,
             // Form Section Visibility Settings
-            visibleFormSections
+            visibleFormSections,
+            // Document Settings
+            docRetentionPeriod, docServiceAddress, docServiceCity, docServicePhone,
+            docFooterText, docRgpdTitle, docRgpdSections, docUserProfileSections, docAntenneAddresses
         } = body;
 
         // Get existing settings
@@ -167,7 +170,17 @@ export async function PUT(request: NextRequest) {
                         ...(aiAnalysisTemperature !== undefined && { aiAnalysisTemperature }),
                         ...(aiCustomAnalysisPrompt !== undefined && { aiCustomAnalysisPrompt }),
                         ...(visibleColumns !== undefined && { visibleColumns }),
-                        ...(visibleFormSections !== undefined && { visibleFormSections })
+                        ...(visibleFormSections !== undefined && { visibleFormSections }),
+                        // Document Settings
+                        ...(docRetentionPeriod !== undefined && { docRetentionPeriod }),
+                        ...(docServiceAddress !== undefined && { docServiceAddress }),
+                        ...(docServiceCity !== undefined && { docServiceCity }),
+                        ...(docServicePhone !== undefined && { docServicePhone }),
+                        ...(docFooterText !== undefined && { docFooterText }),
+                        ...(docRgpdTitle !== undefined && { docRgpdTitle }),
+                        ...(docRgpdSections !== undefined && { docRgpdSections }),
+                        ...(docUserProfileSections !== undefined && { docUserProfileSections }),
+                        ...(docAntenneAddresses !== undefined && { docAntenneAddresses })
                     }
                 });
                 console.log('[API PUT /api/settings] Update successful');

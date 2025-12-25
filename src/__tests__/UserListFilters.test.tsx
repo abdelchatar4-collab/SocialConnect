@@ -54,13 +54,13 @@ describe('UserListFilters Component', () => {
 
     it('renders search input correctly', () => {
         render(<UserListFilters {...defaultProps} />);
-        const input = screen.getByPlaceholderText('Rechercher...');
+        const input = screen.getByPlaceholderText('Rechercher par nom, prénom, email...');
         expect(input).toBeInTheDocument();
     });
 
     it('calls onSearchTermChange when typing', () => {
         render(<UserListFilters {...defaultProps} />);
-        const input = screen.getByPlaceholderText('Rechercher...');
+        const input = screen.getByPlaceholderText('Rechercher par nom, prénom, email...');
         fireEvent.change(input, { target: { value: 'Dupont' } });
         expect(defaultProps.onSearchTermChange).toHaveBeenCalledWith('Dupont');
     });

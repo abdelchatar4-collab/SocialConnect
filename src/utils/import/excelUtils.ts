@@ -103,3 +103,20 @@ export function transformDateExcel(value: string | number | null | undefined): s
     }
     return null;
 }
+
+/**
+ * Lit intelligemment la valeur d'une cellule Excel.
+ */
+export const parseCellValue = (cell: any, headerKey: string | undefined): string => {
+    if (!cell || (cell.v === undefined && cell.w === undefined)) return '';
+
+    const lower = headerKey?.toLowerCase() || '';
+    const isDate = ['date', 'naissance', 'inscription', 'debut', 'fin', 'rendez-vous'].some(k => lower.includes(k));
+
+    if (isDate && cell.t === 'n') {
+        const d = transformDateExcel(cell.v);
+        if (d) return d;
+    }
+
+    return cell.w !== undefined ? String(cell.w) : String(cell.v);
+};

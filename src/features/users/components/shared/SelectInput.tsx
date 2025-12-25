@@ -31,6 +31,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
   return (
     <div className="relative">
       <select
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={`

@@ -14,7 +14,6 @@ import { useAdmin } from '@/contexts/AdminContext';
 import type { UserFormRef } from '@/types';
 import { Adresse, User } from '@/types/user';
 import { initialNewUserData } from '@/features/users/constants/userFormDefaults';
-import { generateRgpdAttestationPDF } from '@/utils/rgpdAttestationGenerator';
 
 // Types for this page
 interface GestionnaireForForm {
@@ -174,13 +173,8 @@ export default function NewUserPage() {
 
   const handleRgpdGeneration = () => {
     if (!savedUserFullData) return;
-    generateRgpdAttestationPDF(
-      savedUserFullData.id,
-      `${savedUserFullData.prenom} ${savedUserFullData.nom}`,
-      `${savedUserFullData.adresse?.rue || ''} ${savedUserFullData.adresse?.numero || ''} ${savedUserFullData.adresse?.boite ? `Boîte ${savedUserFullData.adresse.boite}` : ''}`.trim(),
-      savedUserFullData.adresse?.codePostal || '',
-      savedUserFullData.adresse?.ville || ''
-    );
+    // Ouvrir la page d'aperçu RGPD dans un nouvel onglet
+    window.open(`/documents/rgpd/${savedUserFullData.id}`, '_blank');
   };
 
   const handleFinish = () => router.push('/users');

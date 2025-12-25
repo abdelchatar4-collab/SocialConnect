@@ -246,6 +246,17 @@ model Settings {
   // Form Section Visibility Settings (per service)
   visibleFormSections    Json?    // Structure: { "identity": true, "housing": false, ... }
 
+  // Document Settings (per service)
+  docRetentionPeriod       String?  @default("3 ans")
+  docServiceAddress        String?
+  docServiceCity           String?
+  docServicePhone          String?
+  docFooterText            String?
+  docRgpdTitle             String?  @db.Text
+  docRgpdSections          String?  @db.LongText  // JSON: { "intro": true, "pourquoi": true, ... }
+  docUserProfileSections   String?  @db.LongText  // JSON: { "identite": true, "notes": false, ... }
+  docAntenneAddresses      String?  @db.LongText  // JSON: { "cureghem": { rue: "...", cp: "..." }, ... }
+
   @@index([serviceId])
   @@map("settings")
 }

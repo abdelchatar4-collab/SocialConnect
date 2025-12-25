@@ -213,11 +213,6 @@ export default function Header() {
               </div>
             )}
 
-            {/* Service Switcher (Super Admin) */}
-            <div className="block ml-4">
-              <ServiceSwitcher />
-            </div>
-
             {/* Year Selector */}
             <div className="hidden xl:block ml-4">
               <YearSelector />

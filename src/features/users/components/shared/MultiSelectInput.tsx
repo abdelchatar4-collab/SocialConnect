@@ -65,6 +65,7 @@ export const MultiSelectInput: React.FC<MultiSelectInputProps> = ({
     return (
         <div ref={dropdownRef} className="relative">
             <div
+                id={id}
                 onClick={() => !disabled && setIsOpen(!isOpen)}
                 className={`
                     w-full min-h-[42px] px-3 py-2 border border-gray-300 rounded-md shadow-sm

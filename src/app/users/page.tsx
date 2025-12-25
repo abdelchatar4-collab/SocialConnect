@@ -133,7 +133,7 @@ export default function UsersListPage() {
               onSearchTermChange={setSearchTerm}
               sortField={sortField}
               sortDirection={sortDirection}
-              onSortChange={(field, direction) => {
+              onSortChange={(field: string | null, direction: 'asc' | 'desc') => {
                 setSortField(field);
                 setSortDirection(direction);
               }}

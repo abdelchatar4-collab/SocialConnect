@@ -27,6 +27,7 @@ interface UserFormProps {
   initialData?: Partial<User>;
   onSubmit: (userData: Partial<User>) => Promise<void>;
   onCancel?: () => void;
+  onDelete?: () => void;
   mode?: 'create' | 'edit';
   className?: string;
 }
@@ -51,6 +52,7 @@ export const UserForm = forwardRef<UserFormRef, UserFormProps>((
     initialData,
     onSubmit,
     onCancel,
+    onDelete,
     mode = 'create',
     className = ''
   },
@@ -231,6 +233,7 @@ export const UserForm = forwardRef<UserFormRef, UserFormProps>((
         onNext={handleNext}
         onSubmit={handleSubmit}
         onCancel={onCancel}
+        onDelete={onDelete}
       />
     </div>
   );

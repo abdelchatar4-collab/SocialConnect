@@ -39,7 +39,7 @@ export const StatsCardsSection: React.FC<StatsCardsSectionProps> = ({
                     <Users className="w-6 h-6 text-blue-600" />
                 </div>
                 <div>
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Usagers</p>
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total des dossiers</p>
                     <p className="text-2xl font-bold text-slate-900">{totalUsersCount}</p>
                 </div>
             </div>
