@@ -39,7 +39,7 @@ import { useUserListState } from '../../hooks/useUserListState';
 import { useUserListLogic } from '../../hooks/useUserListLogic';
 
 // Types
-import type { FilterType } from './UserListFilters';
+import type { FilterType } from './UserListFilters.types';
 
 interface UserListProps {
     searchTerm?: string;

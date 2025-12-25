@@ -9,7 +9,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { useState, useCallback, useEffect } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
-import type { FilterType } from '../components/UserList/UserListFilters';
+import type { FilterType } from '../components/UserList/UserListFilters.types';
 
 interface UseUserListStateProps {
     searchTerm?: string;

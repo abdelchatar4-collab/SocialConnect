@@ -14,60 +14,20 @@ import { Popover, Transition, Menu } from '@headlessui/react';
 import { Button } from '@/components/ui';
 import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 import { SlidersHorizontal, ChevronDown, Check, LayoutGrid, List, AlertCircle, Users, UserCheck, Copy } from 'lucide-react';
-import { User } from '@/types/user';
+import { UserListFiltersProps, FilterType } from './UserListFilters.types';
+import { CheckboxRow } from './CheckboxRow';
 
-export type FilterType = 'all' | 'nom' | 'prenom' | 'email' | 'gestionnaire' | 'secteur' | 'antenne' | 'etat' | 'adresse';
-
-interface UserListFiltersProps {
-    searchTerm: string;
-    searchField: FilterType;
-    onSearchTermChange: (value: string) => void;
-    onSearchFieldChange: (field: FilterType) => void;
-    problematiqueFilter: string;
-    onProblematiqueFilterChange: (filter: string) => void;
-    problematiquesOptions: Array<{ value: string; label: string }>;
-    showImportantInfoOnly: boolean;
-    onShowImportantInfoOnlyChange: (value: boolean) => void;
-    showDonneesConfidentielles: boolean;
-    onShowDonneesConfidentiellesChange: (value: boolean) => void;
-    showMissingBirthDate: boolean;
-    onShowMissingBirthDateChange: (value: boolean) => void;
-    showDuplicates: boolean;
-    onShowDuplicatesChange: (value: boolean) => void;
-    // New props for duplicate filter flexibility
-    includeDateInDuplicates: boolean;
-    onIncludeDateInDuplicatesChange: (value: boolean) => void;
-    importantInfoCount: number;
-    donneesConfidentiellesCount: number;
-    missingBirthDateCount: number;
-    duplicatesCount: number;
-
-    // Dashboard Stats
-    totalUsersCount: number;
-    lastAddedUser: User | null;
-    myDossiersCount: number;
-    currentUserIdentifier?: string;
-
-    // Additional toggles for specific columns
-    showProblematiques: boolean;
-    onShowProblematiquesChange: (value: boolean) => void;
-    showActions: boolean;
-    onShowActionsChange: (value: boolean) => void;
-    showDossier: boolean;
-    onShowDossierChange: (value: boolean) => void;
-    showPhone: boolean;
-    onShowPhoneChange: (value: boolean) => void;
-    showAdresse: boolean;
-    onShowAdresseChange: (value: boolean) => void;
-    showDateNaissance: boolean;
-    onShowDateNaissanceChange: (value: boolean) => void;
-
-    // View mode
-    viewMode: 'table' | 'cards';
-    onViewModeChange: (mode: 'table' | 'cards') => void;
-    onAddUser?: () => void;
-    onLastAddedClick?: (userId: string) => void;
-}
+const searchFields: Array<{ value: FilterType; label: string }> = [
+    { value: 'all', label: 'Tous les champs' },
+    { value: 'nom', label: 'Nom' },
+    { value: 'prenom', label: 'Prénom' },
+    { value: 'email', label: 'Email' },
+    { value: 'gestionnaire', label: 'Gestionnaire' },
+    { value: 'secteur', label: 'Secteur' },
+    { value: 'antenne', label: 'Antenne' },
+    { value: 'etat', label: 'État' },
+    { value: 'adresse', label: 'Adresse' },
+];
 
 export const UserListFilters: React.FC<UserListFiltersProps> = ({
     searchTerm,
@@ -88,13 +48,9 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
     includeDateInDuplicates,
     onIncludeDateInDuplicatesChange,
     importantInfoCount,
-    donneesConfidentiellesCount,
-    missingBirthDateCount,
     duplicatesCount,
     totalUsersCount,
-    lastAddedUser,
     myDossiersCount,
-    currentUserIdentifier,
     showProblematiques,
     onShowProblematiquesChange,
     showActions,
@@ -110,25 +66,7 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
     viewMode,
     onViewModeChange,
     onAddUser,
-    onLastAddedClick,
 }) => {
-    const searchFields: Array<{ value: FilterType; label: string }> = [
-        { value: 'all', label: 'Tous les champs' },
-        { value: 'nom', label: 'Nom' },
-        { value: 'prenom', label: 'Prénom' },
-        { value: 'email', label: 'Email' },
-        { value: 'gestionnaire', label: 'Gestionnaire' },
-        { value: 'secteur', label: 'Secteur' },
-        { value: 'antenne', label: 'Antenne' },
-        { value: 'etat', label: 'État' },
-        { value: 'adresse', label: 'Adresse' },
-    ];
-
-    // Helper to format date
-    const formatDate = (dateString?: string) => {
-        if (!dateString) return 'Aucun dossier récent';
-        return new Date(dateString).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-    };
 
     // Calculate active filters count for badge
     const activeFiltersCount = [
@@ -415,32 +353,3 @@ export const UserListFilters: React.FC<UserListFiltersProps> = ({
         </div>
     );
 };
-
-// Helper for Popover Checkboxes
-const CheckboxRow = ({
-    checked,
-    onChange,
-    label,
-}: {
-    checked: boolean;
-    onChange: (v: boolean) => void;
-    label: string;
-}) => (
-    <label className="flex items-center gap-3 group cursor-pointer p-2 rounded-xl hover:bg-slate-50 transition-colors">
-        <div className={`
-            w-5 h-5 rounded-lg border flex items-center justify-center transition-colors
-            ${checked ? 'bg-blue-600 border-blue-600' : 'bg-white border-slate-300 group-hover:border-slate-400'}
-        `}>
-            {checked && <Check className="w-3.5 h-3.5 text-white" />}
-        </div>
-        <span className={`text-sm ${checked ? 'text-slate-900 font-semibold' : 'text-slate-600'}`}>
-            {label}
-        </span>
-        <input
-            type="checkbox"
-            className="hidden"
-            checked={checked}
-            onChange={(e) => onChange(e.target.checked)}
-        />
-    </label>
-);
