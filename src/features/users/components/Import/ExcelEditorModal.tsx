@@ -17,6 +17,7 @@ interface ExcelEditorModalProps {
     headers: string[];
     fileName: string;
     onConfirm: (editedData: any[][], headers: string[]) => void;
+    mode?: 'import' | 'edit';
 }
 
 const ExcelEditorModal: React.FC<ExcelEditorModalProps> = ({
@@ -26,6 +27,7 @@ const ExcelEditorModal: React.FC<ExcelEditorModalProps> = ({
     headers,
     fileName,
     onConfirm,
+    mode = 'import'
 }) => {
     const spreadsheetRef = useRef<HTMLDivElement>(null);
     const jssRef = useRef<any>(null);
@@ -240,7 +242,7 @@ const ExcelEditorModal: React.FC<ExcelEditorModalProps> = ({
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <polyline points="20 6 9 17 4 12" />
                             </svg>
-                            Valider et Importer
+                            {mode === 'edit' ? 'Sauvegarder' : 'Valider et Importer'}
                         </button>
                     </div>
                 </div>
