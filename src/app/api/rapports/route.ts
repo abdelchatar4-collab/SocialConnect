@@ -10,6 +10,8 @@ import { readdir, stat } from 'fs/promises';
 import path from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { getDynamicServiceId } from '@/lib/auth-utils';
+import { mkdir } from 'fs/promises';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +24,19 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const reportsDir = path.join(process.cwd(), 'public', 'rapports');
+    const serviceId = await getDynamicServiceId(session);
+    const reportsDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
+
+    // S'assurer que le dossier du service existe
+    if (!path.join(process.cwd(), 'uploads', 'rapports').includes(reportsDir)) {
+      // Protection contre Directory Traversal
+      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+    }
+
+    try {
+      await mkdir(reportsDir, { recursive: true });
+    } catch (e) { }
+
     const filenames = await readdir(reportsDir);
 
     console.log('[API GET /api/rapports] Found files:', filenames);

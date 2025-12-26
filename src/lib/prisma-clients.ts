@@ -182,10 +182,8 @@ export const getServiceClient = (serviceId: string) => {
                     (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
                     return query(args);
                 },
-                async create({ args, query }) {
-                    // Pour la création, on s'assure que le gestionnaire lié appartient au bon service
-                    // Note: Prisma ne permet pas de filtrer dans 'create' directement sur une relation connectée sans check préalable
-                    // Mais le client filtré sur 'gestionnaire' s'en chargera si on utilise des transactions ou des accès imbriqués
+                async findFirst({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
                     return query(args);
                 },
                 async update({ args, query }) {
@@ -194,6 +192,90 @@ export const getServiceClient = (serviceId: string) => {
                 },
                 async delete({ args, query }) {
                     (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                },
+                async updateMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                },
+                async deleteMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                }
+            },
+            soldeConge: {
+                async findMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                },
+                async findFirst({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                },
+                async updateMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                },
+                async deleteMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
+                    return query(args);
+                }
+            },
+            document: {
+                async findMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async findFirst({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async delete({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async updateMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async deleteMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                }
+            },
+            problematique: {
+                async findMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async findFirst({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async updateMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async deleteMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                }
+            },
+            actionSuivi: {
+                async findMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async findFirst({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async updateMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
+                    return query(args);
+                },
+                async deleteMany({ args, query }) {
+                    (args as any).where = { ...(args.where || {}), user: { serviceId } };
                     return query(args);
                 }
             }

@@ -10,6 +10,8 @@ import { writeFile } from 'fs/promises';
 import path from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { getDynamicServiceId } from '@/lib/auth-utils';
+import { mkdir } from 'fs/promises';
 
 export const dynamic = 'force-dynamic';
 // Configuration pour supporter les gros fichiers
@@ -78,8 +80,13 @@ export async function POST(request: NextRequest) {
     // Utilise la fonction de sanitation pour le nom du fichier
     const filename = sanitizeFileName(file.name);
 
-    // Define the path to the public/rapports directory
-    const uploadDir = path.join(process.cwd(), 'public', 'rapports');
+    // Write the file to the filesystem
+    const serviceId = await getDynamicServiceId(session);
+    const uploadDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
+
+    // S'assurer que le dossier du service existe
+    try { await mkdir(uploadDir, { recursive: true }); } catch (e) { }
+
     const filePath = path.join(uploadDir, filename);
 
     // Write the file to the filesystem

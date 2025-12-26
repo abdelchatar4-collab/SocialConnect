@@ -10,6 +10,9 @@ import { readFile, stat } from 'fs/promises';
 import { readdirSync } from 'fs';
 import path from 'path';
 import { existsSync } from 'fs';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,8 +23,14 @@ export async function GET(
   console.log(`[API GET /api/rapports/[filename]] Requested file: ${params.filename}`);
 
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const serviceId = await getDynamicServiceId(session);
     const filename = decodeURIComponent(params.filename);
-    const rapportsDir = path.join(process.cwd(), 'public', 'rapports');
+    const rapportsDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
     let filePath = path.join(rapportsDir, filename);
 
     console.log(`[API GET /api/rapports/[filename]] Looking for file at: ${filePath}`);

@@ -12,6 +12,7 @@ import archiver from 'archiver';
 import { Readable } from 'stream';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,7 +30,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const rapportsDir = join(process.cwd(), 'public', 'rapports');
+    const serviceId = await getDynamicServiceId(session);
+    const rapportsDir = join(process.cwd(), 'uploads', 'rapports', serviceId);
 
     // Vérifier que le dossier rapports existe
     if (!existsSync(rapportsDir)) {

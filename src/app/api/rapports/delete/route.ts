@@ -10,6 +10,7 @@ import { unlink } from 'fs/promises';
 import path from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +30,10 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Filename not provided.' }, { status: 400 });
     }
 
-    // Define the path to the file in the public/rapports directory
-    const filePath = path.join(process.cwd(), 'public', 'rapports', filename);
+    const serviceId = await getDynamicServiceId(session);
+
+    // Define the path to the file in the uploads/rapports/serviceId directory
+    const filePath = path.join(process.cwd(), 'uploads', 'rapports', serviceId, filename);
 
     // Check if the file exists before attempting to delete
     try {
