@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
             }, { status: 403 });
         }
 
+        // Gemini Specific Check
+        if (settings && (settings as any).aiGeminiEnabled === false) {
+            return NextResponse.json({
+                error: "Le module Gemini est désactivé. Cette fonctionnalité nécessite Gemini."
+            }, { status: 403 });
+        }
+
         console.log('[Partner Verify] Verifying with DB Settings:', partnerName);
 
         const { result, error } = await verifyPartnerWithGemini(

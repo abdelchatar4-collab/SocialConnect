@@ -5,15 +5,17 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { SparklesIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { AnalysisResult, ProposedItem } from '@/types/notes-ai';
+import { AiProviderSelector } from '@/components/ai/AiProviderSelector';
+import { AiProvider } from '@/lib/ai/ai-types';
 
 interface NotesAIAnalysisProps {
     isAnalyzing: boolean;
     analysisResult: AnalysisResult | null;
     analysisError: string | null;
-    handleAnalyze: () => void;
+    handleAnalyze: (provider?: AiProvider) => void;
     abortAnalysis: () => void;
     toggleValidation: (category: 'actions' | 'problematiques', index: number) => void;
     selectAllItems: (category: 'actions' | 'problematiques') => void;
@@ -27,7 +29,7 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
     isAnalyzing,
     analysisResult,
     analysisError,
-    handleAnalyze,
+    handleAnalyze: onAnalyze,
     abortAnalysis,
     toggleValidation,
     selectAllItems,
@@ -36,6 +38,12 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
     setAnalysisResult,
     disabled
 }) => {
+    const [selectedProvider, setSelectedProvider] = useState<AiProvider | undefined>(undefined);
+
+    const handleAnalyzeClick = () => {
+        onAnalyze(selectedProvider);
+    };
+
     const validatedCount = analysisResult
         ? analysisResult.actions.filter((a: ProposedItem) => a.validated).length +
         analysisResult.problematiques.filter((p: ProposedItem) => p.validated).length
@@ -48,10 +56,17 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                     <SparklesIcon className="w-5 h-5 text-purple-600 mr-2" />
                     Extraction IA (optionnel)
                 </h4>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
+
+                    <AiProviderSelector
+                        value={selectedProvider}
+                        onChange={setSelectedProvider}
+                        className="text-purple-700 hover:bg-purple-100"
+                    />
+
                     <button
                         type="button"
-                        onClick={handleAnalyze}
+                        onClick={handleAnalyzeClick}
                         disabled={disabled || isAnalyzing}
                         className={`inline-flex items-center px-4 py-2 rounded-lg font-medium text-sm transition-all
               ${isAnalyzing
@@ -104,7 +119,7 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                         <div>
                             <div className="flex items-center justify-between mb-2">
                                 <h5 className="text-sm font-semibold text-purple-800">
-                                    Problématiques détectées ({analysisResult.problematiques.filter(p => p.validated).length}/{analysisResult.problematiques.length} sélectionnées)
+                                    Problématiques détectées ({analysisResult.problematiques.filter((p: ProposedItem) => p.validated).length}/{analysisResult.problematiques.length} sélectionnées)
                                 </h5>
                                 <button
                                     type="button"
@@ -146,7 +161,7 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                         <div>
                             <div className="flex items-center justify-between mb-2">
                                 <h5 className="text-sm font-semibold text-purple-800">
-                                    Actions détectées ({analysisResult.actions.filter(a => a.validated).length}/{analysisResult.actions.length} sélectionnées)
+                                    Actions détectées ({analysisResult.actions.filter((a: ProposedItem) => a.validated).length}/{analysisResult.actions.length} sélectionnées)
                                 </h5>
                                 <button
                                     type="button"

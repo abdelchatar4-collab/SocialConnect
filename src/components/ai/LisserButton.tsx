@@ -11,6 +11,8 @@ import React, { useState } from 'react';
 import { PencilSquareIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { aiClient } from '@/lib/ai-client';
 import { getShortGlossaryPromptText } from '@/constants/belgianSocialWorkGlossary';
+import { AiProviderSelector } from './AiProviderSelector';
+import { AiProvider } from '@/lib/ai/ai-types';
 
 interface LisserButtonProps {
     text: string;
@@ -68,10 +70,14 @@ export function LisserButton({
     const [isReformulating, setIsReformulating] = useState(false);
     const [reformulatedText, setReformulatedText] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [selectedProvider, setSelectedProvider] = useState<AiProvider | undefined>(undefined);
 
     const colors = colorClasses[colorScheme];
 
-    const handleLisser = async () => {
+    const handleLisser = async (e?: React.MouseEvent) => {
+        // Prevent default if called from button click
+        if (e) e.preventDefault();
+
         if (!text || !text.trim()) {
             setError("Aucun texte à reformuler.");
             return;
@@ -106,7 +112,7 @@ TEXTE REFORMULÉ :
     `;
 
         try {
-            const response = await aiClient.complete(text, systemPrompt);
+            const response = await aiClient.complete(text, systemPrompt, { forceProvider: selectedProvider });
 
             if (response.error) {
                 throw new Error(response.error);
@@ -146,27 +152,35 @@ TEXTE REFORMULÉ :
 
     return (
         <>
-            {/* Lisser Button */}
-            <button
-                type="button"
-                onClick={handleLisser}
-                disabled={disabled || isReformulating}
-                className={`inline-flex items-center px-3 py-1 rounded-lg font-medium text-white transition-all shadow-sm
-          ${size === 'sm' ? 'text-xs' : 'text-sm'}
-          ${isReformulating ? colors.buttonLoading + ' cursor-wait' : colors.button}`}
-            >
-                {isReformulating ? (
-                    <>
-                        <ArrowPathIcon className="w-3 h-3 mr-1 animate-spin" />
-                        Lissage...
-                    </>
-                ) : (
-                    <>
-                        <PencilSquareIcon className="w-3 h-3 mr-1" />
-                        ✨ Lisser
-                    </>
-                )}
-            </button>
+            <div className="flex items-center gap-2">
+                {/* Lisser Button */}
+                <button
+                    type="button"
+                    onClick={handleLisser}
+                    disabled={disabled || isReformulating}
+                    className={`inline-flex items-center px-3 py-1 rounded-lg font-medium text-white transition-all shadow-sm
+            ${size === 'sm' ? 'text-xs' : 'text-sm'}
+            ${isReformulating ? colors.buttonLoading + ' cursor-wait' : colors.button}`}
+                >
+                    {isReformulating ? (
+                        <>
+                            <ArrowPathIcon className="w-3 h-3 mr-1 animate-spin" />
+                            Lissage...
+                        </>
+                    ) : (
+                        <>
+                            <PencilSquareIcon className="w-3 h-3 mr-1" />
+                            ✨ Lisser
+                        </>
+                    )}
+                </button>
+
+                {/* AI Selector */}
+                <AiProviderSelector
+                    value={selectedProvider}
+                    onChange={setSelectedProvider}
+                />
+            </div>
 
             {/* Error Message */}
             {error && (

@@ -11,6 +11,7 @@ export interface AiResponse {
 export interface CompletionOptions {
     temperature?: number;
     maxTokens?: number;
+    forceProvider?: AiProvider;
 }
 
 export type AiProvider = 'ollama' | 'groq' | 'gemini';

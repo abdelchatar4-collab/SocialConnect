@@ -8,6 +8,7 @@ import { aiClient } from '@/lib/ai-client';
 import { useDropdownOptionsAPI } from '@/hooks/useDropdownOptionsAPI';
 import { DROPDOWN_CATEGORIES } from '@/constants/dropdownCategories';
 import { AnalysisResult } from '@/types/notes-ai';
+import { AiProvider } from '@/lib/ai/ai-types';
 import { getAnalysisSystemPrompt, ANALYSIS_USER_PROMPT, findBestMatch, detectCategoriesFromRules } from '@/utils/notesAiUtils';
 
 export function useAiAnalysis(formData: any, onInputChange: any) {
@@ -20,7 +21,7 @@ export function useAiAnalysis(formData: any, onInputChange: any) {
     const vActs = useMemo(() => actOpt.map(o => o.label).join(', '), [actOpt]);
     const vProbs = useMemo(() => probOpt.map(o => o.label).join(', '), [probOpt]);
 
-    const analyze = async () => {
+    const analyze = async (forceProvider?: AiProvider) => {
         const t = [formData.remarques, formData.notesGenerales, formData.informationImportante].filter(Boolean).join('\n\n');
         if (!t.trim()) return setErr("Aucune note");
         const rulesProbs = detectCategoriesFromRules(t, probOpt);
@@ -30,7 +31,7 @@ export function useAiAnalysis(formData: any, onInputChange: any) {
             setBusy(false); return;
         }
         try {
-            const res = await aiClient.complete(`${ANALYSIS_USER_PROMPT}\n${t}`, getAnalysisSystemPrompt(vActs, vProbs), { temperature: aiClient.getAnalysisTemperature() });
+            const res = await aiClient.complete(`${ANALYSIS_USER_PROMPT}\n${t}`, getAnalysisSystemPrompt(vActs, vProbs), { temperature: aiClient.getAnalysisTemperature(), forceProvider });
             if (res.error) throw new Error(res.error);
             const parsed = JSON.parse(res.content.substring(res.content.indexOf('{'), res.content.lastIndexOf('}') + 1));
             const fin: AnalysisResult = {

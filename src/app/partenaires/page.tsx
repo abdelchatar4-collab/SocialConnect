@@ -144,7 +144,7 @@ export default function PartnersDirectoryPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {group.partenaires.map(p => (
                                 <PartnerCard key={p.id} partner={p} colors={getThematiqueColor(p.thematique)}
-                                    aiEnabled={settings.enabled} onVerify={handleVerifyPartner} />
+                                    aiEnabled={settings.enabled && settings.geminiEnabled !== false} onVerify={handleVerifyPartner} />
                             ))}
                         </div>
                     </div>

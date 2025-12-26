@@ -79,16 +79,18 @@ export class LocalAiClient {
         this.updateSettingsProps();
         if (!this.settings.enabled) return { content: '', error: 'AI disabled' };
 
+        // Determine provider (Override or Default)
+        const provider = options?.forceProvider || this.settings.provider;
+
         // Check individual provider toggle
-        const provider = this.settings.provider;
         if (provider === 'ollama' && this.settings.ollamaEnabled === false) return { content: '', error: 'Ollama est désactivé' };
         if (provider === 'groq' && this.settings.groqEnabled === false) return { content: '', error: 'Groq est désactivé' };
         if (provider === 'gemini' && this.settings.geminiEnabled === false) return { content: '', error: 'Gemini est désactivé' };
 
         this.abortController = new AbortController();
-        const res = this.settings.provider === 'groq'
+        const res = provider === 'groq'
             ? await completeWithGroq(this.settings, prompt, systemPrompt, options, this.abortController)
-            : this.settings.provider === 'gemini'
+            : provider === 'gemini'
                 ? await completeWithGemini(this.settings, prompt, systemPrompt, options, this.abortController)
                 : await completeWithOllama(this.settings, prompt, systemPrompt, options, this.abortController, this.shouldUseProxy());
         this.abortController = null;
