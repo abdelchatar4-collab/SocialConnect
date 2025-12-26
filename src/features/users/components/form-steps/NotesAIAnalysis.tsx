@@ -5,10 +5,9 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { SparklesIcon, ArrowPathIcon, CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { AnalysisResult, ProposedItem } from '@/types/notes-ai';
-import { AiProviderSelector } from '@/components/ai/AiProviderSelector';
 import { AiProvider } from '@/lib/ai/ai-types';
 
 interface NotesAIAnalysisProps {
@@ -23,6 +22,7 @@ interface NotesAIAnalysisProps {
     applyValidatedItems: () => void;
     setAnalysisResult: (result: any) => void;
     disabled?: boolean;
+    activeProvider?: AiProvider;
 }
 
 export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
@@ -36,12 +36,12 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
     deselectAllItems,
     applyValidatedItems,
     setAnalysisResult,
-    disabled
+    disabled,
+    activeProvider
 }) => {
-    const [selectedProvider, setSelectedProvider] = useState<AiProvider | undefined>(undefined);
 
     const handleAnalyzeClick = () => {
-        onAnalyze(selectedProvider);
+        onAnalyze(activeProvider);
     };
 
     const validatedCount = analysisResult
@@ -57,12 +57,6 @@ export const NotesAIAnalysis: React.FC<NotesAIAnalysisProps> = ({
                     Extraction IA (optionnel)
                 </h4>
                 <div className="flex gap-2 items-center">
-
-                    <AiProviderSelector
-                        value={selectedProvider}
-                        onChange={setSelectedProvider}
-                        className="text-purple-700 hover:bg-purple-100"
-                    />
 
                     <button
                         type="button"

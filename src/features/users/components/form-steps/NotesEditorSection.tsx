@@ -11,6 +11,8 @@ import { TextAreaInput } from '../shared/TextAreaInput';
 import { ArrowPathIcon, CheckIcon, XMarkIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { UserFormData } from '@/types/user';
 
+import { AiProvider } from '@/lib/ai/ai-types';
+
 interface NotesEditorSectionProps {
     formData: any;
     onInputChange: (field: keyof UserFormData, value: any) => void;
@@ -19,11 +21,12 @@ interface NotesEditorSectionProps {
     isReformulating: boolean;
     reformulatedText: string | null;
     reformulationField: string | null;
-    handleLisser: (field: 'remarques' | 'notesGenerales') => void;
+    handleLisser: (field: 'remarques' | 'notesGenerales', provider?: AiProvider) => void;
     acceptReformulation: () => void;
     rejectReformulation: () => void;
     abortReformulation: () => void;
     handleCleanData: () => void;
+    activeProvider?: AiProvider;
 }
 
 export const NotesEditorSection: React.FC<NotesEditorSectionProps> = ({
@@ -38,7 +41,8 @@ export const NotesEditorSection: React.FC<NotesEditorSectionProps> = ({
     acceptReformulation,
     rejectReformulation,
     abortReformulation,
-    handleCleanData
+    handleCleanData,
+    activeProvider
 }) => {
     return (
         <div className="space-y-6">
@@ -69,7 +73,7 @@ export const NotesEditorSection: React.FC<NotesEditorSectionProps> = ({
                             <div className="flex items-center gap-1">
                                 <button
                                     type="button"
-                                    onClick={() => handleLisser('remarques')}
+                                    onClick={() => handleLisser('remarques', activeProvider)}
                                     disabled={disabled || isReformulating}
                                     className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-all
                     ${isReformulating && reformulationField === 'remarques'
@@ -159,7 +163,7 @@ export const NotesEditorSection: React.FC<NotesEditorSectionProps> = ({
                         <div className="flex gap-2">
                             <button
                                 type="button"
-                                onClick={() => handleLisser('notesGenerales')}
+                                onClick={() => handleLisser('notesGenerales', activeProvider)}
                                 disabled={disabled || isReformulating}
                                 className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium transition-all
                   ${isReformulating && reformulationField === 'notesGenerales'

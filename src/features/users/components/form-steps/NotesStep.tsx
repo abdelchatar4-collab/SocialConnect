@@ -5,10 +5,12 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même the garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir the Licence Publique Générale GNU pour plus de détails.
 */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { UserFormData } from '@/types/user';
 import { useNotesAI } from '../../hooks/useNotesAI';
 import { useFormSectionVisibility } from '../../hooks/useFormSectionVisibility';
+import { PremiumAiSelector } from '@/components/ai/PremiumAiSelector';
+import { AiProvider } from '@/lib/ai/ai-types';
 
 // Sub-components
 import { NotesEditorSection } from './NotesEditorSection';
@@ -27,6 +29,7 @@ export const NotesStep: React.FC<NotesStepProps> = ({
   disabled
 }) => {
   const { isSectionVisible } = useFormSectionVisibility();
+  const [activeProvider, setActiveProvider] = useState<AiProvider | undefined>(undefined);
 
   // If notes section is disabled, don't render anything
   if (!isSectionVisible('notes')) {
@@ -76,11 +79,15 @@ export const NotesStep: React.FC<NotesStepProps> = ({
             </div>
           </div>
 
-          {/* AI Status Indicator */}
+          {/* AI Global Selector */}
           {isAiAvailable && (
-            <div className="flex items-center text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-              <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-              IA Active
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-medium text-amber-800 uppercase tracking-wide">Assistant IA :</span>
+              <PremiumAiSelector
+                value={activeProvider}
+                onChange={setActiveProvider}
+                disabled={disabled}
+              />
             </div>
           )}
         </div>
@@ -100,6 +107,7 @@ export const NotesStep: React.FC<NotesStepProps> = ({
         rejectReformulation={rejectReformulation}
         abortReformulation={abortReformulation}
         handleCleanData={handleCleanData}
+        activeProvider={activeProvider}
       />
 
       {/* Section Analyse et Extraction IA */}
@@ -116,6 +124,7 @@ export const NotesStep: React.FC<NotesStepProps> = ({
           applyValidatedItems={applyValidatedItems}
           setAnalysisResult={setAnalysisResult}
           disabled={disabled}
+          activeProvider={activeProvider}
         />
       )}
 
