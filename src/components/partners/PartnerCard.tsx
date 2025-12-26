@@ -14,6 +14,7 @@ import {
 
 interface Partner {
     id: number;
+    excelRowIndex: number;
     nom: string;
     adresse: string;
     email: string;

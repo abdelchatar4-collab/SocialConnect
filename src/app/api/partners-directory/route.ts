@@ -14,6 +14,7 @@ import fs from 'fs';
 
 interface Partner {
     id: number;
+    excelRowIndex: number;
     nom: string;
     adresse: string;
     email: string;
@@ -112,6 +113,7 @@ export async function GET(request: NextRequest) {
 
             partners.push({
                 id: id++,
+                excelRowIndex: i,
                 nom,
                 adresse,
                 email: email.includes('@') ? email : '',

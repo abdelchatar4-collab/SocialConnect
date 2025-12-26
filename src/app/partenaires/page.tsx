@@ -14,6 +14,7 @@ import { PartnerVerifyModal } from '@/components/partners/PartnerVerifyModal';
 
 interface Partner {
     id: number;
+    excelRowIndex: number;
     nom: string;
     adresse: string;
     email: string;
@@ -101,7 +102,7 @@ export default function PartnersDirectoryPage() {
             verificationResult.changes.forEach((c: any) => updates[c.field] = c.newValue);
             const r = await fetch('/api/partners-directory/update', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ partnerId: verifyingPartner.id, updates })
+                body: JSON.stringify({ partnerId: verifyingPartner.excelRowIndex, updates })
             });
             if (!r.ok) throw new Error('Update failed');
             await fetchPartners(); setShowVerifyModal(false);
