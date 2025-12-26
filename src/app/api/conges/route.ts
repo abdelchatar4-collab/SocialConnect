@@ -8,6 +8,7 @@ import { getServerSession } from 'next-auth/next';
 import { getServiceClient } from '@/lib/prisma-clients';
 import { getDynamicServiceId } from '@/lib/auth-utils';
 import { authOptions } from '@/lib/authOptions';
+import { sendEmail } from '@/lib/email';
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -45,8 +46,45 @@ export async function POST(req: Request) {
         type,
         gestionnaire: { connect: { id: gestionnaireId } },
         reason
+      },
+      include: {
+        gestionnaire: {
+          select: {
+            email: true,
+            prenom: true,
+            nom: true
+          }
+        }
       }
     });
+
+    // Envoi de l'email de confirmation
+    if (conge.gestionnaire?.email) {
+      try {
+        await sendEmail({
+          to: conge.gestionnaire.email,
+          subject: `Confirmation de congé - ${type}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+              <h2 style="color: #059669;">Confirmation de demande de congé</h2>
+              <p>Bonjour ${conge.gestionnaire.prenom},</p>
+              <p>Votre demande de congé a bien été enregistrée :</p>
+              <ul>
+                <li><strong>Type :</strong> ${type}</li>
+                <li><strong>Du :</strong> ${new Date(startDate).toLocaleDateString('fr-FR')}</li>
+                <li><strong>Au :</strong> ${new Date(endDate).toLocaleDateString('fr-FR')}</li>
+                ${reason ? `<li><strong>Motif :</strong> ${reason}</li>` : ''}
+              </ul>
+              <p>Cordialement,<br>L'équipe SocialConnect</p>
+            </div>
+          `
+        });
+      } catch (emailError) {
+        console.error("Erreur lors de l'envoi de l'email:", emailError);
+        // On ne bloque pas la réponse si l'email échoue
+      }
+    }
+
     return NextResponse.json(conge);
   } catch (error) {
     return NextResponse.json({ error: 'Erreur création' }, { status: 500 });
