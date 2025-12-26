@@ -37,14 +37,21 @@ export async function POST(req: Request) {
 
   try {
     const data = await req.json();
-    const { startDate, endDate, type, gestionnaireId, reason } = data;
+    const { startDate, endDate, type, reason } = data;
+
+    // Si gestionnaireId n'est pas fourni, on utilise l'ID de l'utilisateur connecté (auto-déclaration)
+    const targetGestionnaireId = data.gestionnaireId || (session.user as any).id;
+
+    if (!targetGestionnaireId) {
+      return NextResponse.json({ error: 'Gestionnaire introuvable' }, { status: 400 });
+    }
 
     const conge = await prisma.conge.create({
       data: {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         type,
-        gestionnaire: { connect: { id: gestionnaireId } },
+        gestionnaire: { connect: { id: targetGestionnaireId } },
         reason
       },
       include: {
