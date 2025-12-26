@@ -89,7 +89,7 @@ export const UserListFilters: React.FC<UserListFiltersProps> = (props) => {
                     <div className="flex-shrink-0">
                         <Button
                             onClick={onAddUser}
-                            className="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl h-full px-6 shadow-md transition-all active:scale-95"
+                            className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white rounded-xl h-full px-6 shadow-md shadow-indigo-200/50 transition-all active:scale-95"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />

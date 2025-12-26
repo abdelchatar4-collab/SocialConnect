@@ -55,13 +55,12 @@ export const DisplayOptionsDropdown: React.FC<DisplayOptionsDropdownProps> = ({
                     <Popover.Button className={`
                         inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-medium transition-all shadow-sm backdrop-blur-sm
                         ${open || activeFiltersCount > 0
-                            ? 'bg-blue-600 border-blue-600 text-white shadow-blue-200'
-                            : 'bg-white/60 border-slate-200 text-slate-700 hover:bg-white'}
-                    `}>
+                            ? 'bg-white border-teal-500 text-teal-700 shadow-sm ring-1 ring-teal-500/20'
+                            : 'bg-white/60 border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300'}`}>
                         <SlidersHorizontal className="w-4 h-4" />
                         <span>Options d'affichage</span>
                         {activeFiltersCount > 0 && (
-                            <span className="ml-1 inline-flex items-center justify-center bg-white/20 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                            <span className="ml-1 inline-flex items-center justify-center bg-teal-100 text-teal-700 text-xs font-bold px-1.5 py-0.5 rounded-full">
                                 {activeFiltersCount}
                             </span>
                         )}

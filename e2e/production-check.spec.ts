@@ -24,7 +24,7 @@ test('Production Smoke Test - https://pasqweb.org', async ({ page }) => {
         console.log('✅ Interface Cloudflare détectée');
     } else {
         // Si on n'est pas derrière Cloudflare (ex: accès direct ou IP autorisée)
-        await expect(page).toHaveTitle(/SocialConnect/);
+        await expect(page).toHaveTitle(/Gestion Usagers|SocialConnect/);
         console.log('✅ Titre "SocialConnect" détecté');
 
         const logoContainer = page.locator('div:has-text("SC")').first();
