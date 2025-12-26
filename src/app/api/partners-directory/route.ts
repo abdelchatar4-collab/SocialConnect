@@ -38,27 +38,41 @@ export async function GET(request: NextRequest) {
     const serviceId = await getDynamicServiceId(session);
 
     try {
-        // Path to the Excel file in uploads
-        const filePath = path.join(process.cwd(), 'uploads', 'rapports', serviceId, 'LISTING-PARTENAIRES-PASQ.xlsx');
-
-        // Fallback to default service if file doesn't exist
-        const defaultPath = path.join(process.cwd(), 'uploads', 'rapports', 'default', 'LISTING-PARTENAIRES-PASQ.xlsx');
+        // Path to the Excel file in uploads (Strict Isolation)
+        const reportsDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
 
         console.log('[Partners API] Service ID:', serviceId);
-        console.log('[Partners API] Checking path:', filePath);
-        console.log('[Partners API] Default path:', defaultPath);
+        console.log('[Partners API] Scanning directory:', reportsDir);
 
-        const actualPath = fs.existsSync(filePath) ? filePath : defaultPath;
-        console.log('[Partners API] Using path:', actualPath);
-        console.log('[Partners API] File exists:', fs.existsSync(actualPath));
-
-        if (!fs.existsSync(actualPath)) {
+        if (!fs.existsSync(reportsDir)) {
             return NextResponse.json({
-                error: 'Fichier partenaires non trouvé',
+                error: 'Répertoire du service non trouvé',
                 groups: [],
                 total: 0
             }, { status: 404 });
         }
+
+        // Find any file matching LISTING-PARTENAIRES*.xlsx
+        const files = fs.readdirSync(reportsDir);
+        // Filter specifically for partner files
+        const partnerFiles = files.filter(f => f.toUpperCase().startsWith('LISTING-PARTENAIRES') && f.toUpperCase().endsWith('.XLSX'));
+
+        // Sort descending (Z to A) so if multiple exist, we likely get the "latest" (e.g. V2 > V1)
+        partnerFiles.sort((a, b) => b.localeCompare(a));
+
+        const partnerFile = partnerFiles[0];
+
+        if (!partnerFile) {
+            console.log('[Partners API] No partner listing file found for this service.');
+            return NextResponse.json({
+                error: 'Fichier partenaires non trouvé pour ce service',
+                groups: [],
+                total: 0
+            }, { status: 404 });
+        }
+
+        const actualPath = path.join(reportsDir, partnerFile);
+        console.log('[Partners API] Found file:', actualPath);
 
         // Read Excel file
         console.log('[Partners API] Reading file...');
