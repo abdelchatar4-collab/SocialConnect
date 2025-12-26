@@ -20,6 +20,8 @@ import {
   HomeIcon, // Importation de l'icône Home
   Squares2X2Icon, // Importation de l'icône Dashboard
   UsersIcon, // Importation de l'icône Users
+  CalendarDaysIcon,
+  CloudIcon,
 } from "@heroicons/react/24/outline";
 
 interface SessionUserWithRole {
@@ -31,7 +33,7 @@ interface SessionUserWithRole {
 
 export default function Header() {
   const { data: session, status } = useSession();
-  const { isAdmin, toggleAdmin } = useAdmin();
+  const { isAdmin, toggleAdmin, sharepointUrl, sharepointUrlAdmin } = useAdmin();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [cfUserEmail, setCfUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -107,7 +109,12 @@ export default function Header() {
                     <UsersIcon className="h-5 w-5 mr-1" /> Liste des Usagers
                   </Link>
                 </li>
-                {userRole === "ADMIN" && (
+                <li>
+                  <Link href="/conges" className="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 shadow-sm transition-all duration-150 ease-in-out transform hover:scale-105">
+                    <CalendarDaysIcon className="h-5 w-5 mr-1" /> Mes Absences
+                  </Link>
+                </li>
+                {(userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
                   <li>
                     <Link href="/admin" className={navLinkClasses}>
                       <ShieldCheckIcon className="h-5 w-5 mr-1 text-primary" /> Administration
@@ -119,8 +126,31 @@ export default function Header() {
 
             {/* Actions utilisateur authentifié */}
             <div className="flex items-center space-x-4 mt-2 md:mt-0 md:ml-auto"> {/* md:ml-auto pousse les actions à droite */}
+
+              {/* SharePoint Shortcut */}
+              {(() => {
+                const isOwner = session?.user?.email && ['abdelchatar4@gmail.com', 'achatar@anderlecht.brussels'].includes(session.user.email);
+                const targetUrl = isOwner && sharepointUrlAdmin ? sharepointUrlAdmin : sharepointUrl;
+
+                if (targetUrl) {
+                  return (
+                    <a
+                      href={targetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${headerActionItemClasses} text-blue-600 hover:bg-blue-50 hover:text-blue-700`}
+                      title={isOwner && sharepointUrlAdmin ? "SharePoint (Admin)" : "SharePoint (Équipe)"}
+                    >
+                      <CloudIcon className="h-5 w-5 mr-1" />
+                      <span className="hidden sm:inline">Drive</span>
+                    </a>
+                  );
+                }
+                return null;
+              })()}
+
               <div className="flex items-center text-sm text-slate-600">
-                <UserCircleIcon className="h-5 w-5 mr-1 text-slate-500"/>
+                <UserCircleIcon className="h-5 w-5 mr-1 text-slate-500" />
                 <span>{displayName}</span>
               </div>
               <button
@@ -130,20 +160,18 @@ export default function Header() {
                 <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1 text-red-500 group-hover:text-red-600" />
                 Déconnexion
               </button>
-              {userRole === "ADMIN" && (
+              {(userRole === "ADMIN" || userRole === "SUPER_ADMIN") && (
                 <button
                   onClick={toggleAdmin}
-                  className={`group ${headerActionItemClasses} ${
-                    isAdmin
-                      ? 'hover:bg-amber-50 hover:text-amber-700 focus-visible:ring-amber-500'
-                      : 'hover:bg-sky-50 hover:text-sky-700 focus-visible:ring-sky-500'
-                  }`}
+                  className={`group ${headerActionItemClasses} ${isAdmin
+                    ? 'hover:bg-amber-50 hover:text-amber-700 focus-visible:ring-amber-500'
+                    : 'hover:bg-sky-50 hover:text-sky-700 focus-visible:ring-sky-500'
+                    }`}
                 >
-                  <AdjustmentsHorizontalIcon className={`h-5 w-5 mr-1 ${
-                    isAdmin
-                      ? 'text-amber-500 group-hover:text-amber-600'
-                      : 'text-sky-500 group-hover:text-sky-600'
-                  }`} />
+                  <AdjustmentsHorizontalIcon className={`h-5 w-5 mr-1 ${isAdmin
+                    ? 'text-amber-500 group-hover:text-amber-600'
+                    : 'text-sky-500 group-hover:text-sky-600'
+                    }`} />
                   {isAdmin ? "Mode Normal" : "Mode Admin"}
                 </button>
               )}
@@ -152,20 +180,20 @@ export default function Header() {
         ) : status === "loading" ? (
           <span className="text-sm text-slate-400">Chargement...</span>
         ) : isSigningIn ? (
-           <span className="text-sm text-sky-500">Connexion...</span>
+          <span className="text-sm text-sky-500">Connexion...</span>
         ) : error ? (
           <span className="text-sm text-red-500 bg-red-100 px-3 py-1 rounded-md">Erreur: {error}</span>
         ) : (
           // Navigation et action pour utilisateur non authentifié
           <div className="flex items-center space-x-4 w-full md:w-auto md:ml-auto"> {/* md:ml-auto pousse les actions à droite */}
-             <nav>
-                <Link href="/" className={navLinkClasses}>
-                   <HomeIcon className="h-5 w-5 mr-1" /> Accueil
-                </Link>
-             </nav>
-             <Link href="/api/auth/signin" className="text-sky-600 hover:text-sky-500 text-sm font-medium">
-               Se connecter
-             </Link>
+            <nav>
+              <Link href="/" className={navLinkClasses}>
+                <HomeIcon className="h-5 w-5 mr-1" /> Accueil
+              </Link>
+            </nav>
+            <Link href="/api/auth/signin" className="text-sky-600 hover:text-sky-500 text-sm font-medium">
+              Se connecter
+            </Link>
           </div>
         )}
       </div>

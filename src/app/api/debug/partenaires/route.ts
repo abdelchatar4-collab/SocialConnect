@@ -7,27 +7,41 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 export async function GET() {
+  // SECURITY: Only allow in development OR for SUPER_ADMIN
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const userRole = (session.user as any).role;
+  const isDev = process.env.NODE_ENV === 'development';
+
+  if (!isDev && userRole !== 'SUPER_ADMIN') {
+    return NextResponse.json({ error: 'Debug route disabled in production' }, { status: 403 });
+  }
+
+  // Multi-tenant: only show data from current service
+  const serviceId = (session.user as any).serviceId || 'default';
+
   try {
-    // Vérifier toutes les entrées DropdownOption
-    const allOptions = await prisma.dropdownOption.findMany();
-
-    // Vérifier spécifiquement les partenaires
+    // Only show partenaires from current service
     const partenaires = await prisma.dropdownOption.findMany({
-      where: { type:'partenaire' }
-    });
-
-    // Vérifier les types uniques
-    const uniqueTypes = await prisma.dropdownOption.findMany({
-      select: { type: true },
-      distinct: ['type']
+      where: {
+        type: 'partenaire',
+        serviceId: serviceId
+      }
     });
 
     return NextResponse.json({
       message: 'Debug des options partenaires',
-      totalCount: allOptions.length,
-      sampleData: allOptions.slice(0, 5)
+      serviceId: serviceId,
+      count: partenaires.length,
+      data: partenaires
     });
   } catch (error) {
     console.error('Erreur debug:', error);
@@ -35,3 +49,4 @@ export async function GET() {
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
+

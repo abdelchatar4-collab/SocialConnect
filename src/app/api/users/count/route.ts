@@ -5,7 +5,7 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même la garantie implicite de COMMERCIALISATION ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir la Licence Publique Générale GNU pour plus de détails.
 */
 
-// filepath: /Users/abdelchatar/Desktop/Projet-Gestion-Usagers/app-gestion-usagers/src/app/api/users/count/route.ts
+// filepath: src/app/api/users/count/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
 import { getServerSession } from 'next-auth/next';

@@ -165,6 +165,7 @@ model Gestionnaire {
   users            User[]
 
   soldeConges      SoldeConge[]
+  conges           Conge[]
   @@index([serviceId])
   @@map("gestionnaires")
 }
@@ -256,6 +257,9 @@ model Settings {
   docRgpdSections          String?  @db.LongText  // JSON: { "intro": true, "pourquoi": true, ... }
   docUserProfileSections   String?  @db.LongText  // JSON: { "identite": true, "notes": false, ... }
   docAntenneAddresses      String?  @db.LongText  // JSON: { "cureghem": { rue: "...", cp: "..." }, ... }
+  absenceNotificationEmail String?
+  sharepointUrl            String?  @db.Text
+  sharepointUrlAdmin       String?  @db.Text
 
   @@index([serviceId])
   @@map("settings")
@@ -353,4 +357,20 @@ model SoldeConge {
 
   @@unique([gestionnaireId, annee])
   @@map("solde_conges")
+}
+
+model Conge {
+  id             String       @id @default(cuid())
+  gestionnaireId String
+  gestionnaire   Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
+  startDate      DateTime
+  endDate        DateTime
+  type           String       // "Vacances", "Maladie", "Force Majeure", "Autre"
+  reason         String?      @db.Text
+  status         String       @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([gestionnaireId])
+  @@map("conges")
 }

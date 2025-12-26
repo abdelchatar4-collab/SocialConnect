@@ -22,6 +22,12 @@ export interface AdminContextType {
     setHeaderSubtitle: (subtitle: string) => void;
     showCommunalLogo: boolean;
     setShowCommunalLogo: (show: boolean) => void;
+    absenceNotificationEmail: string | null;
+    setAbsenceNotificationEmail: (email: string) => void;
+    sharepointUrl: string | null;
+    setSharepointUrl: (url: string) => void;
+    sharepointUrlAdmin: string | null;
+    setSharepointUrlAdmin: (url: string) => void;
     requiredFields: string[];
     setRequiredFields: (fields: string[]) => void;
     enableBirthdays: boolean;
@@ -55,7 +61,7 @@ export interface AdminContextType {
     setDocRgpdSections: (sections: Record<string, boolean>) => void;
     docUserProfileSections: Record<string, boolean>;
     setDocUserProfileSections: (sections: Record<string, boolean>) => void;
-    saveSettings: () => Promise<void>;
+    saveSettings: (overrides?: any) => Promise<void>;
     isLoadingSettings: boolean;
 }
 

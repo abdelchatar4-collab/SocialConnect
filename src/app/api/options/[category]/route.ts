@@ -108,6 +108,20 @@ export async function PUT(request: NextRequest, { params }: { params: { category
       return NextResponse.json({ error: 'ID et valeur requis' }, { status: 400 });
     }
 
+    // Multi-tenant isolation: verify the option belongs to the same service
+    const existingOption = await prisma.dropdownOption.findUnique({
+      where: { id },
+      select: { serviceId: true }
+    });
+
+    if (!existingOption) {
+      return NextResponse.json({ error: 'Option non trouvée' }, { status: 404 });
+    }
+
+    if (existingOption.serviceId !== serviceId) {
+      return NextResponse.json({ error: 'Accès non autorisé à cette option' }, { status: 403 });
+    }
+
     const option = await prisma.dropdownOption.update({
       where: { id },
       data: { value: value.trim(), label: label?.trim() || value.trim() }
@@ -135,6 +149,20 @@ export async function DELETE(request: NextRequest, { params }: { params: { categ
 
     if (!id) {
       return NextResponse.json({ error: 'ID requis' }, { status: 400 });
+    }
+
+    // Multi-tenant isolation: verify the option belongs to the same service
+    const existingOption = await prisma.dropdownOption.findUnique({
+      where: { id },
+      select: { serviceId: true }
+    });
+
+    if (!existingOption) {
+      return NextResponse.json({ error: 'Option non trouvée' }, { status: 404 });
+    }
+
+    if (existingOption.serviceId !== serviceId) {
+      return NextResponse.json({ error: 'Accès non autorisé à cette option' }, { status: 403 });
     }
 
     await prisma.dropdownOption.delete({ where: { id } });

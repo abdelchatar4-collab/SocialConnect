@@ -49,7 +49,7 @@ export function useImportDossiers(onSuccess?: () => void) {
                             obj[hs] = parseCellValue({ v: row[j], t: ws[addr]?.t }, hs);
                         }
                     });
-                    return mapExcelToUserStructure(obj, headerIdx + 1 + i, process.env.NODE_ENV);
+                    return mapExcelToUserStructure(obj, headerIdx + 1 + i, undefined, process.env.NODE_ENV);
                 }).filter(Boolean);
 
                 if (!users.length) throw new Error("Aucun usager valide");

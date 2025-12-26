@@ -19,6 +19,9 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    // Multi-tenant isolation
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
     const fd = await req.formData();
     const f = fd.get('file');
     if (!f || !(f instanceof File)) return NextResponse.json({ error: 'Invalid file' }, { status: 400 });
@@ -61,6 +64,7 @@ export async function POST(req: Request) {
               remarques: safeStr(row["Bilan Social"]) || safeStr(row.Remarques), secteur: sec || safeStr(row.Secteur) || "Non spécifié", langue: safeStr(row["Langue de l'entretien"]),
               premierContact: safeStrDef(row["Premier contact"], "Import"), notesGenerales: safeStr(row["Notes Générales"]), donneesConfidentielles: safeStr(row["Données Confidentielles"]),
               informationImportante: safeStr(row["Information Importante"]) || safeStr(row["Notes Importantes"]),
+              serviceId: serviceId, // Multi-tenant association
               ...(adrId && { adresse: { connect: { id: adrId } } }), ...(gestId && { gestionnaire: { connect: { id: gestId } } }),
             }
           });

@@ -12,8 +12,9 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 "use client";
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useDashboard } from './DashboardProvider';
-import { RefreshCw, Settings, Clock, CheckCircle, Plus, BarChart3, Grid3X3 } from 'lucide-react';
+import { RefreshCw, Settings, Clock, CheckCircle, Plus, BarChart3, Grid3X3, CalendarDays } from 'lucide-react';
 
 interface DashboardHeaderProps {
     onOpenSettings: () => void;
@@ -52,6 +53,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
                     <span>Tableau de Bord</span>
                     <span className="dashboard-title-accent">PASQ</span>
                 </h1>
+
+                <Link href="/conges" className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg transition-colors text-sm font-medium border border-orange-200">
+                    <CalendarDays className="w-4 h-4" />
+                    <span>Mes Absences</span>
+                </Link>
 
                 {state.lastUpdated && (
                     <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">

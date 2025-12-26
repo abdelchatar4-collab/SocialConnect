@@ -8,12 +8,23 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 
 // Force cette route à être dynamique
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    // Authentication check
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Multi-tenant isolation
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
     // Utiliser nextUrl pour éviter le dynamic server warning
     const { searchParams } = request.nextUrl;
     const gestionnaireId = searchParams.get('gestionnaireId');
@@ -22,10 +33,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'ID du gestionnaire requis' }, { status: 400 });
     }
 
-    // Récupérer le dernier utilisateur ajouté par ce gestionnaire
+    // Récupérer le dernier utilisateur ajouté par ce gestionnaire (filtered by service)
     const lastUser = await prisma.user.findFirst({
       where: {
         gestionnaireId: gestionnaireId,
+        serviceId: serviceId, // Multi-tenant filter
       },
       orderBy: {
         dateOuverture: 'desc',

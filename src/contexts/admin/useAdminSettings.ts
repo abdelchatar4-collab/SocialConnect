@@ -12,6 +12,9 @@ export function useAdminSettings(status: string) {
     const [pCol, setPCol] = useState(INITIAL_SETTINGS.primaryColor);
     const [hSub, setHSub] = useState(INITIAL_SETTINGS.headerSubtitle);
     const [sLog, setSLog] = useState(INITIAL_SETTINGS.showCommunalLogo);
+    const [absEmail, setAbsEmail] = useState<string | null>(null);
+    const [spUrl, setSpUrl] = useState<string | null>(null);
+    const [spAdminUrl, setSpAdminUrl] = useState<string | null>(null);
     const [rFld, setRFld] = useState<string[]>([]);
     const [eBdy, setEBdy] = useState(false);
     const [cBdy, setCBdy] = useState<{ name: string; date: string }[]>([]);
@@ -43,6 +46,9 @@ export function useAdminSettings(status: string) {
                 setPCol(d.primaryColor || INITIAL_SETTINGS.primaryColor);
                 setHSub(d.headerSubtitle || INITIAL_SETTINGS.headerSubtitle);
                 setSLog(d.showCommunalLogo ?? true);
+                setAbsEmail(d.absenceNotificationEmail || '');
+                setSpUrl(d.sharepointUrl || '');
+                setSpAdminUrl(d.sharepointUrlAdmin || '');
                 setHThm(d.activeHolidayTheme || "NONE");
                 setEBdy(!!d.enableBirthdays);
 
@@ -76,17 +82,34 @@ export function useAdminSettings(status: string) {
 
     useEffect(() => { if (status === 'authenticated') fetchS(); }, [status, fetchS]);
 
-    const save = async () => {
+    const save = async (overrides?: any) => {
         const body = {
-            serviceName: sName, logoUrl: lUrl, primaryColor: pCol, headerSubtitle: hSub, showCommunalLogo: sLog,
-            requiredFields: JSON.stringify(rFld), enableBirthdays: eBdy, colleagueBirthdays: JSON.stringify(cBdy),
-            activeHolidayTheme: hThm, availableYears: JSON.stringify(years), enabledModules: JSON.stringify(mods),
-            visibleColumns: JSON.stringify(cols), visibleFormSections: JSON.stringify(secs),
+            serviceName: overrides?.serviceName ?? sName,
+            logoUrl: overrides?.logoUrl ?? lUrl,
+            primaryColor: overrides?.primaryColor ?? pCol,
+            headerSubtitle: overrides?.headerSubtitle ?? hSub,
+            showCommunalLogo: overrides?.showCommunalLogo ?? sLog,
+            absenceNotificationEmail: overrides?.absenceNotificationEmail ?? absEmail,
+            sharepointUrl: overrides?.sharepointUrl ?? spUrl,
+            sharepointUrlAdmin: overrides?.sharepointUrlAdmin ?? spAdminUrl,
+            requiredFields: JSON.stringify(overrides?.requiredFields ?? rFld),
+            enableBirthdays: overrides?.enableBirthdays ?? eBdy,
+            colleagueBirthdays: JSON.stringify(overrides?.colleagueBirthdays ?? cBdy),
+            activeHolidayTheme: overrides?.activeHolidayTheme ?? hThm,
+            availableYears: JSON.stringify(overrides?.availableYears ?? years),
+            enabledModules: JSON.stringify(overrides?.enabledModules ?? mods),
+            visibleColumns: JSON.stringify(overrides?.visibleColumns ?? cols),
+            visibleFormSections: JSON.stringify(overrides?.visibleFormSections ?? secs),
             // Document Settings
-            docRetentionPeriod: docRet, docServiceAddress: docAddr, docServiceCity: docCity, docServicePhone: docPhone,
-            docFooterText: docFooter, docRgpdTitle: docRgpdTitle,
-            docRgpdSections: JSON.stringify(docRgpdSecs), docUserProfileSections: JSON.stringify(docUserSecs),
-            docAntenneAddresses: JSON.stringify(docAnt)
+            docRetentionPeriod: overrides?.docRetentionPeriod ?? docRet,
+            docServiceAddress: overrides?.docServiceAddress ?? docAddr,
+            docServiceCity: overrides?.docServiceCity ?? docCity,
+            docServicePhone: overrides?.docServicePhone ?? docPhone,
+            docFooterText: overrides?.docFooterText ?? docFooter,
+            docRgpdTitle: overrides?.docRgpdTitle ?? docRgpdTitle,
+            docRgpdSections: JSON.stringify(overrides?.docRgpdSections ?? docRgpdSecs),
+            docUserProfileSections: JSON.stringify(overrides?.docUserProfileSections ?? docUserSecs),
+            docAntenneAddresses: JSON.stringify(overrides?.docAntenneAddresses ?? docAnt)
         };
         const res = await fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         if (!res.ok) throw new Error('Save failed');
@@ -94,7 +117,10 @@ export function useAdminSettings(status: string) {
     };
 
     return {
-        sName, setSName, lUrl, setLUrl, pCol, setPCol, hSub, setHSub, sLog, setSLog, rFld, setRFld, eBdy, setEBdy,
+        sName, setSName, lUrl, setLUrl, pCol, setPCol, hSub, setHSub, sLog, setSLog, absEmail, setAbsEmail,
+        spUrl, setSpUrl,
+        spAdminUrl, setSpAdminUrl,
+        rFld, setRFld, eBdy, setEBdy,
         cBdy, setCBdy, hThm, setHThm, mods, setMods, cols, setCols, secs, setSecs, years, setYears, loading, save,
         docRet, setDocRet, docAddr, setDocAddr, docCity, setDocCity, docPhone, setDocPhone, docFooter, setDocFooter,
         docRgpdTitle, setDocRgpdTitle, docRgpdSecs, setDocRgpdSecs, docUserSecs, setDocUserSecs, docAnt, setDocAnt

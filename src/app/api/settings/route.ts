@@ -44,7 +44,10 @@ export async function GET(request: NextRequest) {
                         statsDashboard: true,
                         exportData: true,
                         documents: true
-                    })
+                    }),
+                    absenceNotificationEmail: null,
+                    sharepointUrl: null,
+                    sharepointUrlAdmin: null
                 }
             });
         }
@@ -99,8 +102,6 @@ export async function PUT(request: NextRequest) {
 
         // Get existing settings
         let settings = await prisma.settings.findFirst();
-
-        console.log(`[API PUT /api/settings] Received body for Service ${serviceId}`);
 
         if (!settings) {
             console.log('[API PUT /api/settings] Creating new settings');
@@ -180,7 +181,10 @@ export async function PUT(request: NextRequest) {
                         ...(docRgpdTitle !== undefined && { docRgpdTitle }),
                         ...(docRgpdSections !== undefined && { docRgpdSections }),
                         ...(docUserProfileSections !== undefined && { docUserProfileSections }),
-                        ...(docAntenneAddresses !== undefined && { docAntenneAddresses })
+                        ...(docAntenneAddresses !== undefined && { docAntenneAddresses }),
+                        ...(body.absenceNotificationEmail !== undefined && { absenceNotificationEmail: body.absenceNotificationEmail }),
+                        ...(body.sharepointUrl !== undefined && { sharepointUrl: body.sharepointUrl }),
+                        ...(body.sharepointUrlAdmin !== undefined && { sharepointUrlAdmin: body.sharepointUrlAdmin })
                     }
                 });
                 console.log('[API PUT /api/settings] Update successful');

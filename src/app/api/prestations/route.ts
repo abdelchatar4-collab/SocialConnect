@@ -205,6 +205,11 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Accès refusé' }, { status: 403 });
         }
 
+        // Multi-tenant isolation: verify the prestation belongs to the same service
+        if (prestation.serviceId !== currentUser.serviceId) {
+            return NextResponse.json({ error: 'Accès non autorisé à cette prestation' }, { status: 403 });
+        }
+
         await prisma.prestation.delete({
             where: { id }
         });
@@ -241,6 +246,20 @@ export async function PUT(request: Request) {
 
         if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.role !== 'SUPER_ADMIN')) {
             return NextResponse.json({ error: 'Accès réservé aux administrateurs' }, { status: 403 });
+        }
+
+        // Multi-tenant isolation: verify the prestation belongs to the same service
+        const existingPrestation = await prisma.prestation.findUnique({
+            where: { id },
+            select: { serviceId: true }
+        });
+
+        if (!existingPrestation) {
+            return NextResponse.json({ error: 'Prestation non trouvée' }, { status: 404 });
+        }
+
+        if (existingPrestation.serviceId !== currentUser.serviceId) {
+            return NextResponse.json({ error: 'Accès non autorisé à cette prestation' }, { status: 403 });
         }
 
         // Calculate breakdown

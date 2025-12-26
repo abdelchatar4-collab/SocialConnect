@@ -43,48 +43,80 @@ export function generateUserIdForImport(antenne?: string | null): string {
 /**
  * Mappe une ligne Excel vers la structure utilisateur de l'application
  */
-export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: number, environment = 'development') {
+export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: number, customMapping?: Record<string, string>, environment = 'development') {
   if (!rawData || Object.keys(rawData).length === 0) {
     console.warn(`Row ${rowIndex + 1}: Skipping empty row data.`);
     return null;
   }
 
+  // Utiliser le mapping personnalisé s'il existe, sinon utiliser les mots-clés par défaut
+  const getMap = (field: string) => {
+    if (customMapping && customMapping[field]) return [customMapping[field]];
+    return COMMON_FIELDS_MAP[field as keyof typeof COMMON_FIELDS_MAP] || [field];
+  };
+
   try {
-    const nom = findValue(rawData, COMMON_FIELDS_MAP.nom);
-    const prenom = findValue(rawData, COMMON_FIELDS_MAP.prenom);
+    const nom = findValue(rawData, getMap('nom'));
+    const prenom = findValue(rawData, getMap('prenom'));
 
     if (!nom && !prenom) {
       console.warn(`Row ${rowIndex + 1}: Skipping row due to missing 'Nom' AND 'Prénom'.`);
       return null;
     }
 
-    const email = findValue(rawData, COMMON_FIELDS_MAP.email);
-    const telephone = findValue(rawData, COMMON_FIELDS_MAP.telephone);
-    const dateNaissance = transformDateExcel(findValue(rawData, COMMON_FIELDS_MAP.dateNaissance));
-    const nationaliteValue = findValue(rawData, COMMON_FIELDS_MAP.nationalite);
+    const email = findValue(rawData, getMap('email'));
+    const telephone = findValue(rawData, getMap('telephone'));
+    const dateNaissance = transformDateExcel(findValue(rawData, getMap('dateNaissance')));
+    const nationaliteValue = findValue(rawData, getMap('nationalite'));
 
-    const remarques = findValue(rawData, ['remarque', 'commentaire', 'note', 'observation', 'Notes Générales']) || '';
-    const etat = findValue(rawData, ['statut', 'état', 'status', 'etat'], 'Actif');
-    const dateCloture = transformDateExcel(findValue(rawData, ['date cloture', 'date fermeture', 'Date de clôture']));
-    const dateOuvertureValue = findValue(rawData, ['date création', 'date creation', 'date ouverture', 'Date d\'ouverture de dossier']);
+    // Gestion Remarques + Mediation specific fields
+    const baseRemarques = findValue(rawData, getMap('remarques')) || '';
+    const typeConflit = findValue(rawData, getMap('typeConflit'));
+    const issue = findValue(rawData, getMap('issue'));
+
+    let remarques = baseRemarques;
+    const notesMediation = [];
+    if (typeConflit) notesMediation.push(`Conflit: ${typeConflit}`);
+    if (issue) notesMediation.push(`Issue: ${issue}`);
+
+    if (notesMediation.length > 0) {
+      const mediationStr = notesMediation.join(" | ");
+      remarques = remarques ? `${remarques} | ${mediationStr}` : mediationStr;
+    }
+
+    const etat = findValue(rawData, getMap('etat'), 'Actif');
+    const dateCloture = transformDateExcel(findValue(rawData, getMap('dateCloture')));
+    const dateOuvertureValue = findValue(rawData, getMap('dateOuverture'));
     const dateOuverture = transformDateExcel(dateOuvertureValue) || new Date().toISOString().split('T')[0];
-    const gestionnaire = findValue(rawData, ['gestionnaire', 'gestionnaire du dossier', 'referent', 'référent', 'Gestionnaire du dossier']);
-    const antenne = mapperAntenne(rawData);
+    const gestionnaire = findValue(rawData, getMap('gestionnaire'));
 
-    const statutSejour = findValue(rawData, ['statut de séjour', 'statut séjour', 'séjour', 'residence status', 'Statut de séjour']);
-    const langue = findValue(rawData, ['langue', 'langue entretien', 'language', 'Langue de l\'entretien']);
-    const premierContact = findValue(rawData, ['premier contact', 'contact initial', 'source', 'Premier contact']);
-    const notesGenerales = findValue(rawData, ['notes générales', 'notes generales', 'general notes', 'infos générales', 'Notes Générales']);
+    // Antenne: priorité au mapping, sinon détection automatique
+    const antenneHeader = customMapping?.antenne;
+    const antenne = antenneHeader ? (rawData[antenneHeader] || 'Non spécifié') : mapperAntenne(rawData);
+
+    const statutSejour = findValue(rawData, getMap('statutSejour'));
+    const langue = findValue(rawData, getMap('langue'));
+    const premierContact = findValue(rawData, getMap('premierContact'));
+    const notesGenerales = findValue(rawData, getMap('notesGenerales'));
 
     // --- Gestion Adresse ---
-    const rueBrute = findValue(rawData, ['lieu de vie / adresse', 'adresse complète', 'adresse complete', 'full address', 'Lieu de vie / Adresse']);
-    const rueSpecific = findValue(rawData, COMMON_FIELDS_MAP.adresse);
-    const finalRue = rueBrute || rueSpecific || null;
+    const rueSpecific = findValue(rawData, getMap('adresse'));
+    const finalRue = rueSpecific || findValue(rawData, ['lieu de vie / adresse', 'adresse complète', 'adresse complete', 'full address', 'Lieu de vie / Adresse']) || null;
 
-    const numBoiteRaw = findValue(rawData, ['n°', 'numero', 'numéro', 'num', 'N°']);
-    let parsedNumero: string | null = null;
-    let parsedBoite: string | null = null;
+    const numMapped = findValue(rawData, getMap('numero'));
+    const numBoiteRaw = numMapped || findValue(rawData, ['n°', 'numero', 'numéro', 'num', 'N°', 'Noms et N° de rue']);
 
+    const adresseObject = {
+      rue: finalRue,
+      numero: null as string | null,
+      boite: null as string | null,
+      codePostal: String(findValue(rawData, getMap('codePostal')) || '1070'),
+      ville: String(findValue(rawData, getMap('ville')) || 'Anderlecht'),
+      pays: findValue(rawData, ['pays', 'country']) || 'Belgique',
+      adresseComplete: finalRue
+    };
+
+    // Re-calcul du numéro et boite si possible (si pas déjà mappé explicitement)
     if (numBoiteRaw !== null && numBoiteRaw !== '') {
       const numBoiteStr = String(numBoiteRaw).trim();
       const separators = [' bte ', ' boite ', ' box ', '/', ' bt '];
@@ -93,8 +125,8 @@ export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: 
         const regex = new RegExp(`^(.*?)` + separator.trim().replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + `(.*)$`, 'i');
         const parts = numBoiteStr.match(regex);
         if (parts && parts.length === 3 && parts[1].trim() !== '') {
-          parsedNumero = parts[1].trim();
-          parsedBoite = parts[2].trim() || null;
+          adresseObject.numero = parts[1].trim();
+          adresseObject.boite = parts[2].trim() || null;
           separatorFound = true;
           break;
         }
@@ -102,22 +134,12 @@ export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: 
       if (!separatorFound) {
         const boitePrefixRegex = /^(bte|boite|box|bt)\s+/i;
         if (boitePrefixRegex.test(numBoiteStr)) {
-          parsedBoite = numBoiteStr.replace(boitePrefixRegex, '').trim() || null;
+          adresseObject.boite = numBoiteStr.replace(boitePrefixRegex, '').trim() || null;
         } else if (/^\d+[a-zA-Z]?$/.test(numBoiteStr)) {
-          parsedNumero = numBoiteStr;
+          adresseObject.numero = numBoiteStr;
         }
       }
     }
-
-    const adresseObject = {
-      rue: finalRue,
-      numero: parsedNumero,
-      boite: parsedBoite,
-      codePostal: String(findValue(rawData, COMMON_FIELDS_MAP.codePostal) || '1070'),
-      ville: String(findValue(rawData, COMMON_FIELDS_MAP.ville) || 'Anderlecht'),
-      pays: findValue(rawData, ['pays', 'country']) || 'Belgique',
-      adresseComplete: rueBrute || null
-    };
 
     let nationalite = '';
     if (nationaliteValue) {
@@ -127,6 +149,10 @@ export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: 
         : nationaliteValue.toString().trim();
     }
 
+    // Genre: priorité au mapping
+    const genreHeader = customMapping?.genre;
+    const genre = mapperGenre(rawData, genreHeader);
+
     const mappedUser = {
       id: generateUserIdByAntenne(antenne !== 'Non spécifié' ? antenne : null),
       nom: nom || 'Non précisé',
@@ -134,9 +160,9 @@ export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: 
       email: email || '',
       telephone: telephone || '',
       dateNaissance,
-      genre: mapperGenre(rawData),
+      genre: genre,
       nationalite: nationalite || 'Non spécifié',
-      trancheAge: mapperTrancheAge(rawData),
+      trancheAge: mapperTrancheAge(rawData, customMapping?.trancheAge),
       adresse: adresseObject,
       antenne: antenne,
       problematiques: extraireProblematiques(rawData),
@@ -150,6 +176,43 @@ export function mapExcelToUserStructure(rawData: Record<string, any>, rowIndex: 
       langue: langue || null,
       premierContact: premierContact || null,
       notesGenerales: notesGenerales || null,
+
+      // Nouveaux champs exhaustifs
+      informationImportante: findValue(rawData, getMap('informationImportante')) || null,
+      partenaire: findValue(rawData, getMap('partenaire')) || null,
+      situationProfessionnelle: findValue(rawData, getMap('situationProfessionnelle')) || null,
+      revenus: findValue(rawData, getMap('revenus')) || null,
+      secteur: findValue(rawData, getMap('secteur')) || null,
+
+      // PrevExp Suite
+      hasPrevExp: !!(findValue(rawData, getMap('prevExpDateReception')) || findValue(rawData, getMap('prevExpDecision'))),
+      prevExpDateReception: transformDateExcel(findValue(rawData, getMap('prevExpDateReception'))),
+      prevExpDateRequete: transformDateExcel(findValue(rawData, getMap('prevExpDateRequete'))),
+      prevExpDateVad: transformDateExcel(findValue(rawData, getMap('prevExpDateVad'))),
+      prevExpDecision: findValue(rawData, getMap('prevExpDecision')) || null,
+      prevExpCommentaire: findValue(rawData, getMap('prevExpCommentaire')) || null,
+      prevExpAideJuridique: findValue(rawData, getMap('prevExpAideJuridique')) || null,
+      prevExpDateAudience: transformDateExcel(findValue(rawData, getMap('prevExpDateAudience'))),
+      prevExpDateExpulsion: transformDateExcel(findValue(rawData, getMap('prevExpDateExpulsion'))),
+      prevExpDateJugement: transformDateExcel(findValue(rawData, getMap('prevExpDateJugement'))),
+      prevExpDateSignification: transformDateExcel(findValue(rawData, getMap('prevExpDateSignification'))),
+      prevExpDemandeCpas: findValue(rawData, getMap('prevExpDemandeCpas')) || null,
+      prevExpEtatLogement: findValue(rawData, getMap('prevExpEtatLogement')) || null,
+      prevExpMaintienLogement: findValue(rawData, getMap('prevExpMaintienLogement')) || null,
+      prevExpMotifRequete: findValue(rawData, getMap('prevExpMotifRequete')) || null,
+      prevExpNegociationProprio: findValue(rawData, getMap('prevExpNegociationProprio')) || null,
+      prevExpNombreChambre: findValue(rawData, getMap('prevExpNombreChambre')) || null,
+      prevExpSolutionRelogement: findValue(rawData, getMap('prevExpSolutionRelogement')) || null,
+      prevExpTypeFamille: findValue(rawData, getMap('prevExpTypeFamille')) || null,
+      prevExpTypeRevenu: findValue(rawData, getMap('prevExpTypeRevenu')) || null,
+      prevExpDossierOuvert: findValue(rawData, getMap('prevExpDossierOuvert')) || null,
+
+      // Mediation Suite
+      mediationType: findValue(rawData, getMap('mediationType')) || null,
+      mediationDemandeur: findValue(rawData, getMap('mediationDemandeur')) || null,
+      mediationPartieAdverse: findValue(rawData, getMap('mediationPartieAdverse')) || null,
+      mediationStatut: findValue(rawData, getMap('mediationStatut')) || null,
+      mediationDescription: findValue(rawData, getMap('mediationDescription')) || null,
     };
 
     console.log(`--- Row ${rowIndex + 1} Mapped Successfully: ${mappedUser.nom} ${mappedUser.prenom}`);

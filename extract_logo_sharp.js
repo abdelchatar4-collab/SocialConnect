@@ -8,8 +8,8 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 const sharp = require('sharp');
 const path = require('path');
 
-const inputImage = '/Users/abdelchatar/.gemini/antigravity/brain/e08a08b8-9e09-4d0d-aeda-6303680521b7/uploaded_image_1764066018011.png';
-const outputImage = '/Users/abdelchatar/Desktop/TEST/Test-gestion-usagers/public/socialconnect-logo-extracted.png';
+const inputImage = './temp/logo-source.png'; // Chemin relatif ou à configurer
+const outputImage = './public/socialconnect-logo-extracted.png';
 
 async function extractLogo() {
     try {

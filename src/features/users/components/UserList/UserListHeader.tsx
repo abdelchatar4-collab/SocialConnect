@@ -32,7 +32,6 @@ interface UserListHeaderProps {
     onImport?: () => void;
     onExport?: () => void;
     onBulkDelete?: () => void;
-    onDeleteAll?: () => Promise<void>;
     selectedCount: number;
     loading?: boolean;
 }
@@ -46,7 +45,6 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
     onImport,
     onExport,
     onBulkDelete,
-    onDeleteAll,
     selectedCount,
     loading = false
 }) => {
@@ -72,9 +70,9 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
                     {/* ACTIONS MENU (The Burger) */}
                     <Menu as="div" className="relative inline-block text-left">
                         <div>
-                            <Menu.Button className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/50 backdrop-blur-sm border border-slate-200 shadow-sm text-slate-700 hover:bg-white hover:text-blue-600 hover:border-blue-300 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 group">
+                            <Menu.Button className="flex items-center justify-center w-10 h-10 rounded-xl bg-white hover:bg-slate-50 transition-all duration-200 border border-slate-200 shadow-sm text-slate-600 hover:text-blue-600 hover:border-blue-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 group">
                                 <span className="sr-only">Options</span>
-                                <MenuIcon className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" strokeWidth={2.5} />
+                                <MenuIcon className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" strokeWidth={2} />
                             </Menu.Button>
                         </div>
 
@@ -87,18 +85,24 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95"
                         >
-                            <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-xl bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50">
-                                <div className="px-1 py-1">
+                            <Menu.Items className="absolute right-0 mt-3 w-64 origin-top-right bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 focus:outline-none z-50 overflow-hidden">
+                                <div className="p-2">
+                                    <p className="px-3 py-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Actions</p>
+
                                     {/* Rafraichir */}
                                     <Menu.Item>
                                         {({ active }) => (
                                             <button
                                                 onClick={onRefresh}
                                                 disabled={loading}
-                                                className={`${active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                                                    } group flex w-full items-center rounded-lg px-2 py-2 text-sm transition-colors`}
+                                                className={`group flex items-center gap-3 w-full px-3 py-2 text-sm rounded-xl transition-all duration-150 font-medium
+                                                    ${active ? 'bg-blue-50 text-blue-700 translate-x-1' : 'text-slate-700'}
+                                                `}
                                             >
-                                                <RefreshCw className={`mr-2 h-4 w-4 ${active ? 'text-blue-600' : 'text-gray-400'} ${loading ? 'animate-spin' : ''}`} />
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors
+                                                    ${active ? 'bg-blue-100' : 'bg-slate-100 group-hover:bg-blue-100'}`}>
+                                                    <RefreshCw className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-slate-500 group-hover:text-blue-600'} ${loading ? 'animate-spin' : ''}`} />
+                                                </div>
                                                 Actualiser
                                             </button>
                                         )}
@@ -110,10 +114,14 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
                                             {({ active }) => (
                                                 <button
                                                     onClick={onExport}
-                                                    className={`${active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                                                        } group flex w-full items-center rounded-lg px-2 py-2 text-sm transition-colors`}
+                                                    className={`group flex items-center gap-3 w-full px-3 py-2 text-sm rounded-xl transition-all duration-150 font-medium
+                                                        ${active ? 'bg-blue-50 text-blue-700 translate-x-1' : 'text-slate-700'}
+                                                    `}
                                                 >
-                                                    <Download className={`mr-2 h-4 w-4 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
+                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors
+                                                        ${active ? 'bg-blue-100' : 'bg-slate-100 group-hover:bg-blue-100'}`}>
+                                                        <Download className={`w-4 h-4 ${active ? 'text-blue-600' : 'text-slate-500 group-hover:text-blue-600'}`} />
+                                                    </div>
                                                     Exporter la liste
                                                 </button>
                                             )}
@@ -123,41 +131,29 @@ export const UserListHeader: React.FC<UserListHeaderProps> = ({
 
                                 {/* Admin Actions */}
                                 {isAdmin && (
-                                    <div className="px-1 py-1">
+                                    <div className="p-2 border-t border-slate-100 bg-slate-50/50">
+                                        <p className="px-3 py-1.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Administration</p>
+
                                         {onImport && (
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <button
                                                         onClick={onImport}
-                                                        className={`${active ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-                                                            } group flex w-full items-center rounded-lg px-2 py-2 text-sm transition-colors`}
+                                                        className={`group flex items-center gap-3 w-full px-3 py-2 text-sm rounded-xl transition-all duration-150 font-medium
+                                                            ${active ? 'bg-indigo-50 text-indigo-700 translate-x-1' : 'text-slate-700'}
+                                                        `}
                                                     >
-                                                        <Upload className={`mr-2 h-4 w-4 ${active ? 'text-blue-600' : 'text-gray-400'}`} />
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors
+                                                            ${active ? 'bg-indigo-100' : 'bg-white group-hover:bg-indigo-100'} border border-slate-100 shadow-sm`}>
+                                                            <Upload className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-slate-500 group-hover:text-indigo-600'}`} />
+                                                        </div>
                                                         Importer des usagers
                                                     </button>
                                                 )}
                                             </Menu.Item>
                                         )}
 
-                                        {onDeleteAll && users.length > 0 && (
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            if (window.confirm('Êtes-vous sûr de vouloir tout supprimer ? Cette action est irréversible.')) {
-                                                                onDeleteAll();
-                                                            }
-                                                        }}
-                                                        className={`${active ? 'bg-red-50 text-red-700' : 'text-red-600'
-                                                            } group flex w-full items-center rounded-lg px-2 py-2 text-sm transition-colors`}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Tout supprimer
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                        )}
+                                        {/* Bouton "Tout supprimer" supprimé pour raisons de sécurité */}
                                     </div>
                                 )}
                             </Menu.Items>

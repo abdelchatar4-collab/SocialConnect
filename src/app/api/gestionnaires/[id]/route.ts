@@ -19,6 +19,7 @@ interface ExtendedSession {
     name?: string | null;
     email?: string | null;
     role?: string | null;
+    serviceId?: string | null;
   };
 }
 
@@ -36,6 +37,9 @@ export async function GET(
   }
 
   try {
+    // Get the current user's serviceId for multi-tenant filtering
+    const currentServiceId = (session as any).user?.serviceId;
+
     // Récupérer le gestionnaire depuis la base de données
     const gestionnaire = await prisma.gestionnaire.findUnique({
       where: { id }
@@ -45,6 +49,13 @@ export async function GET(
       return NextResponse.json({
         error: `Gestionnaire non trouvé`
       }, { status: 404 });
+    }
+
+    // Multi-tenant isolation: verify the gestionnaire belongs to the same service
+    if (currentServiceId && gestionnaire.serviceId !== currentServiceId) {
+      return NextResponse.json({
+        error: `Accès non autorisé à ce gestionnaire`
+      }, { status: 403 });
     }
 
     return NextResponse.json(gestionnaire);
@@ -69,6 +80,24 @@ export async function PUT(
   }
 
   try {
+    // Get the current user's serviceId for multi-tenant filtering
+    const currentServiceId = (session as any).user?.serviceId;
+
+    // First, check if the target gestionnaire belongs to the same service
+    const existingGestionnaire = await prisma.gestionnaire.findUnique({
+      where: { id: gestionnaireId },
+      select: { serviceId: true }
+    });
+
+    if (!existingGestionnaire) {
+      return NextResponse.json({ message: "Gestionnaire non trouvé." }, { status: 404 });
+    }
+
+    // Multi-tenant isolation: verify the gestionnaire belongs to the same service
+    if (currentServiceId && existingGestionnaire.serviceId !== currentServiceId) {
+      return NextResponse.json({ message: "Accès non autorisé à ce gestionnaire." }, { status: 403 });
+    }
+
     const body = await request.json();
     // On ne récupère que les champs modifiables, y compris le rôle et la couleur
     const { email, prenom, nom, role, couleurMedaillon, isActive, isGestionnaireDossier } = body;
@@ -142,6 +171,24 @@ export async function DELETE(
   }
 
   try {
+    // Get the current user's serviceId for multi-tenant filtering
+    const currentServiceId = (session as any).user?.serviceId;
+
+    // First, check if the target gestionnaire belongs to the same service
+    const existingGestionnaire = await prisma.gestionnaire.findUnique({
+      where: { id },
+      select: { serviceId: true }
+    });
+
+    if (!existingGestionnaire) {
+      return NextResponse.json({ error: "Gestionnaire non trouvé." }, { status: 404 });
+    }
+
+    // Multi-tenant isolation: verify the gestionnaire belongs to the same service
+    if (currentServiceId && existingGestionnaire.serviceId !== currentServiceId) {
+      return NextResponse.json({ error: "Accès non autorisé à ce gestionnaire." }, { status: 403 });
+    }
+
     // D'abord, mettre à jour tous les utilisateurs qui référencent ce gestionnaire
     const result = await prisma.user.updateMany({
       where: { gestionnaireId: id }, // Utiliser le champ de clé étrangère directement

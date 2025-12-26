@@ -1,0 +1,611 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "SocialConnect Logo" [ref=e7] [cursor=pointer]:
+            - /url: /
+            - img "SocialConnect Logo" [ref=e8]
+          - generic [ref=e10]:
+            - heading "LE PÔLE ACCUEIL SOCIAL DES QUARTIERS" [level=1] [ref=e11]
+            - generic [ref=e12]: PORTAIL DE GESTION
+          - img "Logo Commune d'Anderlecht" [ref=e14]
+          - generic [ref=e16]:
+            - img [ref=e17]
+            - generic [ref=e19]: Exercice
+            - combobox [ref=e20] [cursor=pointer]:
+              - option "2024"
+              - option "2025" [selected]
+              - option "2026"
+        - generic [ref=e21]:
+          - link "Absences" [ref=e22] [cursor=pointer]:
+            - /url: /conges
+            - img [ref=e23]
+            - generic [ref=e25]: Absences
+          - button "À propos" [ref=e26] [cursor=pointer]:
+            - img [ref=e27]
+          - button "Admin Développement Utilisateur AD" [ref=e31] [cursor=pointer]:
+            - generic [ref=e32]:
+              - generic [ref=e33]: Admin Développement
+              - generic [ref=e34]: Utilisateur
+            - generic [ref=e35]: AD
+            - img [ref=e36]
+    - main [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - heading "📊 Tableau de Bord PASQ" [level=1] [ref=e43]:
+                - generic [ref=e44]: 📊
+                - generic [ref=e45]: Tableau de Bord
+                - generic [ref=e46]: PASQ
+              - link "Mes Absences" [ref=e47] [cursor=pointer]:
+                - /url: /conges
+                - img [ref=e48]
+                - generic [ref=e50]: Mes Absences
+              - generic [ref=e51]:
+                - img [ref=e52]
+                - generic [ref=e55]: Mis à jour à 00:04:25
+            - generic [ref=e56]:
+              - button "Widget" [ref=e57] [cursor=pointer]:
+                - img [ref=e58]
+                - generic [ref=e60]: Widget
+                - img [ref=e61]
+              - button "Tableau croisé" [ref=e62] [cursor=pointer]:
+                - img [ref=e63]
+                - generic [ref=e65]: Tableau croisé
+                - img [ref=e66]
+              - button "30s" [ref=e69] [cursor=pointer]:
+                - img [ref=e70]
+                - generic [ref=e73]: 30s
+              - button "Rafraîchir" [ref=e74] [cursor=pointer]:
+                - img [ref=e75]
+                - generic [ref=e80]: Rafraîchir
+              - button "Paramètres du tableau de bord" [ref=e81] [cursor=pointer]:
+                - img [ref=e82]
+          - generic [ref=e85]:
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]: Total Usagers
+                - img [ref=e91]
+              - generic [ref=e96]: "546"
+              - generic [ref=e97]:
+                - img [ref=e98]
+                - generic [ref=e101]: +12%
+                - generic [ref=e102]: ce mois
+            - generic [ref=e104]:
+              - generic [ref=e105]:
+                - generic [ref=e106]: Dossiers Actifs
+                - img [ref=e108]
+              - generic [ref=e110]: "542"
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - generic [ref=e113]: 99.26873857404021%
+                - generic [ref=e114]: du total
+            - generic [ref=e116]:
+              - generic [ref=e117]:
+                - generic [ref=e118]: Prévention Expulsion
+                - img [ref=e120]
+              - generic [ref=e123]: "3"
+            - generic [ref=e125]:
+              - generic [ref=e126]:
+                - generic [ref=e127]: Actions ce mois
+                - img [ref=e129]
+              - generic [ref=e131]: "6"
+            - generic [ref=e132]:
+              - heading "Évolution 2025" [level=3] [ref=e134]
+              - img [ref=e138]:
+                - generic [ref=e142]:
+                  - generic [ref=e144]: Jan
+                  - generic [ref=e146]: Fév
+                  - generic [ref=e148]: Mar
+                  - generic [ref=e150]: Avr
+                  - generic [ref=e152]: Mai
+                  - generic [ref=e154]: Juin
+                  - generic [ref=e156]: Juil
+                  - generic [ref=e158]: Août
+                  - generic [ref=e160]: Sep
+                  - generic [ref=e162]: Oct
+                  - generic [ref=e164]: Nov
+                  - generic [ref=e166]: Déc
+                - generic [ref=e168]:
+                  - generic [ref=e170]: "0"
+                  - generic [ref=e172]: "25"
+                  - generic [ref=e174]: "50"
+                  - generic [ref=e176]: "75"
+                  - generic [ref=e178]: "100"
+            - generic [ref=e194]:
+              - heading "Par Antenne" [level=3] [ref=e196]
+              - generic [ref=e199]:
+                - img [ref=e200]:
+                  - generic [ref=e201]:
+                    - img [ref=e203]
+                    - img [ref=e205]
+                    - img [ref=e207]
+                    - img [ref=e209]
+                    - generic [ref=e210]:
+                      - generic [ref=e213]: 52%
+                      - generic [ref=e216]: 45%
+                      - generic [ref=e219]: 3%
+                      - generic [ref=e222]: 0%
+                - list [ref=e224]:
+                  - listitem [ref=e225]:
+                    - img [ref=e226]
+                    - generic [ref=e229]: Antenne Centre (283)
+                  - listitem [ref=e230]:
+                    - img [ref=e231]
+                    - generic [ref=e234]: Antenne Cureghem (245)
+                  - listitem [ref=e235]:
+                    - img [ref=e236]
+                    - generic [ref=e239]: Antenne Bizet (18)
+                  - listitem [ref=e240]:
+                    - img [ref=e241]
+                    - generic [ref=e244]: Non spécifié (1)
+            - generic [ref=e245]:
+              - heading "Par Gestionnaire" [level=3] [ref=e247]
+              - img [ref=e251]:
+                - generic [ref=e256]:
+                  - generic [ref=e258]: Pauline
+                  - generic [ref=e260]: Amine
+                  - generic [ref=e262]: Fatima
+                  - generic [ref=e264]: Houssaine
+                  - generic [ref=e266]: Mohamed
+                  - generic [ref=e268]: Samia
+                  - generic [ref=e270]: Non assigné
+                  - generic [ref=e272]: Delphine
+                - generic [ref=e274]:
+                  - generic [ref=e276]: "0"
+                  - generic [ref=e278]: "40"
+                  - generic [ref=e280]: "80"
+                  - generic [ref=e282]: "120"
+                  - generic [ref=e284]: "160"
+            - generic [ref=e303]:
+              - heading "Par Âge" [level=3] [ref=e305]
+              - img [ref=e309]:
+                - generic [ref=e314]:
+                  - generic [ref=e316]: 0-18 ans
+                  - generic [ref=e318]: 19-30 ans
+                  - generic [ref=e320]: 31-45 ans
+                  - generic [ref=e322]: 46-60 ans
+                  - generic [ref=e324]: 61+ ans
+                  - generic [ref=e326]: Non spécifié
+                - generic [ref=e328]:
+                  - generic [ref=e330]: "0"
+                  - generic [ref=e332]: "45"
+                  - generic [ref=e334]: "90"
+                  - generic [ref=e336]: "135"
+                  - generic [ref=e338]: "180"
+            - generic [ref=e353]:
+              - heading "Par Genre" [level=3] [ref=e355]
+              - generic [ref=e358]:
+                - img [ref=e359]:
+                  - generic [ref=e360]:
+                    - img [ref=e362]
+                    - img [ref=e364]
+                    - generic [ref=e365]:
+                      - generic [ref=e368]: 53%
+                      - generic [ref=e371]: 47%
+                - list [ref=e373]:
+                  - listitem [ref=e374]:
+                    - img [ref=e375]
+                    - generic [ref=e378]: Femme (290)
+                  - listitem [ref=e379]:
+                    - img [ref=e380]
+                    - generic [ref=e383]: Homme (257)
+            - generic [ref=e384]:
+              - heading "Par Secteur" [level=3] [ref=e386]
+              - img [ref=e390]:
+                - generic [ref=e395]:
+                  - generic [ref=e397]: "0"
+                  - generic [ref=e399]: "50"
+                  - generic [ref=e401]: "100"
+                  - generic [ref=e403]: "150"
+                  - generic [ref=e405]: "200"
+                - generic [ref=e407]:
+                  - generic [ref=e409]: Cureghem
+                  - generic [ref=e411]: Vaillance
+                  - generic [ref=e413]: La Roue
+                  - generic [ref=e415]: Scheut
+                  - generic [ref=e417]: Anderlecht
+                  - generic [ref=e419]: Peterbos
+                  - generic [ref=e421]: Parc
+                  - generic [ref=e423]: Nonspécifié
+                  - generic [ref=e425]: Neerpede
+                  - generic [ref=e427]: Industrie
+            - generic [ref=e450]:
+              - heading "Problématiques" [level=3] [ref=e452]
+              - img [ref=e456]:
+                - generic [ref=e461]:
+                  - generic [ref=e463]: Juridique
+                  - generic [ref=e465]: CPAS
+                  - generic [ref=e467]: cpas
+                  - generic [ref=e469]: Fiscalité
+                  - generic [ref=e471]: Endettement/Surendettement
+                  - generic [ref=e473]: Administratif
+                  - generic [ref=e475]: Logement
+                  - generic [ref=e477]: Energie (eau;gaz;électricité)
+                  - generic [ref=e479]: Santé (physique; handicap; autonomie)
+                  - generic [ref=e481]: Famille/couple
+                - generic [ref=e483]:
+                  - generic [ref=e485]: "0"
+                  - generic [ref=e487]: "8"
+                  - generic [ref=e489]: "16"
+                  - generic [ref=e491]: "24"
+                  - generic [ref=e493]: "32"
+          - generic [ref=e516]:
+            - generic [ref=e517]:
+              - heading "📊 Widgets personnalisés" [level=2] [ref=e518]
+              - button "Nouveau widget" [ref=e519] [cursor=pointer]:
+                - img [ref=e520]
+                - text: Nouveau widget
+            - generic [ref=e521]:
+              - paragraph [ref=e522]: Créez des widgets personnalisés pour analyser vos données avec des filtres spécifiques.
+              - button "+ Créer mon premier widget" [ref=e523] [cursor=pointer]
+          - generic [ref=e524]:
+            - generic [ref=e525]:
+              - heading "Tableaux croisés dynamiques" [level=2] [ref=e526]:
+                - img [ref=e527]
+                - text: Tableaux croisés dynamiques
+              - button "Nouveau tableau" [ref=e529] [cursor=pointer]:
+                - img [ref=e530]
+                - text: Nouveau tableau
+            - generic [ref=e531]:
+              - paragraph [ref=e532]: Créez des tableaux croisés pour analyser vos données selon 2 dimensions (lignes × colonnes).
+              - button "+ Créer mon premier tableau croisé" [ref=e533] [cursor=pointer]
+          - complementary [ref=e534]:
+            - generic [ref=e535]:
+              - heading "Configuration" [level=2] [ref=e536]
+              - button [ref=e537] [cursor=pointer]:
+                - img [ref=e538]
+            - button "Réinitialiser par défaut" [ref=e542] [cursor=pointer]:
+              - img [ref=e543]
+              - text: Réinitialiser par défaut
+            - generic [ref=e546]:
+              - generic [ref=e547]:
+                - heading "Indicateurs Clés (KPIs)" [level=3] [ref=e548]
+                - generic [ref=e549]:
+                  - generic [ref=e550]: Total Usagers
+                  - button [ref=e551] [cursor=pointer]:
+                    - img [ref=e552]
+                - generic [ref=e555]:
+                  - generic [ref=e556]: Dossiers Actifs
+                  - button [ref=e557] [cursor=pointer]:
+                    - img [ref=e558]
+                - generic [ref=e561]:
+                  - generic [ref=e562]: Prévention Expulsion
+                  - button [ref=e563] [cursor=pointer]:
+                    - img [ref=e564]
+                - generic [ref=e567]:
+                  - generic [ref=e568]: Actions ce mois
+                  - button [ref=e569] [cursor=pointer]:
+                    - img [ref=e570]
+              - generic [ref=e573]:
+                - heading "Graphiques" [level=3] [ref=e574]
+                - generic [ref=e575]:
+                  - generic [ref=e576]: Évolution 2025
+                  - button [ref=e577] [cursor=pointer]:
+                    - img [ref=e578]
+                - generic [ref=e581]:
+                  - generic [ref=e582]: Par Antenne
+                  - button [ref=e583] [cursor=pointer]:
+                    - img [ref=e584]
+                - generic [ref=e587]:
+                  - generic [ref=e588]: Par Gestionnaire
+                  - button [ref=e589] [cursor=pointer]:
+                    - img [ref=e590]
+                - generic [ref=e593]:
+                  - generic [ref=e594]: Par Âge
+                  - button [ref=e595] [cursor=pointer]:
+                    - img [ref=e596]
+                - generic [ref=e599]:
+                  - generic [ref=e600]: Par Genre
+                  - button [ref=e601] [cursor=pointer]:
+                    - img [ref=e602]
+                - generic [ref=e605]:
+                  - generic [ref=e606]: Par Secteur
+                  - button [ref=e607] [cursor=pointer]:
+                    - img [ref=e608]
+                - generic [ref=e611]:
+                  - generic [ref=e612]: Problématiques
+                  - button [ref=e613] [cursor=pointer]:
+                    - img [ref=e614]
+              - generic [ref=e617]:
+                - heading "Autres" [level=3] [ref=e618]
+                - generic [ref=e619]:
+                  - generic [ref=e620]: Actions Urgentes
+                  - button [ref=e621] [cursor=pointer]:
+                    - img [ref=e622]
+        - generic [ref=e626]:
+          - generic [ref=e628]:
+            - generic [ref=e629]:
+              - heading "Activités Récentes" [level=2] [ref=e630]:
+                - img [ref=e631]
+                - text: Activités Récentes
+              - paragraph [ref=e633]: Les 10 derniers dossiers créés ou modifiés
+            - link "Voir tout" [ref=e634] [cursor=pointer]:
+              - /url: /users
+              - text: Voir tout
+              - img [ref=e635]
+          - table [ref=e639]:
+            - rowgroup [ref=e640]:
+              - row "Usager Gestionnaire Date d'ouverture Antenne État Actions" [ref=e641]:
+                - columnheader "Usager" [ref=e642]
+                - columnheader "Gestionnaire" [ref=e643]
+                - columnheader "Date d'ouverture" [ref=e644]
+                - columnheader "Antenne" [ref=e645]
+                - columnheader "État" [ref=e646]
+                - columnheader "Actions" [ref=e647]
+            - rowgroup [ref=e648]:
+              - row "ME El Akchaoui Mohamed Cureghem Fatima 23/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e649]:
+                - cell "ME El Akchaoui Mohamed Cureghem" [ref=e650]:
+                  - generic [ref=e651]:
+                    - generic [ref=e653]: ME
+                    - generic [ref=e654]:
+                      - generic [ref=e655]: El Akchaoui Mohamed
+                      - generic [ref=e656]: Cureghem
+                - cell "Fatima" [ref=e657]:
+                  - generic [ref=e658]: Fatima
+                - cell "23/12/2025" [ref=e659]
+                - cell "Antenne Cureghem" [ref=e660]:
+                  - generic [ref=e661]: Antenne Cureghem
+                - cell "Actif" [ref=e662]:
+                  - generic [ref=e663]: Actif
+                - cell "Voir Modifier" [ref=e664]:
+                  - generic [ref=e665]:
+                    - link "Voir" [ref=e666] [cursor=pointer]:
+                      - /url: /users/CUR-VSV2RJ
+                      - img [ref=e667]
+                      - text: Voir
+                    - link "Modifier" [ref=e670] [cursor=pointer]:
+                      - /url: /users/CUR-VSV2RJ/edit
+                      - img [ref=e671]
+                      - text: Modifier
+              - row "FL Lafkiri Farid La Roue Fatima 22/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e673]:
+                - cell "FL Lafkiri Farid La Roue" [ref=e674]:
+                  - generic [ref=e675]:
+                    - generic [ref=e677]: FL
+                    - generic [ref=e678]:
+                      - generic [ref=e679]: Lafkiri Farid
+                      - generic [ref=e680]: La Roue
+                - cell "Fatima" [ref=e681]:
+                  - generic [ref=e682]: Fatima
+                - cell "22/12/2025" [ref=e683]
+                - cell "Antenne Cureghem" [ref=e684]:
+                  - generic [ref=e685]: Antenne Cureghem
+                - cell "Actif" [ref=e686]:
+                  - generic [ref=e687]: Actif
+                - cell "Voir Modifier" [ref=e688]:
+                  - generic [ref=e689]:
+                    - link "Voir" [ref=e690] [cursor=pointer]:
+                      - /url: /users/CUR-1FUIWI
+                      - img [ref=e691]
+                      - text: Voir
+                    - link "Modifier" [ref=e694] [cursor=pointer]:
+                      - /url: /users/CUR-1FUIWI/edit
+                      - img [ref=e695]
+                      - text: Modifier
+              - row "AL LAKBIACH OAZIL Aziz Secteur non défini Pauline 18/12/2025 Antenne Centre Actif Voir Modifier" [ref=e697]:
+                - cell "AL LAKBIACH OAZIL Aziz Secteur non défini" [ref=e698]:
+                  - generic [ref=e699]:
+                    - generic [ref=e701]: AL
+                    - generic [ref=e702]:
+                      - generic [ref=e703]: LAKBIACH OAZIL Aziz
+                      - generic [ref=e704]: Secteur non défini
+                - cell "Pauline" [ref=e705]:
+                  - generic [ref=e706]: Pauline
+                - cell "18/12/2025" [ref=e707]
+                - cell "Antenne Centre" [ref=e708]:
+                  - generic [ref=e709]: Antenne Centre
+                - cell "Actif" [ref=e710]:
+                  - generic [ref=e711]: Actif
+                - cell "Voir Modifier" [ref=e712]:
+                  - generic [ref=e713]:
+                    - link "Voir" [ref=e714] [cursor=pointer]:
+                      - /url: /users/CEN-CFSD0O
+                      - img [ref=e715]
+                      - text: Voir
+                    - link "Modifier" [ref=e718] [cursor=pointer]:
+                      - /url: /users/CEN-CFSD0O/edit
+                      - img [ref=e719]
+                      - text: Modifier
+              - row "FA ALABED Farial Cureghem Amine 17/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e721]:
+                - cell "FA ALABED Farial Cureghem" [ref=e722]:
+                  - generic [ref=e723]:
+                    - generic [ref=e725]: FA
+                    - generic [ref=e726]:
+                      - generic [ref=e727]: ALABED Farial
+                      - generic [ref=e728]: Cureghem
+                - cell "Amine" [ref=e729]:
+                  - generic [ref=e730]: Amine
+                - cell "17/12/2025" [ref=e731]
+                - cell "Antenne Cureghem" [ref=e732]:
+                  - generic [ref=e733]: Antenne Cureghem
+                - cell "Actif" [ref=e734]:
+                  - generic [ref=e735]: Actif
+                - cell "Voir Modifier" [ref=e736]:
+                  - generic [ref=e737]:
+                    - link "Voir" [ref=e738] [cursor=pointer]:
+                      - /url: /users/CUR-RHNCGJ
+                      - img [ref=e739]
+                      - text: Voir
+                    - link "Modifier" [ref=e742] [cursor=pointer]:
+                      - /url: /users/CUR-RHNCGJ/edit
+                      - img [ref=e743]
+                      - text: Modifier
+              - row "MG GHANOUM Mohammad Cureghem Amine 17/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e745]:
+                - cell "MG GHANOUM Mohammad Cureghem" [ref=e746]:
+                  - generic [ref=e747]:
+                    - generic [ref=e749]: MG
+                    - generic [ref=e750]:
+                      - generic [ref=e751]: GHANOUM Mohammad
+                      - generic [ref=e752]: Cureghem
+                - cell "Amine" [ref=e753]:
+                  - generic [ref=e754]: Amine
+                - cell "17/12/2025" [ref=e755]
+                - cell "Antenne Cureghem" [ref=e756]:
+                  - generic [ref=e757]: Antenne Cureghem
+                - cell "Actif" [ref=e758]:
+                  - generic [ref=e759]: Actif
+                - cell "Voir Modifier" [ref=e760]:
+                  - generic [ref=e761]:
+                    - link "Voir" [ref=e762] [cursor=pointer]:
+                      - /url: /users/CUR-56LGBG
+                      - img [ref=e763]
+                      - text: Voir
+                    - link "Modifier" [ref=e766] [cursor=pointer]:
+                      - /url: /users/CUR-56LGBG/edit
+                      - img [ref=e767]
+                      - text: Modifier
+              - row "AA ALMOHAMAD Amineh Cureghem Amine 16/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e769]:
+                - cell "AA ALMOHAMAD Amineh Cureghem" [ref=e770]:
+                  - generic [ref=e771]:
+                    - generic [ref=e773]: AA
+                    - generic [ref=e774]:
+                      - generic [ref=e775]: ALMOHAMAD Amineh
+                      - generic [ref=e776]: Cureghem
+                - cell "Amine" [ref=e777]:
+                  - generic [ref=e778]: Amine
+                - cell "16/12/2025" [ref=e779]
+                - cell "Antenne Cureghem" [ref=e780]:
+                  - generic [ref=e781]: Antenne Cureghem
+                - cell "Actif" [ref=e782]:
+                  - generic [ref=e783]: Actif
+                - cell "Voir Modifier" [ref=e784]:
+                  - generic [ref=e785]:
+                    - link "Voir" [ref=e786] [cursor=pointer]:
+                      - /url: /users/CUR-HMRDWU
+                      - img [ref=e787]
+                      - text: Voir
+                    - link "Modifier" [ref=e790] [cursor=pointer]:
+                      - /url: /users/CUR-HMRDWU/edit
+                      - img [ref=e791]
+                      - text: Modifier
+              - row "MB BEN FATAH Malak La Roue Pauline 16/12/2025 Antenne Centre Actif Voir Modifier" [ref=e793]:
+                - cell "MB BEN FATAH Malak La Roue" [ref=e794]:
+                  - generic [ref=e795]:
+                    - generic [ref=e797]: MB
+                    - generic [ref=e798]:
+                      - generic [ref=e799]: BEN FATAH Malak
+                      - generic [ref=e800]: La Roue
+                - cell "Pauline" [ref=e801]:
+                  - generic [ref=e802]: Pauline
+                - cell "16/12/2025" [ref=e803]
+                - cell "Antenne Centre" [ref=e804]:
+                  - generic [ref=e805]: Antenne Centre
+                - cell "Actif" [ref=e806]:
+                  - generic [ref=e807]: Actif
+                - cell "Voir Modifier" [ref=e808]:
+                  - generic [ref=e809]:
+                    - link "Voir" [ref=e810] [cursor=pointer]:
+                      - /url: /users/CEN-UNZ0N5
+                      - img [ref=e811]
+                      - text: Voir
+                    - link "Modifier" [ref=e814] [cursor=pointer]:
+                      - /url: /users/CEN-UNZ0N5/edit
+                      - img [ref=e815]
+                      - text: Modifier
+              - row "MC CHOURAK Mohammed Scheut Pauline 16/12/2025 Antenne Centre Actif Voir Modifier" [ref=e817]:
+                - cell "MC CHOURAK Mohammed Scheut" [ref=e818]:
+                  - generic [ref=e819]:
+                    - generic [ref=e821]: MC
+                    - generic [ref=e822]:
+                      - generic [ref=e823]: CHOURAK Mohammed
+                      - generic [ref=e824]: Scheut
+                - cell "Pauline" [ref=e825]:
+                  - generic [ref=e826]: Pauline
+                - cell "16/12/2025" [ref=e827]
+                - cell "Antenne Centre" [ref=e828]:
+                  - generic [ref=e829]: Antenne Centre
+                - cell "Actif" [ref=e830]:
+                  - generic [ref=e831]: Actif
+                - cell "Voir Modifier" [ref=e832]:
+                  - generic [ref=e833]:
+                    - link "Voir" [ref=e834] [cursor=pointer]:
+                      - /url: /users/CEN-SZ0WE3
+                      - img [ref=e835]
+                      - text: Voir
+                    - link "Modifier" [ref=e838] [cursor=pointer]:
+                      - /url: /users/CEN-SZ0WE3/edit
+                      - img [ref=e839]
+                      - text: Modifier
+              - row "BO OULKADI Bouchra Cureghem Pauline 15/12/2025 Antenne Centre Actif Voir Modifier" [ref=e841]:
+                - cell "BO OULKADI Bouchra Cureghem" [ref=e842]:
+                  - generic [ref=e843]:
+                    - generic [ref=e845]: BO
+                    - generic [ref=e846]:
+                      - generic [ref=e847]: OULKADI Bouchra
+                      - generic [ref=e848]: Cureghem
+                - cell "Pauline" [ref=e849]:
+                  - generic [ref=e850]: Pauline
+                - cell "15/12/2025" [ref=e851]
+                - cell "Antenne Centre" [ref=e852]:
+                  - generic [ref=e853]: Antenne Centre
+                - cell "Actif" [ref=e854]:
+                  - generic [ref=e855]: Actif
+                - cell "Voir Modifier" [ref=e856]:
+                  - generic [ref=e857]:
+                    - link "Voir" [ref=e858] [cursor=pointer]:
+                      - /url: /users/CEN-0UNSDO
+                      - img [ref=e859]
+                      - text: Voir
+                    - link "Modifier" [ref=e862] [cursor=pointer]:
+                      - /url: /users/CEN-0UNSDO/edit
+                      - img [ref=e863]
+                      - text: Modifier
+              - row "FS Sakhi Fatima La Roue Amine 13/12/2025 Antenne Cureghem Actif Voir Modifier" [ref=e865]:
+                - cell "FS Sakhi Fatima La Roue" [ref=e866]:
+                  - generic [ref=e867]:
+                    - generic [ref=e869]: FS
+                    - generic [ref=e870]:
+                      - generic [ref=e871]: Sakhi Fatima
+                      - generic [ref=e872]: La Roue
+                - cell "Amine" [ref=e873]:
+                  - generic [ref=e874]: Amine
+                - cell "13/12/2025" [ref=e875]
+                - cell "Antenne Cureghem" [ref=e876]:
+                  - generic [ref=e877]: Antenne Cureghem
+                - cell "Actif" [ref=e878]:
+                  - generic [ref=e879]: Actif
+                - cell "Voir Modifier" [ref=e880]:
+                  - generic [ref=e881]:
+                    - link "Voir" [ref=e882] [cursor=pointer]:
+                      - /url: /users/CUR-EFA0G5
+                      - img [ref=e883]
+                      - text: Voir
+                    - link "Modifier" [ref=e886] [cursor=pointer]:
+                      - /url: /users/CUR-EFA0G5/edit
+                      - img [ref=e887]
+                      - text: Modifier
+          - generic [ref=e889]:
+            - heading "Actions rapides" [level=4] [ref=e890]
+            - generic [ref=e891]:
+              - link "Nouvel usager" [ref=e892] [cursor=pointer]:
+                - /url: /users/new
+                - img [ref=e893]
+                - text: Nouvel usager
+              - link "Générer rapport" [ref=e895] [cursor=pointer]:
+                - /url: /rapports
+                - img [ref=e896]
+                - text: Générer rapport
+              - link "Liste complète" [ref=e898] [cursor=pointer]:
+                - /url: /users
+                - img [ref=e899]
+                - text: Liste complète
+    - contentinfo [ref=e901]:
+      - generic [ref=e903]:
+        - generic [ref=e904]: © 2025 AC. Tous droits réservés.
+        - generic [ref=e905]:
+          - generic [ref=e906]: GNU GPL v3
+          - generic [ref=e907]: Version 1.0.0
+  - button "Retour à l'accueil" [ref=e908] [cursor=pointer]:
+    - img [ref=e909]
+    - generic: Accueil
+  - alert [ref=e912]
+  - button "Mes Prestations" [ref=e913] [cursor=pointer]:
+    - img [ref=e914]
+    - img [ref=e917]
+  - generic [ref=e919]: "8"
+```

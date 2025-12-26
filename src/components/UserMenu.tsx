@@ -23,7 +23,8 @@ import {
     Users,
     ChevronDown,
     Clock,
-    Building2
+    Building2,
+    CalendarDays
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
@@ -77,6 +78,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onOpenSettings }) => {
     const menuItems = [
         { href: '/', label: 'Accueil', icon: Home },
         { href: '/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
+        { href: '/conges', label: 'Mes Absences', icon: CalendarDays },
         { href: '/prestations', label: 'Mes Prestations', icon: Clock },
         { href: '/users', label: 'Liste des usagers', icon: Users },
     ];

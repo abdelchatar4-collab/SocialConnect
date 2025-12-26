@@ -1,4 +1,4 @@
-# filepath: /Users/abdelchatar/Desktop/Projet-Gestion-Usagers Formulaire Sections/app-gestion-usagers/Dockerfile
+# filepath: Dockerfile
 
 # --- Build Stages ---
 

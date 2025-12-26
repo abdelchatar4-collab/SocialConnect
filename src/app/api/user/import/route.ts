@@ -4,11 +4,22 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 */
 
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 import { getAllGestionnaires } from './importUtils';
 import { importSingleUser } from './importCore';
 
 export async function POST(request: Request) {
   try {
+    // Authentication check
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Multi-tenant isolation: use serviceId from session, NOT from body
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
     const body = await request.json();
     const usersToImport = Array.isArray(body) ? body : body.users;
     const targetYear = body.annee ? parseInt(String(body.annee), 10) : new Date().getFullYear();
@@ -25,7 +36,7 @@ export async function POST(request: Request) {
       await Promise.all(batch.map(async (userData) => {
         try {
           if (!userData.nom || !userData.prenom) throw new Error('Champs obligatoires manquants');
-          await importSingleUser(userData, targetYear, allGest);
+          await importSingleUser(userData, targetYear, allGest, serviceId);
           importedCount++;
         } catch (err: any) {
           errors.push({ data: userData, reason: err.message });

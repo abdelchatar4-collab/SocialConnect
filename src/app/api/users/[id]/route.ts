@@ -16,8 +16,13 @@ import { buildUserUpdateData } from './userUpdateMapper';
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  // Multi-tenant isolation
+  const serviceId = (session.user as any).serviceId || 'default';
+  const servicePrisma = getServiceClient(serviceId);
+
   try {
-    const user = await prisma.user.findUnique({ where: { id: params.id }, include: { adresse: true, problematiques: true, actions: true, gestionnaire: true } });
+    const user = await servicePrisma.user.findUnique({ where: { id: params.id }, include: { adresse: true, problematiques: true, actions: true, gestionnaire: true } });
     if (!user) return NextResponse.json({ error: '404' }, { status: 404 });
     if (!user.problematiques?.length) user.problematiques = detectProblematiquesFromNotes(user.id, user.notesGenerales || user.remarques || "");
     if (user.logementDetails && typeof user.logementDetails === 'string') try { user.logementDetails = JSON.parse(user.logementDetails); } catch { user.logementDetails = ''; }
@@ -26,19 +31,30 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  if (!(await getServerSession(authOptions))) return NextResponse.json({ error: '401' }, { status: 401 });
-  try { return NextResponse.json(await prisma.user.update({ where: { id: params.id }, data: { rgpdAttestationGeneratedAt: new Date() }, select: { id: true, nom: true, prenom: true, rgpdAttestationGeneratedAt: true } })); }
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
+
+  // Multi-tenant isolation
+  const serviceId = (session.user as any).serviceId || 'default';
+  const servicePrisma = getServiceClient(serviceId);
+
+  try { return NextResponse.json(await servicePrisma.user.update({ where: { id: params.id }, data: { rgpdAttestationGeneratedAt: new Date() }, select: { id: true, nom: true, prenom: true, rgpdAttestationGeneratedAt: true } })); }
   catch (e) { return handleApiError(e); }
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
+
+  // Multi-tenant isolation
+  const serviceId = (session.user as any).serviceId || 'default';
+  const servicePrisma = getServiceClient(serviceId);
+
   try {
     const body = await req.json();
     await handleProblematiques(params.id, body.problematiques);
     await handleActions(params.id, body.actions);
-    return NextResponse.json(await prisma.user.update({ where: { id: params.id }, data: buildUserUpdateData(body, session), include: { adresse: true, problematiques: true, actions: true } }));
+    return NextResponse.json(await servicePrisma.user.update({ where: { id: params.id }, data: buildUserUpdateData(body, session), include: { adresse: true, problematiques: true, actions: true } }));
   } catch (e) { return handleApiError(e); }
 }
 

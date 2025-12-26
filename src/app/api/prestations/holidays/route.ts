@@ -75,6 +75,22 @@ export async function DELETE(request: Request) {
     if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
     try {
+        const serviceId = (session.user as any).serviceId || 'default';
+
+        // Multi-tenant isolation: verify the holiday belongs to the same service
+        const existingHoliday = await prisma.holiday.findUnique({
+            where: { id },
+            select: { serviceId: true }
+        });
+
+        if (!existingHoliday) {
+            return NextResponse.json({ error: 'Holiday not found' }, { status: 404 });
+        }
+
+        if (existingHoliday.serviceId !== serviceId) {
+            return NextResponse.json({ error: 'Access denied to this holiday' }, { status: 403 });
+        }
+
         await prisma.holiday.delete({ where: { id } });
         return NextResponse.json({ success: true });
     } catch (error) {

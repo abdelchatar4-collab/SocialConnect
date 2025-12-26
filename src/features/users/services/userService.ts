@@ -27,7 +27,7 @@ export class UserService {
   async updateUser(id: string, data: Partial<UserFormData>) { return await apiClient.updateUser(id, { ...data, id }); }
   async deleteUser(id: string) { return (await apiClient.deleteUser(id)).success; }
   async deleteMultipleUsers(ids: string[]) { return (await apiClient.bulkDeleteUsers({ ids })).success; }
-  async deleteAllUsers() { return (await apiClient.deleteAllUsers()).success; }
+  // deleteAllUsers supprimé pour raisons de sécurité
   async getAllGestionnaires() { return await apiClient.getGestionnaires(); }
 
   async searchUsers(f: UserSearchFilters, o: UserServiceOptions = {}): Promise<User[]> {

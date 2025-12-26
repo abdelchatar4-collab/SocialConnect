@@ -19,6 +19,23 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
 
     const { id } = params;
 
+    // Multi-tenant isolation
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
+    // Verify the option belongs to the same service
+    const existingOption = await prisma.dropdownOption.findUnique({
+      where: { id },
+      select: { serviceId: true }
+    });
+
+    if (!existingOption) {
+      return NextResponse.json({ error: 'Partenaire non trouvé' }, { status: 404 });
+    }
+
+    if (existingOption.serviceId !== serviceId) {
+      return NextResponse.json({ error: 'Accès non autorisé à ce partenaire' }, { status: 403 });
+    }
+
     // Vérifier si le partenaire est utilisé par des utilisateurs
     const usersCount = await prisma.user.count({
       where: { partenaire: { contains: id } }

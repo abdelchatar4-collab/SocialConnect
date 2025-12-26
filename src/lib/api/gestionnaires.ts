@@ -35,15 +35,7 @@ export class GestionnaireOperations extends UserOperations {
         return Array.isArray(data) ? data : data.gestionnaires || [];
     }
 
-    async deleteAllUsers(): Promise<{ success: boolean; message: string }> {
-        if (this.isLocalStorageMode()) {
-            localStorage.setItem(API_CONFIG.STORAGE_KEY, JSON.stringify([]));
-            return { success: true, message: 'All users deleted' };
-        }
-        const resp = await this.fetchWithTimeout(`${this.baseURL}/api/users/delete-all`, { method: 'DELETE' });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        return { success: true, message: 'All users deleted' };
-    }
+    // deleteAllUsers a été supprimé pour des raisons de sécurité
 
     public clearCache(key?: string): void {
         if (key) localStorage.removeItem(key);

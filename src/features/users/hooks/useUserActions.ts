@@ -104,52 +104,11 @@ export const useUserActions = ({
         }
     }, [selectedUsers, isAdmin, users, setUsers, setSelectedUsers, onRefresh]);
 
-    /**
-     * Delete ALL users (dangerous operation)
-     */
-    const handleDeleteAll = useCallback(async () => {
-        const confirmation1 = prompt("Cette action est irréversible et supprimera TOUS les utilisateurs. Tapez 'SUPPRIMER TOUT' pour confirmer.");
-
-        if (confirmation1 !== 'SUPPRIMER TOUT') {
-            alert('Suppression annulée.');
-            return;
-        }
-
-        const confirmation2 = confirm("Êtes-vous ABSOLUMENT sûr ? Tous les utilisateurs seront définitivement supprimés.");
-
-        if (!confirmation2) {
-            alert('Suppression annulée.');
-            return;
-        }
-
-        try {
-            const response = await fetch('/api/users/delete-all', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Erreur lors de la suppression de tous les utilisateurs: ${response.status} ${response.statusText} - ${errorText}`);
-            }
-
-            setUsers([]);
-            setSelectedUsers([]);
-            alert('Tous les utilisateurs ont été supprimés.');
-            onRefresh();
-
-        } catch (error) {
-            console.error('Erreur lors de la suppression de tous les utilisateurs:', error);
-            alert(`Erreur: ${error instanceof Error ? error.message : String(error)}`);
-        }
-    }, [setUsers, setSelectedUsers, onRefresh]);
+    // handleDeleteAll a été supprimé pour des raisons de sécurité
+    // Utilisez handleBulkDelete pour supprimer plusieurs utilisateurs
 
     return {
         handleDelete,
         handleBulkDelete,
-        handleDeleteAll,
     };
 };

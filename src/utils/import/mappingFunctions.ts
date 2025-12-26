@@ -21,11 +21,11 @@ export function mapperAntenne(rawData: Record<string, any>): string {
     return antenneValue ? antenneValue.toString().trim() : 'Non spécifié';
 }
 
-export function mapperTrancheAge(rawData: Record<string, any>): string {
+export function mapperTrancheAge(rawData: Record<string, any>, customKey?: string): string {
     let age: number | null = null;
     const ageKeys = ['age', 'âge', 'Age'];
     const birthDateKeys = COMMON_FIELDS_MAP.dateNaissance;
-    const trancheAgeKeys = ['Tranche d\'âge', 'tranche age', 'tranche d age'];
+    const trancheAgeKeys = customKey ? [customKey] : ['Tranche d\'âge', 'tranche age', 'tranche d age'];
 
     const ageValue = findValue(rawData, ageKeys, null);
     if (ageValue !== null && ageValue !== '' && !isNaN(parseInt(String(ageValue)))) {
@@ -66,8 +66,8 @@ export function mapperTrancheAge(rawData: Record<string, any>): string {
     return "Non spécifié";
 }
 
-export function mapperGenre(rawData: Record<string, any>): string {
-    const possibleKeys = ['genre', 'sexe', 'gender', 'civilité', 'civilite', 'Genre'];
+export function mapperGenre(rawData: Record<string, any>, customKey?: string): string {
+    const possibleKeys = customKey ? [customKey] : ['genre', 'sexe', 'gender', 'civilité', 'civilite', 'Genre'];
     const maleValues = ['m', 'h', 'homme', 'male', 'masculin', 'mr', 'monsieur', '1(m)', '1'];
     const femaleValues = ['f', 'femme', 'female', 'féminin', 'mme', 'madame', 'mlle', 'mademoiselle', '2(f)', '2'];
     const otherValues = ['autre', 'other', 'non-binaire', 'nb', 'non précisé', 'non specifie'];

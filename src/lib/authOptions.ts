@@ -116,6 +116,11 @@ export const authOptions: NextAuthOptions = {
         console.log("🔄 Trigger Update détecté");
       }
 
+      // Preserve user ID from initial login
+      if (user) {
+        token.id = user.id;
+      }
+
       // 1. Récupérer l'émail (soit du user login, soit du token existant)
       const email = user?.email || token?.email;
 
@@ -128,6 +133,7 @@ export const authOptions: NextAuthOptions = {
 
         if (gestionnaire) {
           // Mise à jour du token avec les données DB fraîches
+          token.id = gestionnaire.id; // Override with DB ID if exists
           token.gestionnaire = gestionnaire;
           token.role = gestionnaire.role;
           token.email = gestionnaire.email; // S'assurer que l'email est persistant
@@ -140,21 +146,18 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // Cas spécifique développement (login bypass via Credentials)
-      // On écrase si c'est le tout premier login dev
-      if (process.env.NODE_ENV === 'development' && user && user.role === 'SUPER_ADMIN' && !token.gestionnaire) {
-        // Ce bloc ne sert que si le fetch DB ci-dessus a échoué (ex: user virtuel pas en base)
-        // Mais normalement on a des users en base même en dev maintenant.
-      }
-
       return token;
     },
     async session({ session, token }) {
-      if (token.gestionnaire && session.user) {
-        session.user.role = token.role as string
-        (session.user as any).serviceId = token.serviceId as string
-        session.user.gestionnaire = token.gestionnaire
-        console.log(`👤 Session créée pour: ${session.user.email} (${session.user.role} - Service: ${(session.user as any).serviceId})`)
+      if (session.user) {
+        session.user.id = (token.id as string) || (token.sub as string); // Ensure ID is passed
+        session.user.role = token.role as string;
+        (session.user as any).serviceId = token.serviceId as string;
+        (session.user as any).gestionnaire = token.gestionnaire; // Use type assertion if needed
+
+        if (token.gestionnaire) {
+          console.log(`👤 Session créée pour: ${session.user.email} (ID: ${session.user.id} - Role: ${session.user.role})`);
+        }
       }
       return session
     },

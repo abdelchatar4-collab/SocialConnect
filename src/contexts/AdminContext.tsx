@@ -17,7 +17,8 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const {
-    sName, setSName, lUrl, setLUrl, pCol, setPCol, hSub, setHSub, sLog, setSLog,
+    sName, setSName, lUrl, setLUrl, pCol, setPCol, hSub, setHSub, sLog, setSLog, absEmail, setAbsEmail,
+    spUrl, setSpUrl, spAdminUrl, setSpAdminUrl,
     rFld, setRFld, eBdy, setEBdy, cBdy, setCBdy, hThm, setHThm, mods, setMods,
     cols, setCols, secs, setSecs, years, setYears, loading, save,
     docRet, setDocRet, docAddr, setDocAddr, docCity, setDocCity, docPhone, setDocPhone, docFooter, setDocFooter,
@@ -25,11 +26,13 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   } = useAdminSettings(status);
 
   useEffect(() => {
-    setIsAdmin(status === "authenticated" && (session?.user as any)?.role === 'ADMIN');
+    const role = (session?.user as any)?.role;
+    setIsAdmin(status === "authenticated" && (role === 'ADMIN' || role === 'SUPER_ADMIN'));
   }, [session, status]);
 
   const toggleAdmin = () => {
-    if (status === "authenticated" && (session?.user as any)?.role === 'ADMIN') setIsAdmin(p => !p);
+    const role = (session?.user as any)?.role;
+    if (status === "authenticated" && (role === 'ADMIN' || role === 'SUPER_ADMIN')) setIsAdmin(p => !p);
     else setIsAdmin(false);
   };
 
@@ -38,7 +41,11 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
       isAdmin, toggleAdmin, selectedYear, setSelectedYear, availableYears: years, setAvailableYears: setYears,
       serviceName: sName, setServiceName: setSName, logoUrl: lUrl, setLogoUrl: setLUrl,
       primaryColor: pCol, setPrimaryColor: setPCol, headerSubtitle: hSub, setHeaderSubtitle: setHSub,
-      showCommunalLogo: sLog, setShowCommunalLogo: setSLog, requiredFields: rFld, setRequiredFields: setRFld,
+      showCommunalLogo: sLog, setShowCommunalLogo: setSLog,
+      absenceNotificationEmail: absEmail, setAbsenceNotificationEmail: setAbsEmail,
+      sharepointUrl: spUrl, setSharepointUrl: setSpUrl,
+      sharepointUrlAdmin: spAdminUrl, setSharepointUrlAdmin: setSpAdminUrl,
+      requiredFields: rFld, setRequiredFields: setRFld,
       enableBirthdays: eBdy, setEnableBirthdays: setEBdy, colleagueBirthdays: cBdy, setColleagueBirthdays: setCBdy,
       activeHolidayTheme: hThm, setActiveHolidayTheme: setHThm, enabledModules: mods, setEnabledModules: setMods,
       visibleColumns: cols, setVisibleColumns: setCols, visibleFormSections: secs, setVisibleFormSections: setSecs,

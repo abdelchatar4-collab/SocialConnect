@@ -11,10 +11,17 @@ export default defineConfig({
     projects: [
         {
             name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
+            use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3000' },
+        },
+        {
+            name: 'production',
+            use: {
+                ...devices['Desktop Chrome'],
+                baseURL: 'https://pasqweb.org',
+            },
         },
     ],
-    webServer: {
+    webServer: process.env.CI_TEST_PROD ? undefined : {
         command: 'npm run dev',
         url: 'http://localhost:3000',
         reuseExistingServer: true,

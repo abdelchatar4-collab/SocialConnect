@@ -17,8 +17,14 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Multi-tenant filtering by serviceId
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
     const partenaires = await prisma.dropdownOption.findMany({
-      where: { type: 'partenaire' },
+      where: {
+        type: 'partenaire',
+        serviceId: serviceId
+      },
       orderBy: { value: 'asc' }
     });
     return NextResponse.json(partenaires);
@@ -37,15 +43,19 @@ export async function POST(request: NextRequest) {
 
     const { value } = await request.json();
 
+    // Multi-tenant filtering by serviceId
+    const serviceId = (session.user as any)?.serviceId || 'default';
+
     if (!value || value.trim() === '') {
       return NextResponse.json({ error: 'Le nom du partenaire est requis' }, { status: 400 });
     }
 
-    // Vérifier si le partenaire existe déjà
+    // Vérifier si le partenaire existe déjà pour ce service
     const existing = await prisma.dropdownOption.findFirst({
       where: {
         type: 'partenaire',
-        value: value.trim()
+        value: value.trim(),
+        serviceId: serviceId
       }
     });
 
@@ -57,7 +67,8 @@ export async function POST(request: NextRequest) {
       data: {
         type: 'partenaire',
         value: value.trim(),
-        label: value.trim()
+        label: value.trim(),
+        service: { connect: { id: serviceId } }
       }
     });
 

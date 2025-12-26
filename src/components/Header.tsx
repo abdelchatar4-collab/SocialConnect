@@ -19,7 +19,7 @@ import { BirthdayBanner } from "@/components/BirthdayBanner";
 import { UserMenu } from "@/components/UserMenu";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
+import { InformationCircleIcon, CloudIcon, CalendarDaysIcon } from "@heroicons/react/24/outline";
 import AboutModal from "@/components/AboutModal";
 import ServiceSwitcher from "@/components/layout/ServiceSwitcher";
 import { ClockIcon } from "@heroicons/react/24/outline";
@@ -35,7 +35,7 @@ interface SessionUserWithRole {
 
 export default function Header() {
   const { data: session, status } = useSession();
-  const { isAdmin, toggleAdmin, serviceName, logoUrl, headerSubtitle, showCommunalLogo, primaryColor } = useAdmin();
+  const { isAdmin, toggleAdmin, serviceName, logoUrl, headerSubtitle, showCommunalLogo, primaryColor, sharepointUrl, sharepointUrlAdmin } = useAdmin();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [cfUserEmail, setCfUserEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -221,6 +221,39 @@ export default function Header() {
 
           {/* RIGHT: User Menu */}
           <div className="flex items-center gap-2">
+
+            {/* SharePoint Shortcut */}
+            {(() => {
+              const isOwner = session?.user?.email && ['abdelchatar4@gmail.com', 'achatar@anderlecht.brussels'].includes(session.user.email);
+              const targetUrl = isOwner && sharepointUrlAdmin ? sharepointUrlAdmin : sharepointUrl;
+
+              if (targetUrl) {
+                return (
+                  <a
+                    href={targetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 text-slate-400 hover:text-blue-500 transition-colors rounded-full hover:bg-slate-100 flex items-center mr-2"
+                    title={isOwner && sharepointUrlAdmin ? "SharePoint (Admin)" : "SharePoint (Équipe)"}
+                  >
+                    <CloudIcon className="w-5 h-5" />
+                  </a>
+                );
+              }
+              return null;
+            })()}
+
+            {/* Mes Absences Button */}
+            {status === "authenticated" && (
+              <Link
+                href="/conges"
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 shadow-sm transition-all duration-200 mr-2"
+                title="Mes Absences"
+              >
+                <CalendarDaysIcon className="w-5 h-5" />
+                <span className="hidden sm:inline">Absences</span>
+              </Link>
+            )}
 
             <button
               onClick={() => setIsAboutOpen(true)}
