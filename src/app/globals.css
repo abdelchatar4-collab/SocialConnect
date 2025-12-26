@@ -9,6 +9,10 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 @tailwind components;
 @tailwind utilities;
 
+/* Jspreadsheet CSS for Excel Editor */
+@import 'jspreadsheet-ce/dist/jspreadsheet.css';
+@import 'jsuites/dist/jsuites.css';
+
 /* Importation de la police Inter depuis Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 

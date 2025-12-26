@@ -18,6 +18,7 @@ import AiProviderSelector from './ai/AiProviderSelector';
 import AiConnectionStatus from './ai/AiConnectionStatus';
 import AiEnabledToggle from './ai/AiEnabledToggle';
 import AiGroqSettings from './ai/AiGroqSettings';
+import AiGeminiSettings from './ai/AiGeminiSettings';
 import AiOllamaSettings from './ai/AiOllamaSettings';
 import AiAdvancedAnalysisSettings from './ai/AiAdvancedAnalysisSettings';
 import AiFooterActions from './ai/AiFooterActions';
@@ -87,7 +88,21 @@ export default function AiSettings() {
                 <AiGroqSettings
                     groqApiKey={settings.groqApiKey}
                     groqModel={settings.groqModel}
+                    groqEnabled={settings.groqEnabled}
                     useKeyPool={settings.useKeyPool}
+                    onChange={handleChange}
+                    onTest={testConnection}
+                />
+            )}
+
+            {settings.provider === 'gemini' && (
+                <AiGeminiSettings
+                    geminiApiKey={settings.geminiApiKey || ''}
+                    geminiModel={settings.geminiModel || 'gemini-1.5-flash'}
+                    geminiEnabled={settings.geminiEnabled}
+                    isTesting={isTestingConnection}
+                    connectionStatus={connectionStatus}
+                    availableModels={availableModels}
                     onChange={handleChange}
                     onTest={testConnection}
                 />
@@ -97,6 +112,7 @@ export default function AiSettings() {
                 <AiOllamaSettings
                     endpoint={settings.endpoint}
                     model={settings.model}
+                    ollamaEnabled={settings.ollamaEnabled}
                     availableModels={availableModels}
                     onChange={handleChange}
                 />

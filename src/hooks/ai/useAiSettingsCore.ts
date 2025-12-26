@@ -6,6 +6,7 @@ SocialConnect - useAiSettings Hook
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { AiSettingsData, AiProvider, AI_SETTINGS_KEY, DEFAULT_SETTINGS } from './aiSettingsConstants';
+import { aiClient } from '@/lib/ai-client';
 
 /*
 // DANGEROUS IN MULTI-TENANT: Cannot easily get serviceId here
@@ -43,12 +44,18 @@ export function useAiSettings() {
                         groqApiKey: db.aiGroqApiKey || local.groqApiKey || DEFAULT_SETTINGS.groqApiKey,
                         groqModel: db.aiGroqModel || local.groqModel || DEFAULT_SETTINGS.groqModel,
                         useKeyPool: db.aiUseKeyPool ?? local.useKeyPool ?? DEFAULT_SETTINGS.useKeyPool,
+                        geminiApiKey: db.aiGeminiApiKey || local.geminiApiKey || DEFAULT_SETTINGS.geminiApiKey,
+                        geminiModel: db.aiGeminiModel || local.geminiModel || DEFAULT_SETTINGS.geminiModel,
+                        ollamaEnabled: db.aiOllamaEnabled ?? local.ollamaEnabled ?? DEFAULT_SETTINGS.ollamaEnabled,
+                        groqEnabled: db.aiGroqEnabled ?? local.groqEnabled ?? DEFAULT_SETTINGS.groqEnabled,
+                        geminiEnabled: db.aiGeminiEnabled ?? local.geminiEnabled ?? DEFAULT_SETTINGS.geminiEnabled,
                         customAnalysisPrompt: db.aiCustomAnalysisPrompt || local.customAnalysisPrompt || DEFAULT_SETTINGS.customAnalysisPrompt,
                         analysisTemperature: db.aiAnalysisTemperature ?? local.analysisTemperature ?? DEFAULT_SETTINGS.analysisTemperature,
                     };
                     setSettings(updated); localStorage.setItem(scopedKey, JSON.stringify(updated));
-                } else if (local.provider) setSettings({ ...DEFAULT_SETTINGS, ...local });
-            } catch (e) { if (local.provider) setSettings({ ...DEFAULT_SETTINGS, ...local }); }
+                    aiClient.refreshSettings(); // Sync global singleton
+                } else if (local.provider) { setSettings({ ...DEFAULT_SETTINGS, ...local }); aiClient.refreshSettings(); }
+            } catch (e) { if (local.provider) { setSettings({ ...DEFAULT_SETTINGS, ...local }); aiClient.refreshSettings(); } }
             setLoaded(true);
         };
         if (session) load();
@@ -58,7 +65,7 @@ export function useAiSettings() {
         const updated = { ...settings, ...newS }; setSettings(updated);
         const serviceId = (session?.user as any)?.serviceId || 'default';
         const scopedKey = `${AI_SETTINGS_KEY}-${serviceId}`;
-        try { localStorage.setItem(scopedKey, JSON.stringify(updated)); } catch (e) { }
+        try { localStorage.setItem(scopedKey, JSON.stringify(updated)); aiClient.refreshSettings(); } catch (e) { }
         try {
             await fetch('/api/settings', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },
@@ -67,6 +74,8 @@ export function useAiSettings() {
                     aiModel: updated.model, aiTemperature: updated.temperature, aiGroqApiKey: updated.groqApiKey,
                     aiGroqModel: updated.groqModel, aiUseKeyPool: updated.useKeyPool, aiEnableAnalysis: updated.enableAnalysis,
                     aiAnalysisTemperature: updated.analysisTemperature, aiCustomAnalysisPrompt: updated.customAnalysisPrompt,
+                    aiGeminiApiKey: updated.geminiApiKey, aiGeminiModel: updated.geminiModel,
+                    aiOllamaEnabled: updated.ollamaEnabled, aiGroqEnabled: updated.groqEnabled, aiGeminiEnabled: updated.geminiEnabled,
                 })
             });
         } catch (e) { }

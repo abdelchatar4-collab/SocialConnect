@@ -89,7 +89,7 @@ export async function PUT(request: NextRequest) {
             requiredFields, enableBirthdays, colleagueBirthdays, activeHolidayTheme, availableYears,
             // AI Settings
             aiEnabled, aiProvider, aiEndpoint, aiModel, aiTemperature,
-            aiGroqApiKey, aiGroqModel, aiUseKeyPool, aiEnableAnalysis, aiAnalysisTemperature, aiCustomAnalysisPrompt,
+            aiGroqApiKey, aiGroqModel, aiGroqEnabled, aiGeminiApiKey, aiGeminiModel, aiGeminiEnabled, aiOllamaEnabled, aiUseKeyPool, aiEnableAnalysis, aiAnalysisTemperature, aiCustomAnalysisPrompt,
             // Feature Toggles (Modules)
             enabledModules,
             // Column Visibility Settings
@@ -133,13 +133,18 @@ export async function PUT(request: NextRequest) {
                     aiTemperature: aiTemperature ?? 0.7,
                     aiGroqApiKey: aiGroqApiKey || null,
                     aiGroqModel: aiGroqModel || "llama-3.1-8b-instant",
+                    aiGroqEnabled: aiGroqEnabled ?? true,
+                    aiGeminiApiKey: aiGeminiApiKey || null,
+                    aiGeminiModel: aiGeminiModel || "gemini-3-flash-preview",
+                    aiGeminiEnabled: aiGeminiEnabled ?? true,
+                    aiOllamaEnabled: aiOllamaEnabled ?? true,
                     aiUseKeyPool: aiUseKeyPool ?? false,
                     aiEnableAnalysis: aiEnableAnalysis ?? true,
                     aiAnalysisTemperature: aiAnalysisTemperature ?? 0,
                     aiCustomAnalysisPrompt: aiCustomAnalysisPrompt || null,
                     visibleColumns: visibleColumns || null,
                     visibleFormSections: visibleFormSections || null
-                }
+                } as any
             });
         } else {
             console.log('[API PUT /api/settings] Updating existing settings ID:', settings.id);
@@ -167,6 +172,11 @@ export async function PUT(request: NextRequest) {
                         ...(aiTemperature !== undefined && { aiTemperature }),
                         ...(aiGroqApiKey !== undefined && { aiGroqApiKey }),
                         ...(aiGroqModel !== undefined && { aiGroqModel }),
+                        ...(aiGroqEnabled !== undefined && { aiGroqEnabled }),
+                        ...(aiGeminiApiKey !== undefined && { aiGeminiApiKey }),
+                        ...(aiGeminiModel !== undefined && { aiGeminiModel }),
+                        ...(aiGeminiEnabled !== undefined && { aiGeminiEnabled }),
+                        ...(aiOllamaEnabled !== undefined && { aiOllamaEnabled }),
                         ...(aiUseKeyPool !== undefined && { aiUseKeyPool }),
                         ...(aiEnableAnalysis !== undefined && { aiEnableAnalysis }),
                         ...(aiAnalysisTemperature !== undefined && { aiAnalysisTemperature }),

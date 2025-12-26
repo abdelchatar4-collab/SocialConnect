@@ -42,7 +42,7 @@ const AiConnectionStatus: React.FC<AiConnectionStatusProps> = ({
                             connectionStatus === 'error' ? 'text-red-800' :
                                 'text-gray-600'
                             }`}>
-                            {connectionStatus === 'connected' ? `Connecté à ${provider === 'groq' ? 'Groq' : 'Ollama'}` :
+                            {connectionStatus === 'connected' ? `Connecté à ${provider === 'groq' ? 'Groq' : provider === 'gemini' ? 'Gemini' : 'Ollama'}` :
                                 connectionStatus === 'error' ? 'Connexion impossible' :
                                     'Statut inconnu'}
                         </span>

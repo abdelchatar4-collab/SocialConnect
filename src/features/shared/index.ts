@@ -35,7 +35,7 @@ export { default as ExportButton } from './components/ExportButton';
 // export { default as SettingsButton } from './components/SettingsButton';
 
 // Other shared components
-export { default as DocumentPreview } from './components/DocumentPreview';
+export { DocumentPreview } from './components/DocumentPreview';
 
 // Hooks
 export * from './hooks/useLocalStorage';

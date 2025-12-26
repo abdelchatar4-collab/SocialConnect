@@ -11,6 +11,7 @@ import {
 } from './ai/ai-types';
 import { completeWithOllama } from './ai/ollama-client';
 import { completeWithGroq } from './ai/groq-client';
+import { completeWithGemini } from './ai/gemini-completion-client';
 
 export type { AiResponse, CompletionOptions, AiProvider, AiSettings };
 export { OLLAMA_DEFAULT_ENDPOINT, DEFAULT_MODEL, DEFAULT_TEMPERATURE, GROQ_MODELS, DEFAULT_GROQ_MODEL } from './ai/ai-types';
@@ -19,7 +20,9 @@ function getStoredSettings(): AiSettings {
     const defaults: AiSettings = {
         provider: 'ollama', endpoint: OLLAMA_DEFAULT_ENDPOINT, model: DEFAULT_MODEL,
         temperature: DEFAULT_TEMPERATURE, enabled: true, groqApiKey: '',
-        groqModel: DEFAULT_GROQ_MODEL, useKeyPool: false, enableAnalysis: true
+        groqModel: DEFAULT_GROQ_MODEL, useKeyPool: false, enableAnalysis: true,
+        geminiApiKey: '', geminiModel: '',
+        ollamaEnabled: true, groqEnabled: true, geminiEnabled: true
     };
     if (typeof window === 'undefined') return defaults;
     try {
@@ -57,24 +60,37 @@ export class LocalAiClient {
 
     async checkAvailability(): Promise<boolean> {
         this.updateSettingsProps();
-        if (!this.settings.enabled) return false;
-        if (this.settings.provider === 'groq') return !!this.settings.groqApiKey && this.settings.groqApiKey.length > 10;
+        if (this.settings.provider === 'groq') return !!this.settings.groqApiKey && this.settings.groqApiKey.length > 5;
+        if (this.settings.provider === 'gemini') return !!this.settings.geminiApiKey && this.settings.geminiApiKey.length > 5;
+
         try {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);
             const endpoint = this.shouldUseProxy() ? '/api/ai/ollama' : `${this.settings.endpoint}/api/tags`;
             const resp = await fetch(endpoint, { method: 'GET', signal: controller.signal });
-            clearTimeout(timeoutId); return resp.ok;
-        } catch { return false; }
+            clearTimeout(timeoutId);
+            return resp.ok;
+        } catch {
+            return false;
+        }
     }
 
     async complete(prompt: string, systemPrompt?: string, options?: CompletionOptions): Promise<AiResponse> {
         this.updateSettingsProps();
         if (!this.settings.enabled) return { content: '', error: 'AI disabled' };
+
+        // Check individual provider toggle
+        const provider = this.settings.provider;
+        if (provider === 'ollama' && this.settings.ollamaEnabled === false) return { content: '', error: 'Ollama est désactivé' };
+        if (provider === 'groq' && this.settings.groqEnabled === false) return { content: '', error: 'Groq est désactivé' };
+        if (provider === 'gemini' && this.settings.geminiEnabled === false) return { content: '', error: 'Gemini est désactivé' };
+
         this.abortController = new AbortController();
         const res = this.settings.provider === 'groq'
             ? await completeWithGroq(this.settings, prompt, systemPrompt, options, this.abortController)
-            : await completeWithOllama(this.settings, prompt, systemPrompt, options, this.abortController, this.shouldUseProxy());
+            : this.settings.provider === 'gemini'
+                ? await completeWithGemini(this.settings, prompt, systemPrompt, options, this.abortController)
+                : await completeWithOllama(this.settings, prompt, systemPrompt, options, this.abortController, this.shouldUseProxy());
         this.abortController = null;
         return res;
     }

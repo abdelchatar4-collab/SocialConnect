@@ -3,7 +3,7 @@ Copyright (C) 2025 ABDEL KADER CHATAR
 */
 
 import React from 'react';
-import { ServerIcon, CloudIcon } from '@heroicons/react/24/outline';
+import { ServerIcon, CloudIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { AiProvider } from '@/hooks/useAiSettings';
 
 interface AiProviderSelectorProps {
@@ -15,7 +15,7 @@ const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({ provider, onCha
     return (
         <div className="bg-white p-4 rounded-lg border border-gray-200">
             <h4 className="font-medium text-gray-900 mb-3">Fournisseur IA</h4>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
                 {/* Ollama Option */}
                 <button
                     onClick={() => onChange('ollama')}
@@ -25,8 +25,8 @@ const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({ provider, onCha
                         }`}
                 >
                     <ServerIcon className={`w-8 h-8 mx-auto mb-2 ${provider === 'ollama' ? 'text-purple-600' : 'text-gray-400'}`} />
-                    <p className={`font-medium ${provider === 'ollama' ? 'text-purple-900' : 'text-gray-700'}`}>Ollama (Local)</p>
-                    <p className="text-xs text-gray-500 mt-1">Serveur local, gratuit, privé</p>
+                    <p className={`font-medium ${provider === 'ollama' ? 'text-purple-900' : 'text-gray-700'}`}>Ollama</p>
+                    <p className="text-xs text-gray-500 mt-1">Local, gratuit</p>
                 </button>
 
                 {/* Groq Option */}
@@ -38,8 +38,21 @@ const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({ provider, onCha
                         }`}
                 >
                     <CloudIcon className={`w-8 h-8 mx-auto mb-2 ${provider === 'groq' ? 'text-green-600' : 'text-gray-400'}`} />
-                    <p className={`font-medium ${provider === 'groq' ? 'text-green-900' : 'text-gray-700'}`}>Groq (Cloud)</p>
-                    <p className="text-xs text-gray-500 mt-1">Ultra-rapide ⚡, gratuit (1000/jour)</p>
+                    <p className={`font-medium ${provider === 'groq' ? 'text-green-900' : 'text-gray-700'}`}>Groq</p>
+                    <p className="text-xs text-gray-500 mt-1">Ultra-rapide ⚡</p>
+                </button>
+
+                {/* Gemini Option */}
+                <button
+                    onClick={() => onChange('gemini')}
+                    className={`p-4 rounded-lg border-2 transition-all ${provider === 'gemini'
+                        ? 'border-violet-500 bg-violet-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                >
+                    <SparklesIcon className={`w-8 h-8 mx-auto mb-2 ${provider === 'gemini' ? 'text-violet-600' : 'text-gray-400'}`} />
+                    <p className={`font-medium ${provider === 'gemini' ? 'text-violet-900' : 'text-gray-700'}`}>Gemini</p>
+                    <p className="text-xs text-gray-500 mt-1">Web search 🔍</p>
                 </button>
             </div>
         </div>
@@ -47,3 +60,4 @@ const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({ provider, onCha
 };
 
 export default AiProviderSelector;
+

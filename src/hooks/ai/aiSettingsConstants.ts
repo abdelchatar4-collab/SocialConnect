@@ -3,10 +3,10 @@ Copyright (C) 2025 ABDEL KADER CHATAR
 SocialConnect - AI Settings Constants and Types
 */
 
-import { DEFAULT_GROQ_MODEL } from '@/lib/ai-client';
+import { DEFAULT_GROQ_MODEL, DEFAULT_GEMINI_MODEL } from '@/lib/ai/ai-types';
 
 export const AI_SETTINGS_KEY = 'ai_settings';
-export type AiProvider = 'ollama' | 'groq';
+export type AiProvider = 'ollama' | 'groq' | 'gemini';
 
 export interface AiSettingsData {
     provider: AiProvider;
@@ -15,9 +15,14 @@ export interface AiSettingsData {
     temperature: number;
     enabled: boolean;
     enableAnalysis: boolean;
+    ollamaEnabled: boolean;
+    groqEnabled: boolean;
+    geminiEnabled: boolean;
     groqApiKey: string;
     groqModel: string;
     useKeyPool: boolean;
+    geminiApiKey: string;
+    geminiModel: string;
     customAnalysisPrompt?: string;
     analysisTemperature?: number;
 }
@@ -28,12 +33,17 @@ export const DEFAULT_SETTINGS: AiSettingsData = {
     model: 'ministral-3:3b',
     temperature: 0.7,
     enabled: true,
+    enableAnalysis: true,
+    ollamaEnabled: true,
+    groqEnabled: true,
+    geminiEnabled: true,
     groqApiKey: '',
     groqModel: DEFAULT_GROQ_MODEL,
     useKeyPool: false,
+    geminiApiKey: '',
+    geminiModel: DEFAULT_GEMINI_MODEL,
     customAnalysisPrompt: '',
     analysisTemperature: 0,
-    enableAnalysis: true,
 };
 
 export const AVAILABLE_MODELS = [

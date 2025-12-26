@@ -30,6 +30,27 @@ export function useAiSettingsFull() {
                 if (settings.provider === 'groq') {
                     const r = await fetch('https://api.groq.com/openai/v1/models', { headers: { 'Authorization': `Bearer ${settings.groqApiKey}` } });
                     if (r.ok) setModels((await r.json()).data?.map((m: any) => m.id) || []);
+                } else if (settings.provider === 'gemini') {
+                    const r = await fetch('/api/ai/gemini', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'models',
+                            apiKey: settings.geminiApiKey
+                        })
+                    });
+                    if (r.ok) {
+                        const data = await r.json();
+                        if (data.status === 'success') {
+                            setStatus('connected');
+                            setModels(data.models?.map((m: any) => m.name) || []);
+                        } else {
+                            throw new Error(data.error || 'Erreur inconnue Gemini');
+                        }
+                    } else {
+                        const d = await r.json().catch(() => ({}));
+                        throw new Error(d.error || 'Clé API Gemini invalide ou quota dépassé');
+                    }
                 } else {
                     const fetchTags = async () => {
                         try { const res = await fetch(`${ep}/api/tags`); if (res.ok) return res.json(); } catch (e) { }
@@ -54,6 +75,7 @@ export function useAiSettingsFull() {
                     aiModel: settings.model, aiTemperature: settings.temperature, aiGroqApiKey: settings.groqApiKey,
                     aiGroqModel: settings.groqModel, aiUseKeyPool: settings.useKeyPool, aiEnableAnalysis: settings.enableAnalysis,
                     aiAnalysisTemperature: settings.analysisTemperature, aiCustomAnalysisPrompt: settings.customAnalysisPrompt,
+                    aiGeminiApiKey: settings.geminiApiKey, aiGeminiModel: settings.geminiModel,
                 })
             });
             const d = await res.json(); setSyncMsg(res.ok ? `✅ ${d.message}` : `❌ ${d.error}`);
@@ -62,7 +84,7 @@ export function useAiSettingsFull() {
 
     const handleSave = async () => { setIsSaving(true); await saveSettings(settings); setTimeout(() => setIsSaving(false), 500); };
 
-    useEffect(() => { if (loaded) testConnection(); }, [loaded, settings.provider, settings.endpoint, settings.groqApiKey]);
+    useEffect(() => { if (loaded) testConnection(); }, [loaded, settings.provider, settings.endpoint, settings.groqApiKey, settings.geminiApiKey]);
 
     return {
         settings, saveSettings, loaded, isTestingConnection: isTesting, connectionStatus: status,
