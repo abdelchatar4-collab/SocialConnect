@@ -101,11 +101,38 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: prompt }] }],
                     generationConfig: {
-                        temperature: 0.1, // Lower temperature for more consistent JSON
+                        temperature: 0.1,
                         maxOutputTokens: 2048,
-                        response_mime_type: "application/json", // Force JSON mode
+                        response_mime_type: "application/json",
+                        // Force strict schema for Gemini 3.0
+                        response_schema: {
+                            type: "object",
+                            properties: {
+                                nom: { type: "string" },
+                                adresse: { type: "string", nullable: true },
+                                email: { type: "string", nullable: true },
+                                telephone: { type: "string", nullable: true },
+                                thematique: { type: "string", nullable: true },
+                                confidence: { type: "string", enum: ["high", "medium", "low"] },
+                                sources: { type: "array", items: { type: "string" } },
+                                changes: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            field: { type: "string" },
+                                            oldValue: { type: "string" },
+                                            newValue: { type: "string" },
+                                            reason: { type: "string" }
+                                        },
+                                        required: ["field", "oldValue", "newValue", "reason"]
+                                    }
+                                }
+                            },
+                            required: ["nom", "confidence", "sources", "changes"]
+                        }
                     },
-                    // Enable Google Search grounding (Gemini 3.0 uses google_search)
+                    // Enable Google Search grounding
                     tools: [{ googleSearch: {} }]
                 }),
             }
@@ -115,7 +142,6 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
             const errorData = await response.json().catch(() => ({}));
             console.error('[Gemini] API Error:', errorData);
 
-            // Handle Quota Exceeded specifically
             if (response.status === 429) {
                 return {
                     result: null,
@@ -130,13 +156,17 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
         }
 
         const data = await response.json();
-        const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        let textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
         if (!textContent) {
             return { result: null, error: 'Réponse vide de Gemini' };
         }
 
-        // Extremely robust JSON extraction
+        // Clean grounding noise (citations like [1], [2] inside text)
+        // Gemini grounding often adds these even in JSON mode if not careful
+        textContent = textContent.replace(/\[\d+\]/g, '');
+
+        // Robust JSON extraction
         let jsonStr = textContent.trim();
 
         // Remove markdown block if present
@@ -145,7 +175,7 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
             if (match) jsonStr = match[1].trim();
         }
 
-        // Double check: find first '{' and last '}' to strip any stray characters
+        // Final safety: find first '{' and last '}'
         const start = jsonStr.indexOf('{');
         const end = jsonStr.lastIndexOf('}');
         if (start !== -1 && end !== -1 && end > start) {
@@ -155,6 +185,10 @@ Réponds UNIQUEMENT avec le JSON, sans texte autour.`;
         try {
             const parsed = JSON.parse(jsonStr) as PartnerVerification;
             parsed.modelUsed = 'Gemini 3.0 Flash';
+            // Validate minimal structure even after parse
+            if (!parsed.nom || !parsed.confidence) {
+                throw new Error('Champs obligatoires manquants après parsing');
+            }
             return { result: parsed };
         } catch (parseError) {
             console.error('[Gemini] JSON Parse Error:', parseError);
