@@ -28,14 +28,25 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 });
         }
 
-        // Find the Excel file
-        const filePath = path.join(process.cwd(), 'uploads', 'rapports', serviceId, 'LISTING-PARTENAIRES-PASQ.xlsx');
-        const defaultPath = path.join(process.cwd(), 'uploads', 'rapports', 'default', 'LISTING-PARTENAIRES-PASQ.xlsx');
-        const actualPath = fs.existsSync(filePath) ? filePath : defaultPath;
+        // Find the Excel file (Identical logic to GET route for consistency)
+        const reportsDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
 
-        if (!fs.existsSync(actualPath)) {
-            return NextResponse.json({ error: 'Fichier non trouvé' }, { status: 404 });
+        if (!fs.existsSync(reportsDir)) {
+            return NextResponse.json({ error: 'Répertoire du service non trouvé' }, { status: 404 });
         }
+
+        // Find match
+        const files = fs.readdirSync(reportsDir);
+        const partnerFiles = files.filter(f => f.toUpperCase().startsWith('LISTING-PARTENAIRES') && f.toUpperCase().endsWith('.XLSX'));
+        partnerFiles.sort((a, b) => b.localeCompare(a)); // Z-A
+
+        const partnerFile = partnerFiles[0];
+
+        if (!partnerFile) {
+            return NextResponse.json({ error: 'Fichier partenaires introuvable' }, { status: 404 });
+        }
+
+        const actualPath = path.join(reportsDir, partnerFile);
 
         // Read the Excel file
         const fileBuffer = fs.readFileSync(actualPath);
