@@ -3,12 +3,13 @@ Copyright (C) 2025 ABDEL KADER CHATAR
 SocialConnect - Core Import Logic
 */
 
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
 import { determineSecteur } from '@/utils/secteurUtils';
 import { sanitizeStringField, findGestionnaireId } from './importUtils';
 import { parseDateString } from '@/lib/api/userApiUtils';
 
 export async function importSingleUser(userData: any, targetYear: number, allGest: any[], serviceId: string = 'default') {
+    const prisma = getServiceClient(serviceId);
     const email = sanitizeStringField(userData.email);
     if (email) {
         const existing = await prisma.user.findFirst({

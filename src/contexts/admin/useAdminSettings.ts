@@ -6,7 +6,7 @@ SocialConnect - Internal Admin Settings Hook
 import { useState, useEffect, useCallback } from 'react';
 import { INITIAL_SETTINGS, DEFAULT_VISIBLE_COLUMNS, DEFAULT_VISIBLE_FORM_SECTIONS, DEFAULT_DOC_SETTINGS } from './adminConstants';
 
-export function useAdminSettings(status: string) {
+export function useAdminSettings(status: string, serviceId?: string) {
     const [sName, setSName] = useState(INITIAL_SETTINGS.serviceName);
     const [lUrl, setLUrl] = useState(INITIAL_SETTINGS.logoUrl);
     const [pCol, setPCol] = useState(INITIAL_SETTINGS.primaryColor);
@@ -80,7 +80,7 @@ export function useAdminSettings(status: string) {
         } catch { } finally { setLoading(false); }
     }, []);
 
-    useEffect(() => { if (status === 'authenticated') fetchS(); }, [status, fetchS]);
+    useEffect(() => { if (status === 'authenticated') fetchS(); }, [status, fetchS, serviceId]);
 
     const save = async (overrides?: any) => {
         const body = {

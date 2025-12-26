@@ -3,7 +3,8 @@ Copyright (C) 2025 ABDEL KADER CHATAR
 SocialConnect - API Import Utilities
 */
 
-import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
+import { getServiceClient } from '@/lib/prisma-clients';
 
 export const sanitizeStringField = (value: unknown): string | null => {
     if (typeof value === 'string') {
@@ -14,8 +15,11 @@ export const sanitizeStringField = (value: unknown): string | null => {
     return null;
 };
 
-export async function getAllGestionnaires() {
-    return prisma.gestionnaire.findMany({ select: { id: true, nom: true, prenom: true } });
+export async function getAllGestionnaires(serviceId: string) {
+    const prisma = getServiceClient(serviceId);
+    return prisma.gestionnaire.findMany({
+        select: { id: true, nom: true, prenom: true }
+    });
 }
 
 export function findGestionnaireId(nameOrId: unknown, allGest: any[]): string | null {

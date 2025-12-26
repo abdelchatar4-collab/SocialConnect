@@ -4,11 +4,12 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 */
 
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { getServiceClient } from '@/lib/prisma-clients';
 import * as XLSX from 'xlsx';
 import { determineSecteur } from '@/utils/secteurUtils';
 import { generateUserIdByAntenne } from '@/lib/idGenerator';
 import { getServerSession } from 'next-auth/next';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { authOptions } from '@/lib/authOptions';
 import { parseExcelDate, parseGenre, safeStr, safeStrDef } from './importHelper';
 
@@ -19,8 +20,8 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Multi-tenant isolation
-    const serviceId = (session.user as any)?.serviceId || 'default';
+    const serviceId = await getDynamicServiceId(session);
+    const prisma = getServiceClient(serviceId);
 
     const fd = await req.formData();
     const f = fd.get('file');
@@ -31,6 +32,8 @@ export async function POST(req: Request) {
 
     const results = { imported: 0, failed: 0, errors: [] as string[] };
 
+    // Note: getServiceClient extension provides an isolated prisma instance.
+    // We use it directly. Transaction is managed by the isolated client.
     await prisma.$transaction(async (tx) => {
       for (const [i, row] of data.entries()) {
         try {
@@ -48,6 +51,7 @@ export async function POST(req: Request) {
           let gestId: string | undefined;
           const pg = safeStr(row["Gestionnaire du dossier"]);
           if (pg && pg.toLowerCase() !== "non assigné") {
+            // tx is also isolated by getServiceClient because it inherits the extension
             const g = await tx.gestionnaire.findFirst({ where: { prenom: { equals: pg } } });
             if (g) gestId = g.id;
           }
@@ -64,7 +68,6 @@ export async function POST(req: Request) {
               remarques: safeStr(row["Bilan Social"]) || safeStr(row.Remarques), secteur: sec || safeStr(row.Secteur) || "Non spécifié", langue: safeStr(row["Langue de l'entretien"]),
               premierContact: safeStrDef(row["Premier contact"], "Import"), notesGenerales: safeStr(row["Notes Générales"]), donneesConfidentielles: safeStr(row["Données Confidentielles"]),
               informationImportante: safeStr(row["Information Importante"]) || safeStr(row["Notes Importantes"]),
-              serviceId: serviceId, // Multi-tenant association
               ...(adrId && { adresse: { connect: { id: adrId } } }), ...(gestId && { gestionnaire: { connect: { id: gestId } } }),
             }
           });

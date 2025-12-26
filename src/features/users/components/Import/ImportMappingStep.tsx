@@ -8,6 +8,7 @@ Permet l'utilisateur de lier les colonnes Excel aux champs du système.
 import React, { useState, useEffect } from 'react';
 import { IMPORT_CATEGORIES } from './MappingConfig';
 import { COMMON_FIELDS_MAP } from '@/utils/import/importConstants';
+import { useSession } from 'next-auth/react';
 import { AlertCircle, ArrowRight, Check } from 'lucide-react';
 
 interface ImportMappingStepProps {
@@ -18,6 +19,7 @@ interface ImportMappingStepProps {
 }
 
 export const ImportMappingStep: React.FC<ImportMappingStepProps> = ({ headers, sampleData, onConfirm, onCancel }) => {
+    const { data: session } = useSession();
     const [mapping, setMapping] = useState<Record<string, string>>({});
     const [searchTerm, setSearchTerm] = useState('');
     const [showAllCategories, setShowAllCategories] = useState(false);
@@ -27,7 +29,8 @@ export const ImportMappingStep: React.FC<ImportMappingStepProps> = ({ headers, s
 
     // Initialisation intelligente
     useEffect(() => {
-        const savedMapping = localStorage.getItem('last_import_mapping');
+        const serviceId = (session?.user as any)?.serviceId || 'default';
+        const savedMapping = localStorage.getItem(`last_import_mapping-${serviceId}`);
         const initialMapping: Record<string, string> = savedMapping ? JSON.parse(savedMapping) : {};
 
         allFields.forEach(field => {
@@ -59,7 +62,8 @@ export const ImportMappingStep: React.FC<ImportMappingStepProps> = ({ headers, s
     const handleSelectChange = (fieldKey: string, header: string) => {
         const newMapping = { ...mapping, [fieldKey]: header };
         setMapping(newMapping);
-        localStorage.setItem('last_import_mapping', JSON.stringify(newMapping));
+        const serviceId = (session?.user as any)?.serviceId || 'default';
+        localStorage.setItem(`last_import_mapping-${serviceId}`, JSON.stringify(newMapping));
     };
 
     const isReady = allFields.filter(f => f.required).every(f => mapping[f.key]);

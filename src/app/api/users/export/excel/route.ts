@@ -7,6 +7,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as fs from 'fs/promises';
@@ -24,7 +25,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const serviceId = (session.user as any).serviceId || 'default';
+    const serviceId = await getDynamicServiceId(session);
     const prisma = getServiceClient(serviceId);
 
     // Get year filter from query parameters

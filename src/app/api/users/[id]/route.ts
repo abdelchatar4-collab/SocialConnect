@@ -7,8 +7,8 @@ export const dynamic = 'force-dynamic';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { detectProblematiquesFromNotes, handleApiError } from './user-api.helpers';
 import { handleProblematiques, handleActions } from './userUpdateStorage';
 import { buildUserUpdateData } from './userUpdateMapper';
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   // Multi-tenant isolation
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const servicePrisma = getServiceClient(serviceId);
 
   try {
@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
 
   // Multi-tenant isolation
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const servicePrisma = getServiceClient(serviceId);
 
   try { return NextResponse.json(await servicePrisma.user.update({ where: { id: params.id }, data: { rgpdAttestationGeneratedAt: new Date() }, select: { id: true, nom: true, prenom: true, rgpdAttestationGeneratedAt: true } })); }
@@ -47,13 +47,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
 
   // Multi-tenant isolation
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const servicePrisma = getServiceClient(serviceId);
 
   try {
     const body = await req.json();
-    await handleProblematiques(params.id, body.problematiques);
-    await handleActions(params.id, body.actions);
+    await handleProblematiques(servicePrisma, params.id, body.problematiques);
+    await handleActions(servicePrisma, params.id, body.actions);
     return NextResponse.json(await servicePrisma.user.update({ where: { id: params.id }, data: buildUserUpdateData(body, session), include: { adresse: true, problematiques: true, actions: true } }));
   } catch (e) { return handleApiError(e); }
 }
@@ -63,7 +63,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   if (!session) return NextResponse.json({ error: '401' }, { status: 401 });
 
   const userRole = (session.user as any)?.role;
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
   const id = params.id;
 

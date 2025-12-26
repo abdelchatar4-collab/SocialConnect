@@ -5,6 +5,7 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { authOptions } from '@/lib/authOptions';
 import { getAllGestionnaires } from './importUtils';
 import { importSingleUser } from './importCore';
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     // Multi-tenant isolation: use serviceId from session, NOT from body
-    const serviceId = (session.user as any)?.serviceId || 'default';
+    const serviceId = await getDynamicServiceId(session);
 
     const body = await request.json();
     const usersToImport = Array.isArray(body) ? body : body.users;
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
     if (!Array.isArray(usersToImport) || !usersToImport.length) return NextResponse.json({ error: 'Data empty' }, { status: 400 });
 
-    const allGest = await getAllGestionnaires();
+    const allGest = await getAllGestionnaires(serviceId);
     let importedCount = 0;
     const errors: any[] = [];
     const batchSize = 10;

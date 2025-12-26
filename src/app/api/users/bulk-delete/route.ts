@@ -9,6 +9,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -18,7 +19,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   const userRole = (session.user as { role?: string } | undefined)?.role;
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
 
   try {

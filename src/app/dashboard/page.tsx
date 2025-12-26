@@ -13,6 +13,7 @@ import { DashboardLayout } from '@/features/dashboard';
 import { User } from '@/types/user';
 import { Card, CardContent, Loading, Badge } from '@/components/ui';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useSession } from 'next-auth/react';
 import {
   UserGroupIcon,
   DocumentTextIcon,
@@ -28,7 +29,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const { data: session } = useSession();
   const { selectedYear } = useAdmin();
+  const serviceId = (session?.user as any)?.serviceId;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +66,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [selectedYear]);
+  }, [selectedYear, serviceId]);
 
   if (loading) {
     return (

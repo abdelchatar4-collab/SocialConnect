@@ -4,8 +4,11 @@ SocialConnect - useAiSettings Hook
 */
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { AiSettingsData, AiProvider, AI_SETTINGS_KEY, DEFAULT_SETTINGS } from './aiSettingsConstants';
 
+/*
+// DANGEROUS IN MULTI-TENANT: Cannot easily get serviceId here
 export function getAiSettings(): AiSettingsData {
     try {
         const stored = localStorage.getItem(AI_SETTINGS_KEY);
@@ -13,15 +16,19 @@ export function getAiSettings(): AiSettingsData {
     } catch (e) { }
     return DEFAULT_SETTINGS;
 }
+*/
 
 export function useAiSettings() {
+    const { data: session } = useSession();
     const [settings, setSettings] = useState<AiSettingsData>(DEFAULT_SETTINGS);
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         const load = async () => {
+            const serviceId = (session?.user as any)?.serviceId || 'default';
+            const scopedKey = `${AI_SETTINGS_KEY}-${serviceId}`;
             let local: any = {};
-            try { const s = localStorage.getItem(AI_SETTINGS_KEY); if (s) local = JSON.parse(s); } catch (e) { }
+            try { const s = localStorage.getItem(scopedKey); if (s) local = JSON.parse(s); } catch (e) { }
             try {
                 const res = await fetch('/api/settings');
                 if (res.ok) {
@@ -39,17 +46,19 @@ export function useAiSettings() {
                         customAnalysisPrompt: db.aiCustomAnalysisPrompt || local.customAnalysisPrompt || DEFAULT_SETTINGS.customAnalysisPrompt,
                         analysisTemperature: db.aiAnalysisTemperature ?? local.analysisTemperature ?? DEFAULT_SETTINGS.analysisTemperature,
                     };
-                    setSettings(updated); localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(updated));
+                    setSettings(updated); localStorage.setItem(scopedKey, JSON.stringify(updated));
                 } else if (local.provider) setSettings({ ...DEFAULT_SETTINGS, ...local });
             } catch (e) { if (local.provider) setSettings({ ...DEFAULT_SETTINGS, ...local }); }
             setLoaded(true);
         };
-        load();
-    }, []);
+        if (session) load();
+    }, [session]);
 
     const saveSettings = async (newS: Partial<AiSettingsData>) => {
         const updated = { ...settings, ...newS }; setSettings(updated);
-        try { localStorage.setItem(AI_SETTINGS_KEY, JSON.stringify(updated)); } catch (e) { }
+        const serviceId = (session?.user as any)?.serviceId || 'default';
+        const scopedKey = `${AI_SETTINGS_KEY}-${serviceId}`;
+        try { localStorage.setItem(scopedKey, JSON.stringify(updated)); } catch (e) { }
         try {
             await fetch('/api/settings', {
                 method: 'PUT', headers: { 'Content-Type': 'application/json' },

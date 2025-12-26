@@ -16,6 +16,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
   const { data: session, status } = useSession();
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const serviceId = (session?.user as any)?.serviceId;
   const {
     sName, setSName, lUrl, setLUrl, pCol, setPCol, hSub, setHSub, sLog, setSLog, absEmail, setAbsEmail,
     spUrl, setSpUrl, spAdminUrl, setSpAdminUrl,
@@ -23,7 +24,7 @@ export const AdminProvider = ({ children }: { children: ReactNode }) => {
     cols, setCols, secs, setSecs, years, setYears, loading, save,
     docRet, setDocRet, docAddr, setDocAddr, docCity, setDocCity, docPhone, setDocPhone, docFooter, setDocFooter,
     docRgpdTitle, setDocRgpdTitle, docRgpdSecs, setDocRgpdSecs, docUserSecs, setDocUserSecs, docAnt, setDocAnt
-  } = useAdminSettings(status);
+  } = useAdminSettings(status, serviceId);
 
   useEffect(() => {
     const role = (session?.user as any)?.role;

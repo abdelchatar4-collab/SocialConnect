@@ -4,26 +4,23 @@ SocialConnect est un logiciel libre : vous pouvez le redistribuer et/ou le modif
 */
 
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth/next';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
+import { authOptions } from '@/lib/authOptions';
 
-/**
- * GET /api/prestations/holidays
- */
 export async function GET(request: Request) {
-    const session = await getServerSession();
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const serviceId = await getDynamicServiceId(session);
+    const prisma = getServiceClient(serviceId);
     const { searchParams } = new URL(request.url);
     const year = searchParams.get('year') ? parseInt(searchParams.get('year')!) : new Date().getFullYear();
-    const serviceId = (session.user as any).serviceId || 'default';
 
     try {
         const holidays = await prisma.holiday.findMany({
-            where: {
-                year,
-                serviceId
-            },
+            where: { year },
             orderBy: { date: 'asc' }
         });
         return NextResponse.json(holidays);
@@ -32,65 +29,39 @@ export async function GET(request: Request) {
     }
 }
 
-/**
- * POST /api/prestations/holidays
- */
 export async function POST(request: Request) {
-    const session = await getServerSession();
-    if (!session || (session.user as any).role !== 'ADMIN') {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const session = await getServerSession(authOptions);
+    const role = (session?.user as any)?.role;
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const serviceId = (session?.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
 
     try {
         const { date, label } = await request.json();
         const d = new Date(date);
-        const serviceId = (session.user as any).serviceId || 'default';
-
         const holiday = await prisma.holiday.create({
-            data: {
-                date: d,
-                label,
-                year: d.getFullYear(),
-                serviceId
-            }
+            data: { date: d, label, year: d.getFullYear() }
         });
-
         return NextResponse.json(holiday);
     } catch (error) {
         return NextResponse.json({ error: 'Failed to create holiday' }, { status: 500 });
     }
 }
 
-/**
- * DELETE /api/prestations/holidays?id=...
- */
 export async function DELETE(request: Request) {
-    const session = await getServerSession();
-    if (!session || (session.user as any).role !== 'ADMIN') {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    const session = await getServerSession(authOptions);
+    const role = (session?.user as any)?.role;
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+    const serviceId = (session?.user as any).serviceId || 'default';
+    const prisma = getServiceClient(serviceId);
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 
     try {
-        const serviceId = (session.user as any).serviceId || 'default';
-
-        // Multi-tenant isolation: verify the holiday belongs to the same service
-        const existingHoliday = await prisma.holiday.findUnique({
-            where: { id },
-            select: { serviceId: true }
-        });
-
-        if (!existingHoliday) {
-            return NextResponse.json({ error: 'Holiday not found' }, { status: 404 });
-        }
-
-        if (existingHoliday.serviceId !== serviceId) {
-            return NextResponse.json({ error: 'Access denied to this holiday' }, { status: 403 });
-        }
-
         await prisma.holiday.delete({ where: { id } });
         return NextResponse.json({ success: true });
     } catch (error) {

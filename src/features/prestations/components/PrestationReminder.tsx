@@ -27,13 +27,14 @@ export const PrestationReminder: React.FC<PrestationReminderProps> = ({
     useEffect(() => {
         if (!session || prestations.length === 0) {
             // If no prestations at all, show reminder after threshold
-            const stored = localStorage.getItem('prestation_reminder_dismissed');
+            const serviceId = (session?.user as any)?.serviceId || 'default';
+            const stored = localStorage.getItem(`prestation_reminder_dismissed-${serviceId}`);
             if (stored) {
                 const dismissedDate = new Date(stored);
                 const now = new Date();
                 // Reset dismissal after 24 hours
                 if ((now.getTime() - dismissedDate.getTime()) > 24 * 60 * 60 * 1000) {
-                    localStorage.removeItem('prestation_reminder_dismissed');
+                    localStorage.removeItem(`prestation_reminder_dismissed-${serviceId}`);
                     setIsDismissed(false);
                 } else {
                     setIsDismissed(true);
@@ -69,7 +70,8 @@ export const PrestationReminder: React.FC<PrestationReminderProps> = ({
     }, [session, prestations, daysThreshold]);
 
     const handleDismiss = () => {
-        localStorage.setItem('prestation_reminder_dismissed', new Date().toISOString());
+        const serviceId = (session?.user as any)?.serviceId || 'default';
+        localStorage.setItem(`prestation_reminder_dismissed-${serviceId}`, new Date().toISOString());
         setIsDismissed(true);
     };
 

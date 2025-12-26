@@ -8,6 +8,7 @@ Refactored to use extracted calculation utilities
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAdmin } from '@/contexts/AdminContext';
+import { useSession } from 'next-auth/react';
 import { User } from '@/types';
 import {
     DashboardContextValue,
@@ -50,12 +51,16 @@ interface DashboardProviderProps {
 }
 
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, users = [] }) => {
+    const { data: session } = useSession();
     const [state, setState] = useState<DashboardState>(() => {
         if (typeof window !== 'undefined') {
             try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                const savedCustom = localStorage.getItem(CUSTOM_WIDGETS_KEY);
-                const savedPivot = localStorage.getItem(PIVOT_TABLES_KEY);
+                // Scoped keys for isolation
+                const serviceId = (JSON.parse(localStorage.getItem('nextauth.message') || '{}')?.user as any)?.serviceId || 'default';
+                const saved = localStorage.getItem(`${STORAGE_KEY}-${serviceId}`);
+                const savedCustom = localStorage.getItem(`${CUSTOM_WIDGETS_KEY}-${serviceId}`);
+                const savedPivot = localStorage.getItem(`${PIVOT_TABLES_KEY}-${serviceId}`);
+
                 let widgets = DEFAULT_WIDGETS;
                 let customWidgets: CustomWidgetConfig[] = [];
                 let pivotTables: PivotTableConfig[] = [];
@@ -97,8 +102,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
     const setWidgetVisibility = useCallback((widgetId: string, visible: boolean) => {
         setState(prev => {
             const newWidgets = prev.widgets.map(w => w.id === widgetId ? { ...w, visible } : w);
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             if (typeof window !== 'undefined') {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({ widgets: newWidgets }));
+                localStorage.setItem(`${STORAGE_KEY}-${serviceId}`, JSON.stringify({ widgets: newWidgets }));
             }
             return { ...prev, widgets: newWidgets };
         });
@@ -106,8 +112,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
 
     // Reset widgets to default
     const resetWidgets = useCallback(() => {
+        const serviceId = (session?.user as any)?.serviceId || 'default';
         setState(prev => ({ ...prev, widgets: DEFAULT_WIDGETS }));
-        if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEY);
+        if (typeof window !== 'undefined') localStorage.removeItem(`${STORAGE_KEY}-${serviceId}`);
     }, []);
 
     // Set filter
@@ -124,24 +131,27 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
                 createdAt: new Date().toISOString(),
                 order: prev.customWidgets.length + 1,
             };
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newCustomWidgets = [...prev.customWidgets, newWidget];
-            if (typeof window !== 'undefined') localStorage.setItem(CUSTOM_WIDGETS_KEY, JSON.stringify(newCustomWidgets));
+            if (typeof window !== 'undefined') localStorage.setItem(`${CUSTOM_WIDGETS_KEY}-${serviceId}`, JSON.stringify(newCustomWidgets));
             return { ...prev, customWidgets: newCustomWidgets };
         });
     }, []);
 
     const updateCustomWidget = useCallback((widget: CustomWidgetConfig) => {
         setState(prev => {
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newCustomWidgets = prev.customWidgets.map(w => w.id === widget.id ? widget : w);
-            if (typeof window !== 'undefined') localStorage.setItem(CUSTOM_WIDGETS_KEY, JSON.stringify(newCustomWidgets));
+            if (typeof window !== 'undefined') localStorage.setItem(`${CUSTOM_WIDGETS_KEY}-${serviceId}`, JSON.stringify(newCustomWidgets));
             return { ...prev, customWidgets: newCustomWidgets };
         });
     }, []);
 
     const removeCustomWidget = useCallback((widgetId: string) => {
         setState(prev => {
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newCustomWidgets = prev.customWidgets.filter(w => w.id !== widgetId);
-            if (typeof window !== 'undefined') localStorage.setItem(CUSTOM_WIDGETS_KEY, JSON.stringify(newCustomWidgets));
+            if (typeof window !== 'undefined') localStorage.setItem(`${CUSTOM_WIDGETS_KEY}-${serviceId}`, JSON.stringify(newCustomWidgets));
             return { ...prev, customWidgets: newCustomWidgets };
         });
     }, []);
@@ -155,30 +165,50 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children, 
                 createdAt: new Date().toISOString(),
                 order: prev.pivotTables.length + 1,
             };
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newPivotTables = [...prev.pivotTables, newPivot];
-            if (typeof window !== 'undefined') localStorage.setItem(PIVOT_TABLES_KEY, JSON.stringify(newPivotTables));
+            if (typeof window !== 'undefined') localStorage.setItem(`${PIVOT_TABLES_KEY}-${serviceId}`, JSON.stringify(newPivotTables));
             return { ...prev, pivotTables: newPivotTables };
         });
     }, []);
 
     const updatePivotTable = useCallback((config: PivotTableConfig) => {
         setState(prev => {
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newPivotTables = prev.pivotTables.map(p => p.id === config.id ? config : p);
-            if (typeof window !== 'undefined') localStorage.setItem(PIVOT_TABLES_KEY, JSON.stringify(newPivotTables));
+            if (typeof window !== 'undefined') localStorage.setItem(`${PIVOT_TABLES_KEY}-${serviceId}`, JSON.stringify(newPivotTables));
             return { ...prev, pivotTables: newPivotTables };
         });
     }, []);
 
     const removePivotTable = useCallback((id: string) => {
         setState(prev => {
+            const serviceId = (session?.user as any)?.serviceId || 'default';
             const newPivotTables = prev.pivotTables.filter(p => p.id !== id);
-            if (typeof window !== 'undefined') localStorage.setItem(PIVOT_TABLES_KEY, JSON.stringify(newPivotTables));
+            if (typeof window !== 'undefined') localStorage.setItem(`${PIVOT_TABLES_KEY}-${serviceId}`, JSON.stringify(newPivotTables));
             return { ...prev, pivotTables: newPivotTables };
         });
     }, []);
 
     // Initial data load
     useEffect(() => { refreshData(); }, [refreshData]);
+
+    // ✨ RE-LOAD WIDGET CONFIG ON SERVICE CHANGE
+    useEffect(() => {
+        if (typeof window !== 'undefined' && session?.user) {
+            const serviceId = (session.user as any).serviceId || 'default';
+            const saved = localStorage.getItem(`${STORAGE_KEY}-${serviceId}`);
+            const savedCustom = localStorage.getItem(`${CUSTOM_WIDGETS_KEY}-${serviceId}`);
+            const savedPivot = localStorage.getItem(`${PIVOT_TABLES_KEY}-${serviceId}`);
+
+            setState(prev => ({
+                ...prev,
+                widgets: saved ? (JSON.parse(saved).widgets || DEFAULT_WIDGETS) : DEFAULT_WIDGETS,
+                customWidgets: savedCustom ? (JSON.parse(savedCustom) || []) : [],
+                pivotTables: savedPivot ? (JSON.parse(savedPivot) || []) : []
+            }));
+        }
+    }, [session]);
 
     // Auto-refresh timer
     useEffect(() => {

@@ -3,37 +3,34 @@ Copyright (C) 2025 ABDEL KADER CHATAR
 */
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth';
+import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 
 export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.gestionnaire) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const serviceId = await getDynamicServiceId(session);
+    const prisma = getServiceClient(serviceId);
 
     const { searchParams } = new URL(request.url);
     const annee = parseInt(searchParams.get('annee') || '2026');
-    const gestionnaireId = searchParams.get('gestionnaireId') || session.user.gestionnaire.id;
+    const gestionnaireId = searchParams.get('gestionnaireId') || (session.user as any).id;
 
     // Sécurité : Un user lambda ne peut voir que ses propres soldes
-    if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'SUPER_ADMIN' && gestionnaireId !== (session?.user as any)?.gestionnaire?.id) {
+    const userRole = (session.user as any).role;
+    const currentUserId = (session.user as any).id;
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN' && gestionnaireId !== currentUserId) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     try {
-        // 1. Récupérer le solde théorique (quotas)
-        let solde = await prisma.soldeConge.findUnique({
-            where: {
-                gestionnaireId_annee: {
-                    gestionnaireId,
-                    annee
-                }
-            }
+        let solde = await prisma.soldeConge.findFirst({
+            where: { gestionnaireId, annee }
         });
 
-        // Si pas de solde existant, on renvoie des zéros (ou on le crée à la volée, mais ici renvoyons 0)
         if (!solde) {
             solde = {
                 id: 'virtual',
@@ -49,40 +46,20 @@ export async function GET(request: Request) {
             } as any;
         }
 
-        // 2. Calculer le consommé (réel) basé sur les prestations validées de l'année
-        const debutAnnee = new Date(`${annee}-01-01T00:00:00.000Z`);
-        const finAnnee = new Date(`${annee}-12-31T23:59:59.999Z`);
-
-        const prestations = await prisma.prestation.findMany({
+        const stats = await prisma.prestation.findMany({
             where: {
                 gestionnaireId,
-                date: {
-                    gte: debutAnnee,
-                    lte: finAnnee
-                }
+                date: { gte: new Date(`${annee}-01-01`), lte: new Date(`${annee}-12-31`) }
             },
-            select: {
-                motif: true,
-                dureeNet: true
-            }
+            select: { motif: true, dureeNet: true }
         });
 
-        // Initialiser les compteurs de consommation
-        const consomme = {
-            vacancesAnnuelles: 0,
-            consultationMedicale: 0,
-            forceMajeure: 0,
-            congesReglementaires: 0,
-            creditHeures: 0, // Crédit Heures
-            maladie: 0 // Informatif, pas de quota généralement
-        };
-
-        prestations.forEach(p => {
-            // Mapping motifs -> compteurs
+        const consomme = { vacancesAnnuelles: 0, consultationMedicale: 0, forceMajeure: 0, congesReglementaires: 0, creditHeures: 0, maladie: 0 };
+        stats.forEach(p => {
             if (p.motif === 'Congé VA') consomme.vacancesAnnuelles += p.dureeNet;
             else if (p.motif === 'Consultation médicale') consomme.consultationMedicale += p.dureeNet;
             else if (p.motif === 'Force majeure') consomme.forceMajeure += p.dureeNet;
-            else if (p.motif.includes('règlementaire')) consomme.congesReglementaires += p.dureeNet; // "Congé réglementaire" (à vérifier motif exact)
+            else if (p.motif.includes('règlementaire')) consomme.congesReglementaires += p.dureeNet;
             else if (p.motif === 'Congé CH') consomme.creditHeures += p.dureeNet;
             else if (p.motif === 'Maladie' || p.motif === 'Maladie (certificat)') consomme.maladie += p.dureeNet;
         });
@@ -98,63 +75,35 @@ export async function GET(request: Request) {
                 creditHeures: (solde?.creditHeures || 0) - consomme.creditHeures,
             }
         });
-
     } catch (error) {
-        console.error("Error fetching soldes:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const userRole = (session.user as any).role;
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN') {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
+    const serviceId = await getDynamicServiceId(session);
+    const prisma = getServiceClient(serviceId);
 
     try {
         const body = await request.json();
         const { gestionnaireId, annee, vacancesAnnuelles, consultationMedicale, forceMajeure, congesReglementaires, creditHeures, heuresSupplementaires } = body;
 
-        // Security Check: Only ADMIN or SELF can update
-        const userRole = (session as any).user.role;
-        const currentGestionnaireId = (session as any).user.gestionnaire?.id;
-        const isAdmin = userRole === 'ADMIN' || userRole === 'SUPER_ADMIN';
-
-        if (!isAdmin) {
-            return NextResponse.json({ error: 'Unauthorized: Only Admins can update quotas' }, { status: 403 });
-        }
-
         const solde = await prisma.soldeConge.upsert({
-            where: {
-                gestionnaireId_annee: {
-                    gestionnaireId,
-                    annee
-                }
-            },
-            update: {
-                vacancesAnnuelles,
-                consultationMedicale,
-                forceMajeure,
-                congesReglementaires,
-                creditHeures,
-                heuresSupplementaires
-            },
-            create: {
-                gestionnaireId,
-                annee,
-                vacancesAnnuelles,
-                consultationMedicale,
-                forceMajeure,
-                congesReglementaires,
-                creditHeures,
-                heuresSupplementaires
-            }
+            where: { gestionnaireId_annee: { gestionnaireId, annee } },
+            update: { vacancesAnnuelles, consultationMedicale, forceMajeure, congesReglementaires, creditHeures, heuresSupplementaires },
+            create: { gestionnaireId, annee, vacancesAnnuelles, consultationMedicale, forceMajeure, congesReglementaires, creditHeures, heuresSupplementaires }
         });
 
         return NextResponse.json(solde);
-
     } catch (error) {
-        console.error("Error updating soldes:", error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

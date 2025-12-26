@@ -8,6 +8,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 // src/app/api/users/managed-count/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
 
   try {

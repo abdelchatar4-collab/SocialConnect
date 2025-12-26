@@ -23,7 +23,9 @@ function getStoredSettings(): AiSettings {
     };
     if (typeof window === 'undefined') return defaults;
     try {
-        const stored = localStorage.getItem(AI_SETTINGS_KEY);
+        const serviceId = (JSON.parse(localStorage.getItem('nextauth.message') || '{}')?.user as any)?.serviceId || 'default';
+        const scopedKey = `${AI_SETTINGS_KEY}-${serviceId}`;
+        const stored = localStorage.getItem(scopedKey);
         return stored ? { ...defaults, ...JSON.parse(stored) } : defaults;
     } catch { return defaults; }
 }

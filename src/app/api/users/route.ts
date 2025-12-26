@@ -7,6 +7,7 @@ Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GAR
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { getDynamicServiceId } from '@/lib/auth-utils';
 import { Prisma } from '@prisma/client';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
 
   try {
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
 
   try {
@@ -66,7 +67,7 @@ export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const serviceId = (session.user as any).serviceId || 'default';
+  const serviceId = await getDynamicServiceId(session);
   const prisma = getServiceClient(serviceId);
   const userRole = (session.user as any).role;
 
