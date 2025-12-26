@@ -6,8 +6,8 @@ SocialConnect - User Import Hook
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { mapExcelToUserStructure } from '@/utils/importHelpers';
-import { detectHeaders } from './Import/ImportHeaderDetector';
-import { ImportProgress, ImportResults } from './Import/ImportTypes';
+import { detectHeaders } from '@/features/users/components/Import/ImportHeaderDetector';
+import { ImportProgress, ImportResults } from '@/features/users/components/Import/ImportTypes';
 
 export const useUserImport = (serviceId: string, onImportComplete?: () => void) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
