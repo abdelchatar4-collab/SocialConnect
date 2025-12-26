@@ -37,7 +37,7 @@ export default function DocumentPreview({
   // For legacy mode, if url is missing, we construct it from the name
   // In rapports page, documents are usually in /api/rapports/view/{name}
   const activeUrl = isLegacy
-    ? (legacyDocument?.url || (legacyDocument?.name ? `/api/rapports/view?filename=${encodeURIComponent(legacyDocument.name)}` : ''))
+    ? (legacyDocument?.url || (legacyDocument?.name ? `/api/rapports/${encodeURIComponent(legacyDocument.name)}` : ''))
     : url;
 
   const activeName = isLegacy ? legacyDocument?.name : name;
