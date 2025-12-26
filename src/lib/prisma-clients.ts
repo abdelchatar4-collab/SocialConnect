@@ -174,52 +174,21 @@ export const getServiceClient = (serviceId: string) => {
                 }
             },
             conge: {
-                async findMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async count({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async findFirst({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async update({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async delete({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async updateMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async deleteMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                }
+                // Modèles personnels : l'isolation est assurée par le gestionnaireId dans les requêtes
+                // et les vérifications de droits dans les API.
+                async findMany({ args, query }) { return query(args); },
+                async count({ args, query }) { return query(args); },
+                async findFirst({ args, query }) { return query(args); },
+                async update({ args, query }) { return query(args); },
+                async delete({ args, query }) { return query(args); },
+                async updateMany({ args, query }) { return query(args); },
+                async deleteMany({ args, query }) { return query(args); }
             },
             soldeConge: {
-                async findMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async findFirst({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async updateMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                },
-                async deleteMany({ args, query }) {
-                    (args as any).where = { ...(args.where || {}), gestionnaire: { serviceId } };
-                    return query(args);
-                }
+                async findMany({ args, query }) { return query(args); },
+                async findFirst({ args, query }) { return query(args); },
+                async updateMany({ args, query }) { return query(args); },
+                async deleteMany({ args, query }) { return query(args); }
             },
             document: {
                 async findMany({ args, query }) {

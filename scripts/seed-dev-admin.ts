@@ -20,13 +20,13 @@ async function main() {
                 role: 'SUPER_ADMIN',
                 serviceId: 'default',
                 isActive: true,
-                horaireHabituel: {
+                horaireHabituel: JSON.stringify({
                     name: "Horaire standard",
                     start: "09:00",
                     end: "17:00",
                     pause: 30,
                     standardDuration: 450
-                }
+                })
             }
         });
         console.log('User created:', user);

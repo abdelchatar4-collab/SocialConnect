@@ -48,8 +48,6 @@ model User {
   dossierPrecedentId             String?
   prevExpAideJuridique           String?
   prevExpDateAudience            DateTime?
-  serviceId                      String              @default("default")
-  service                        Service             @relation(fields: [serviceId], references: [id])
   prevExpDateExpulsion           DateTime?
   prevExpDateJugement            DateTime?
   prevExpDateSignification       DateTime?
@@ -65,21 +63,23 @@ model User {
   revenus                        String?
   situationProfessionnelle       String?
   prevExpDossierOuvert           String?
-  mediationType                  String?
-  mediationDemandeur             String?
-  mediationPartieAdverse         String?
-  mediationStatut                String?
-  mediationDescription           String?             @db.Text
   createdAt                      DateTime            @default(now())
   createdBy                      String?
   updatedAt                      DateTime?           @updatedAt
   updatedBy                      String?
+  serviceId                      String              @default("default")
+  mediationDemandeur             String?
+  mediationDescription           String?             @db.Text
+  mediationPartieAdverse         String?
+  mediationStatut                String?
+  mediationType                  String?
   documents                      Document[]
   adresse                        Adresse?            @relation(fields: [adresseId], references: [id], onDelete: Cascade)
   dossierPrecedent               User?               @relation("HistoriqueDossier", fields: [dossierPrecedentId], references: [id], onUpdate: SetNull)
   dossierSuivant                 User[]              @relation("HistoriqueDossier")
   geographicalSector             GeographicalSector? @relation(fields: [geographicalSectorId], references: [id])
   gestionnaire                   Gestionnaire?       @relation(fields: [gestionnaireId], references: [id])
+  service                        Service             @relation(fields: [serviceId], references: [id])
   street                         Street?             @relation(fields: [streetId], references: [id])
   actions                        ActionSuivi[]       @relation("ActionSuiviToUser")
   problematiques                 Problematique[]
@@ -149,23 +149,23 @@ model ActionSuivi {
 }
 
 model Gestionnaire {
-  id               String  @id @default(uuid())
-  nom              String?
-  prenom           String
-  email            String? @unique
-  role             String  @default("USER")
-  serviceId        String  @default("default")
-  service          Service @relation(fields: [serviceId], references: [id])
-  couleurMedaillon String? @db.LongText
-  isActive         Boolean @default(true)
-  lastActiveServiceId String? // Pour les Super Admins : dernier service visité
-  horaireHabituel   Json?    // { name: string, start: string, end: string, pause: number, standardDuration: number }
-  isGestionnaireDossier Boolean @default(true) // Si true, apparaît dans les dropdowns d'assignation de dossiers
-  prestations      Prestation[]
-  users            User[]
+  id                    String       @id @default(uuid())
+  nom                   String?
+  prenom                String
+  email                 String?      @unique
+  role                  String       @default("USER")
+  couleurMedaillon      String?      @db.LongText
+  isActive              Boolean      @default(true)
+  serviceId             String       @default("default")
+  lastActiveServiceId   String?
+  horaireHabituel       String?      @db.LongText
+  isGestionnaireDossier Boolean      @default(true)
+  users                 User[]
+  conges                Conge[]
+  service               Service      @relation(fields: [serviceId], references: [id])
+  prestations           Prestation[]
+  soldeConges           SoldeConge[]
 
-  soldeConges      SoldeConge[]
-  conges           Conge[]
   @@index([serviceId])
   @@map("gestionnaires")
 }
@@ -209,54 +209,43 @@ model Street {
 }
 
 model Settings {
-  id                 String   @id @default(uuid())
-  serviceId          String?
-  // service            Service? @relation(fields: [serviceId], references: [id])
-  serviceName        String   @default("LE PÔLE ACCUEIL SOCIAL DES QUARTIERS")
-  logoUrl            String?
-  primaryColor       String   @default("#1e3a8a")
-  headerSubtitle     String   @default("PORTAIL DE GESTION")
-  showCommunalLogo   Boolean  @default(true)
-  requiredFields     String   @db.LongText
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  colleagueBirthdays String   @db.LongText
-  enableBirthdays    Boolean  @default(false)
-  activeHolidayTheme String   @default("NONE")
-  availableYears     String   @db.LongText
-
-  // AI Settings
-  aiEnabled              Boolean @default(true)
-  aiProvider             String  @default("ollama")
-  aiEndpoint             String  @default("http://192.168.2.147:11434")
-  aiModel                String  @default("qwen2.5:3b")
-  aiTemperature          Float   @default(0.7)
-  aiGroqApiKey           String? @db.VarChar(255)
-  aiGroqModel            String  @default("llama-3.1-8b-instant")
-  aiUseKeyPool           Boolean @default(false)
-  aiEnableAnalysis       Boolean @default(true)
-  aiAnalysisTemperature  Float   @default(0)
-  aiCustomAnalysisPrompt String? @db.Text
-
-  // Feature Toggles (Modules à la carte)
-  enabledModules         Json?    // Stucture: { "housing": true, "stats": true, ... }
-
-  // Column Visibility Settings (per service)
-  visibleColumns         Json?    // Structure: { "nom": true, "telephone": true, ... }
-
-  // Form Section Visibility Settings (per service)
-  visibleFormSections    Json?    // Structure: { "identity": true, "housing": false, ... }
-
-  // Document Settings (per service)
+  id                       String   @id @default(uuid())
+  serviceName              String   @default("LE PÔLE ACCUEIL SOCIAL DES QUARTIERS")
+  logoUrl                  String?
+  primaryColor             String   @default("#1e3a8a")
+  headerSubtitle           String   @default("PORTAIL DE GESTION")
+  showCommunalLogo         Boolean  @default(true)
+  requiredFields           String   @db.LongText
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  colleagueBirthdays       String   @db.LongText
+  enableBirthdays          Boolean  @default(false)
+  activeHolidayTheme       String   @default("NONE")
+  availableYears           String   @db.LongText
+  aiAnalysisTemperature    Float    @default(0)
+  aiCustomAnalysisPrompt   String?  @db.Text
+  aiEnableAnalysis         Boolean  @default(true)
+  aiEnabled                Boolean  @default(true)
+  aiEndpoint               String   @default("http://192.168.2.147:11434")
+  aiGroqApiKey             String?  @db.VarChar(255)
+  aiGroqModel              String   @default("llama-3.1-8b-instant")
+  aiModel                  String   @default("qwen2.5:3b")
+  aiProvider               String   @default("ollama")
+  aiTemperature            Float    @default(0.7)
+  aiUseKeyPool             Boolean  @default(false)
+  serviceId                String?
+  enabledModules           String?  @db.LongText
+  visibleColumns           String?  @db.LongText
+  visibleFormSections      String?  @db.LongText
+  docAntenneAddresses      String?  @db.LongText
+  docFooterText            String?
   docRetentionPeriod       String?  @default("3 ans")
+  docRgpdSections          String?  @db.LongText
+  docRgpdTitle             String?  @db.Text
   docServiceAddress        String?
   docServiceCity           String?
   docServicePhone          String?
-  docFooterText            String?
-  docRgpdTitle             String?  @db.Text
-  docRgpdSections          String?  @db.LongText  // JSON: { "intro": true, "pourquoi": true, ... }
-  docUserProfileSections   String?  @db.LongText  // JSON: { "identite": true, "notes": false, ... }
-  docAntenneAddresses      String?  @db.LongText  // JSON: { "cureghem": { rue: "...", cp: "..." }, ... }
+  docUserProfileSections   String?  @db.LongText
   absenceNotificationEmail String?
   sharepointUrl            String?  @db.Text
   sharepointUrlAdmin       String?  @db.Text
@@ -282,41 +271,38 @@ model ApiKey {
 }
 
 model Service {
-  id          String   @id @default(cuid())
-  slug        String   @unique // ex: "vie-precaire", "logement"
-  name        String // ex: "Vie Précaire"
-  cluster     String? // ex: "Pôle Inclusion" (Groupement)
-  description String?  @db.Text
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  id              String           @id @default(cuid())
+  slug            String           @unique
+  name            String
+  cluster         String?
+  description     String?          @db.Text
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   users           User[]
-  gestionnaires   Gestionnaire[]
   dropdownOptions DropdownOption[]
-  prestations     Prestation[]
+  gestionnaires   Gestionnaire[]
   holidays        Holiday[]
-  // settings      Settings[]
+  prestations     Prestation[]
 }
 
 model Prestation {
-  id               String       @id @default(cuid())
-  date             DateTime
-  heureDebut       String       // "HH:mm"
-  heureFin         String       // "HH:mm"
-  pause            Int          @default(0) // Minutes
-  dureeNet         Int          @default(0) // Minutes
-  isOvertime       Boolean      @default(false) // If after 19:00
-  bonis            Int          @default(0) // Minutes exceeding standard
-  motif            String
-  commentaire      String?      @db.Text
-  gestionnaireId   String
-  serviceId        String       @default("default")
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-
-  gestionnaire     Gestionnaire @relation(fields: [gestionnaireId], references: [id])
-  service          Service      @relation(fields: [serviceId], references: [id])
+  id             String       @id @default(cuid())
+  date           DateTime
+  heureDebut     String
+  heureFin       String
+  pause          Int          @default(0)
+  dureeNet       Int          @default(0)
+  isOvertime     Boolean      @default(false)
+  bonis          Int          @default(0)
+  motif          String
+  commentaire    String?      @db.Text
+  gestionnaireId String
+  serviceId      String       @default("default")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  gestionnaire   Gestionnaire @relation(fields: [gestionnaireId], references: [id])
+  service        Service      @relation(fields: [serviceId], references: [id])
 
   @@index([gestionnaireId])
   @@index([serviceId])
@@ -339,21 +325,17 @@ model Holiday {
 }
 
 model SoldeConge {
-  id              String       @id @default(cuid())
-  gestionnaireId  String
-  gestionnaire    Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
-
-  annee                Int      @default(2026)
-
-  // Quotas en minutes (ex: 217h30 = 13050 minutes)
-  vacancesAnnuelles    Int      @default(0) // VA
-  consultationMedicale Int      @default(0) // CM
-  forceMajeure         Int      @default(0) // FM
-  congesReglementaires Int      @default(0) // CR
-  creditHeures         Int      @default(0) // CH
-  heuresSupplementaires Int     @default(0) // HS
-
-  updatedAt            DateTime @updatedAt
+  id                    String       @id @default(cuid())
+  gestionnaireId        String
+  annee                 Int          @default(2026)
+  vacancesAnnuelles     Int          @default(0)
+  consultationMedicale  Int          @default(0)
+  forceMajeure          Int          @default(0)
+  congesReglementaires  Int          @default(0)
+  creditHeures          Int          @default(0)
+  heuresSupplementaires Int          @default(0)
+  updatedAt             DateTime     @updatedAt
+  gestionnaire          Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
 
   @@unique([gestionnaireId, annee])
   @@map("solde_conges")
@@ -362,14 +344,14 @@ model SoldeConge {
 model Conge {
   id             String       @id @default(cuid())
   gestionnaireId String
-  gestionnaire   Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
   startDate      DateTime
   endDate        DateTime
-  type           String       // "Vacances", "Maladie", "Force Majeure", "Autre"
+  type           String
   reason         String?      @db.Text
-  status         String       @default("PENDING") // PENDING, APPROVED, REJECTED
+  status         String       @default("PENDING")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+  gestionnaire   Gestionnaire @relation(fields: [gestionnaireId], references: [id], onDelete: Cascade)
 
   @@index([gestionnaireId])
   @@map("conges")

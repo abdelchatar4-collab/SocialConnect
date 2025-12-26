@@ -42,12 +42,12 @@ async function main() {
                 requiredFields: JSON.stringify([]),
                 colleagueBirthdays: JSON.stringify([]),
                 availableYears: JSON.stringify([2024, 2025]),
-                enabledModules: {
+                enabledModules: JSON.stringify({
                     housingAnalysis: false,
                     statsDashboard: true,
                     exportData: true,
                     documents: true
-                }
+                })
             }
         });
     } else {

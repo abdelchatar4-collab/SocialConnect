@@ -27,8 +27,9 @@ export async function GET() {
     const serviceId = await getDynamicServiceId(session);
     const reportsDir = path.join(process.cwd(), 'uploads', 'rapports', serviceId);
 
-    // S'assurer que le dossier du service existe
-    if (!path.join(process.cwd(), 'uploads', 'rapports').includes(reportsDir)) {
+    // S'assurer que le dossier du service est bien contenu dans le dossier uploads/rapports
+    const baseDir = path.join(process.cwd(), 'uploads', 'rapports');
+    if (!reportsDir.startsWith(baseDir)) {
       // Protection contre Directory Traversal
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }

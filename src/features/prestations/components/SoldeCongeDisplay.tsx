@@ -120,103 +120,88 @@ export const SoldeCongeDisplay: React.FC = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                <div>
-                    <Gauge
-                        label="Vacances Annuelles"
-                        total={data.quotas.vacancesAnnuelles}
-                        used={data.consomme.vacancesAnnuelles}
-                        colorFrom="from-emerald-400"
-                        colorTo="to-emerald-600"
-                        Icon={SunIcon}
-                        bgClass="bg-emerald-50/50 hover:bg-emerald-50"
-                    />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                <Gauge
+                    label="Vacances Annuelles"
+                    total={data.quotas.vacancesAnnuelles}
+                    used={data.consomme.vacancesAnnuelles}
+                    colorFrom="from-emerald-400"
+                    colorTo="to-emerald-600"
+                    Icon={SunIcon}
+                    bgClass="bg-emerald-50/50 hover:bg-emerald-50"
+                />
 
-                    <Gauge
-                        label="Crédit d'Heures"
-                        total={data.quotas.creditHeures}
-                        used={data.consomme.creditHeures}
-                        colorFrom="from-blue-400"
-                        colorTo="to-blue-600"
-                        Icon={ClockIcon}
-                        bgClass="bg-blue-50/50 hover:bg-blue-50"
-                    />
+                <Gauge
+                    label="Crédit d'Heures"
+                    total={data.quotas.creditHeures}
+                    used={data.consomme.creditHeures}
+                    colorFrom="from-blue-400"
+                    colorTo="to-blue-600"
+                    Icon={ClockIcon}
+                    bgClass="bg-blue-50/50 hover:bg-blue-50"
+                />
 
-                    {(data.quotas.heuresSupplementaires || 0) > 0 && (
-                        <Gauge
-                            label="Heures Supplémentaires (Stock)"
-                            total={data.quotas.heuresSupplementaires || 0}
-                            used={0}
-                            colorFrom="from-rose-400"
-                            colorTo="to-rose-600"
-                            Icon={PlusCircleIcon}
-                            bgClass="bg-rose-50/50 hover:bg-rose-50"
-                        />
-                    )}
-                </div>
+                <Gauge
+                    label="Consultation Médicale"
+                    total={data.quotas.consultationMedicale || 0}
+                    used={data.consomme.consultationMedicale}
+                    colorFrom="from-purple-400"
+                    colorTo="to-purple-600"
+                    Icon={HeartIcon}
+                    bgClass="bg-purple-50/50 hover:bg-purple-50"
+                />
 
-                <div>
-                    <Gauge
-                        label="Force Majeure"
-                        total={data.quotas.forceMajeure}
-                        used={data.consomme.forceMajeure}
-                        colorFrom="from-amber-400"
-                        colorTo="to-amber-600"
-                        Icon={BoltIcon}
-                        bgClass="bg-amber-50/50 hover:bg-amber-50"
-                    />
-                    <Gauge
-                        label="Consultation Médicale"
-                        total={data.quotas.consultationMedicale}
-                        used={data.consomme.consultationMedicale}
-                        colorFrom="from-purple-400"
-                        colorTo="to-purple-600"
-                        Icon={HeartIcon}
-                        bgClass="bg-purple-50/50 hover:bg-purple-50"
-                    />
-                </div>
+                <Gauge
+                    label="Congés Réglementaires"
+                    total={data.quotas.congesReglementaires}
+                    used={data.consomme.congesReglementaires}
+                    colorFrom="from-cyan-400"
+                    colorTo="to-cyan-600"
+                    Icon={DocumentTextIcon}
+                    bgClass="bg-cyan-50/50 hover:bg-cyan-50"
+                />
+            </div>
 
-                <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
-                    <Gauge
-                        label="Congés Réglementaires"
-                        total={data.quotas.congesReglementaires}
-                        used={data.consomme.congesReglementaires}
-                        colorFrom="from-cyan-400"
-                        colorTo="to-cyan-600"
-                        Icon={DocumentTextIcon}
-                        bgClass="bg-cyan-50/50 hover:bg-cyan-50"
-                    />
+            <div className="mt-2 space-y-6">
+                <Gauge
+                    label="Heures Supplémentaires (Stock)"
+                    total={data.quotas.heuresSupplementaires || 0}
+                    used={0}
+                    colorFrom="from-rose-400"
+                    colorTo="to-rose-600"
+                    Icon={PlusCircleIcon}
+                    bgClass="bg-rose-50 hover:bg-rose-100 ring-2 ring-rose-200 border-rose-200"
+                />
 
-                    {/* Jours sans certificat - special gauge in DAYS not minutes */}
-                    <div className="mb-6 last:mb-0 rounded-xl p-3 border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 hover:border-orange-300 transition-all shadow-sm hover:shadow-md group">
-                        <div className="flex justify-between items-end mb-2">
-                            <span className="font-bold text-gray-800 flex items-center gap-2">
-                                <span className="p-1.5 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors text-orange-600">
-                                    <ExclamationTriangleIcon className="w-5 h-5" />
-                                </span>
-                                Jours sans certificat
+                {/* Jours sans certificat - back to full length bottom */}
+                <div className="rounded-xl p-3 border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 hover:border-orange-300 transition-all shadow-sm hover:shadow-md group">
+                    <div className="flex justify-between items-end mb-2">
+                        <span className="font-bold text-gray-800 flex items-center gap-2">
+                            <span className="p-1.5 rounded-lg bg-orange-100 group-hover:bg-orange-200 transition-colors text-orange-600">
+                                <ExclamationTriangleIcon className="w-5 h-5" />
                             </span>
-                            <div className="text-right text-xs text-gray-500">
-                                <span className="block mb-0.5">Quota : <strong>3 jours/an</strong></span>
-                                <span className={`block px-2 py-0.5 rounded-md ${3 - joursSansCertificatUsed <= 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-orange-100 text-orange-700'}`}>
-                                    Restant : <strong>{3 - joursSansCertificatUsed} jour(s)</strong>
-                                </span>
-                            </div>
-                        </div>
-                        <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner relative ring-1 ring-black/5">
-                            <div
-                                className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 shadow-lg relative overflow-hidden transition-all duration-1000 ease-out"
-                                style={{ width: `${Math.min(100, (joursSansCertificatUsed / 3) * 100)}%` }}
-                            >
-                                <div className="absolute inset-0 bg-white/20 animate-[pulse_3s_infinite]" />
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-center mt-1.5">
-                            <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Consommation (non consécutifs)</span>
-                            <span className={`text-xs font-bold ${joursSansCertificatUsed >= 3 ? 'text-red-500' : 'text-orange-600'}`}>
-                                {joursSansCertificatUsed}/3 jours ({Math.round((joursSansCertificatUsed / 3) * 100)}%)
+                            Jours sans certificat (non consécutifs)
+                        </span>
+                        <div className="text-right text-xs text-gray-500">
+                            <span className="block mb-0.5">Quota : <strong>3 jours/an</strong></span>
+                            <span className={`block px-2 py-0.5 rounded-md ${3 - joursSansCertificatUsed <= 0 ? 'bg-red-100 text-red-700 font-bold' : 'bg-orange-100 text-orange-700'}`}>
+                                Restant : <strong>{3 - joursSansCertificatUsed} jour(s)</strong>
                             </span>
                         </div>
+                    </div>
+                    <div className="h-4 bg-gray-100 rounded-full overflow-hidden shadow-inner relative ring-1 ring-black/5">
+                        <div
+                            className="h-full rounded-full bg-gradient-to-r from-orange-400 to-orange-600 shadow-lg relative overflow-hidden transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.min(100, (joursSansCertificatUsed / 3) * 100)}%` }}
+                        >
+                            <div className="absolute inset-0 bg-white/20 animate-[pulse_3s_infinite]" />
+                        </div>
+                    </div>
+                    <div className="flex justify-between items-center mt-1.5">
+                        <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">Consommation annuelle</span>
+                        <span className={`text-xs font-bold ${joursSansCertificatUsed >= 3 ? 'text-red-500' : 'text-orange-600'}`}>
+                            {joursSansCertificatUsed}/3 jours ({Math.round((joursSansCertificatUsed / 3) * 100)}%)
+                        </span>
                     </div>
                 </div>
             </div>

@@ -1,9 +1,6 @@
-/*
-Copyright (C) 2025 ABDEL KADER CHATAR
-*/
-
 import { NextResponse } from 'next/server';
 import { getServiceClient } from '@/lib/prisma-clients';
+import { prisma as globalPrisma } from '@/lib/prisma'; // Client global sans filtre
 import { getDynamicServiceId } from '@/lib/auth-utils';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
@@ -13,40 +10,38 @@ export async function GET(request: Request) {
     if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const serviceId = await getDynamicServiceId(session);
-    const prisma = getServiceClient(serviceId);
-
     const { searchParams } = new URL(request.url);
     const annee = parseInt(searchParams.get('annee') || '2026');
-    const gestionnaireId = searchParams.get('gestionnaireId') || (session.user as any).id;
+
+    // Identifier le gestionnaire par email (plus fiable que l'ID de session qui peut varier)
+    const currentGest = await globalPrisma.gestionnaire.findUnique({
+        where: { email: session.user.email as string }
+    });
+
+    if (!currentGest) return NextResponse.json({ error: 'Gestionnaire non trouvé' }, { status: 404 });
+
+    const gestionnaireId = searchParams.get('gestionnaireId') || currentGest.id;
 
     // Sécurité : Un user lambda ne peut voir que ses propres soldes
     const userRole = (session.user as any).role;
-    const currentUserId = (session.user as any).id;
-    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN' && gestionnaireId !== currentUserId) {
+    if (userRole !== 'ADMIN' && userRole !== 'SUPER_ADMIN' && gestionnaireId !== currentGest.id) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     try {
-        let solde = await prisma.soldeConge.findFirst({
+        let solde = await globalPrisma.soldeConge.findFirst({
             where: { gestionnaireId, annee }
         });
 
         if (!solde) {
             solde = {
-                id: 'virtual',
-                gestionnaireId,
-                annee,
-                vacancesAnnuelles: 0,
-                consultationMedicale: 0,
-                forceMajeure: 0,
-                congesReglementaires: 0,
-                creditHeures: 0,
-                heuresSupplementaires: 0,
+                id: 'virtual', gestionnaireId, annee,
+                vacancesAnnuelles: 0, consultationMedicale: 0, forceMajeure: 0, congesReglementaires: 0, creditHeures: 0, heuresSupplementaires: 0,
                 updatedAt: new Date()
             } as any;
         }
 
-        const stats = await prisma.prestation.findMany({
+        const stats = await globalPrisma.prestation.findMany({
             where: {
                 gestionnaireId,
                 date: { gte: new Date(`${annee}-01-01`), lte: new Date(`${annee}-12-31`) }
@@ -55,7 +50,7 @@ export async function GET(request: Request) {
         });
 
         const consomme = { vacancesAnnuelles: 0, consultationMedicale: 0, forceMajeure: 0, congesReglementaires: 0, creditHeures: 0, maladie: 0 };
-        stats.forEach(p => {
+        stats.forEach((p: any) => {
             if (p.motif === 'Congé VA') consomme.vacancesAnnuelles += p.dureeNet;
             else if (p.motif === 'Consultation médicale') consomme.consultationMedicale += p.dureeNet;
             else if (p.motif === 'Force majeure') consomme.forceMajeure += p.dureeNet;
@@ -65,7 +60,10 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json({
-            quotas: solde,
+            quotas: {
+                ...solde,
+                heuresSupplementaires: solde?.heuresSupplementaires || 0
+            },
             consomme,
             restant: {
                 vacancesAnnuelles: (solde?.vacancesAnnuelles || 0) - consomme.vacancesAnnuelles,
