@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 
 interface EmailPayload {
     to: string;
+    cc?: string;
     subject: string;
     html: string;
 }
@@ -14,6 +15,7 @@ export const sendEmail = async (data: EmailPayload) => {
         console.log('---------------------------------------------------');
         console.log('📧 [EMAIL SIMULATION] SMTP not configured');
         console.log(`To: ${data.to}`);
+        if (data.cc) console.log(`CC: ${data.cc}`);
         console.log(`Subject: ${data.subject}`);
         console.log('--- Content ---');
         console.log(data.html.replace(/<[^>]*>?/gm, '')); // Strip HTML for console readability

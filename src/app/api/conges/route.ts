@@ -65,11 +65,18 @@ export async function POST(req: Request) {
       }
     });
 
+    // Récupération des paramètres pour l'email de notification RH
+    const settings = await prisma.settings.findFirst({
+      where: { serviceId },
+      select: { absenceNotificationEmail: true }
+    });
+
     // Envoi de l'email de confirmation
     if (conge.gestionnaire?.email) {
       try {
         await sendEmail({
           to: conge.gestionnaire.email,
+          cc: settings?.absenceNotificationEmail || undefined,
           subject: `Confirmation de congé - ${type}`,
           html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -86,10 +93,20 @@ export async function POST(req: Request) {
             </div>
           `
         });
-      } catch (emailError) {
+      } catch (emailError: any) {
         console.error("Erreur lors de l'envoi de l'email:", emailError);
-        // On ne bloque pas la réponse si l'email échoue
+        // MODE DEBUG : On fait échouer la requête pour afficher l'erreur au client
+        return NextResponse.json({
+          error: "Congé créé MAIS échec envoi email",
+          details: emailError.message
+        }, { status: 500 });
       }
+    } else {
+      // MODE DEBUG : On signale si l'email est manquant
+      return NextResponse.json({
+        error: "Congé créé MAIS aucun email associé à ce compte",
+        details: `Gestionnaire: ${conge.gestionnaire?.prenom} (ID: ${conge.gestionnaireId})`
+      }, { status: 500 });
     }
 
     return NextResponse.json(conge);
