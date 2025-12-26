@@ -100,8 +100,12 @@ const ExcelEditorModal: React.FC<ExcelEditorModalProps> = ({
         };
     }, [isOpen, data, headers]);
 
-    // Note: Search functionality disabled - jspreadsheet-ce API differs from expected
-    // The built-in search is enabled via the 'search: true' option above
+    // Search functionality
+    useEffect(() => {
+        if (jssRef.current && jssRef.current.search) {
+            jssRef.current.search(searchQuery);
+        }
+    }, [searchQuery]);
 
     // Handle confirm
     const handleConfirm = useCallback(() => {
